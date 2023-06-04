@@ -18,7 +18,7 @@ The source code of this library is provided under the MIT license.
 
 ## Integrating the component
 
-Prebuilt versions of the project can be retrieved from Nuget under the name Axodox.`MachineLearning` and added to Visual Studio C++ projects (both desktop and UWP projects are supported) with the x64 platform.
+Prebuilt versions of the project can be retrieved from Nuget under the name `Axodox.MachineLearning` and added to Visual Studio C++ projects (both desktop and UWP projects are supported) with the x64 platform.
 
 Basic integration:
 - Add the `Axodox.Common` and `Axodox.MachineLearning` packages to your project
@@ -45,3 +45,5 @@ You can either run `build_nuget.ps1` or open `Axodox.MachineLearning.sln` and bu
 Once you have built the library, you override your existing nuget package install by setting the `AxodoxMachineLearning-Location` environment variable to point to your local build. 
 
 > For example `C:\dev\axodox-machinelearning\Axodox.MachineLearning.Universal` for an UWP app and `C:\dev\axodox-machinelearning\Axodox.MachineLearning.Desktop` for a desktop app.
+
+This allows to add all projects into the same solution and make changes on the library and your app seamlessly without copying files repeatedly.
