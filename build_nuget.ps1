@@ -28,17 +28,21 @@ foreach ($platform in $platforms) {
 }
 
 # Pack nuget
+Write-Host 'Creating output directory...' -ForegroundColor Magenta
 New-Item -Path '.\Output' -ItemType Directory -Force
 
-$xml = [xml](Get-Content Axodox.MachineLearning.nuspec)
+Write-Host 'Patching nuspec...' -ForegroundColor Magenta
+$nuspec = [xml](Get-Content "$PSScriptRoot\Axodox.MachineLearning.nuspec")
 
-$xml.package.metadata.version = if ($null -ne $env:APPVEYOR_BUILD_VERSION) { $env:APPVEYOR_BUILD_VERSION } else { "1.0.0.0" }
-$xml.package.metadata.repository.branch = if ($null -ne $env:APPVEYOR_REPO_BRANCH) { $env:APPVEYOR_REPO_BRANCH } else { "main" }
+$nuspec.package.metadata.version = if ($null -ne $env:APPVEYOR_BUILD_VERSION) { $env:APPVEYOR_BUILD_VERSION } else { "1.0.0.0" }
+$nuspec.package.metadata.repository.branch = if ($null -ne $env:APPVEYOR_REPO_BRANCH) { $env:APPVEYOR_REPO_BRANCH } else { "main" }
 $commit = if ($null -ne $env:APPVEYOR_REPO_COMMIT) { $env:APPVEYOR_REPO_COMMIT } else { $null }
 if ($null -ne $commit) {
-  $xml.package.metadata.repository.SetAttribute("commit", $commit)
+  $nuspec.package.metadata.repository.SetAttribute("commit", $commit)
 }
 
-$xml.Save('.\Axodox.MachineLearning.Patched.nuspec')
+$nuspec.Save("$PSScriptRoot\Axodox.MachineLearning.Patched.nuspec")
+
+Write-Host 'Creating nuget package...' -ForegroundColor Magenta
 .\Tools\nuget.exe pack .\Axodox.MachineLearning.Patched.nuspec -OutputDirectory .\Output
 Remove-Item -Path '.\Axodox.MachineLearning.Patched.nuspec'

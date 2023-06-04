@@ -20,11 +20,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="$(AxodoxMachineLearning-Location)\Axodox.MachineLearning.Desktop.vcxproj" Condition="'$(AxodoxMachineLearning-Location)'!='True' And '$(ApplicationType)'!='Windows Store'">
+    <ProjectReference Include="$(AxodoxMachineLearning-Location)\Axodox.MachineLearning.Desktop.vcxproj" Condition="'$(AxodoxMachineLearning-Location)'!='' And '$(ApplicationType)'!='Windows Store'">
       <Project>{cecab444-790c-4018-afb8-bc7aaf493313}</Project>
     </ProjectReference>
 
-    <ProjectReference Include="$(AxodoxMachineLearning-Location)\Axodox.MachineLearning.Universal.vcxproj" Condition="'$(AxodoxMachineLearning-Location)'=='True' And '$(ApplicationType)'=='Windows Store'">
+    <ProjectReference Include="$(AxodoxMachineLearning-Location)\Axodox.MachineLearning.Universal.vcxproj" Condition="'$(AxodoxMachineLearning-Location)'!='' And '$(ApplicationType)'=='Windows Store'">
       <Project>{b63b5d82-ad8f-4951-89c5-c16af90cedcb}</Project>
     </ProjectReference>
   </ItemGroup>
