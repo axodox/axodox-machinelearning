@@ -3,12 +3,31 @@
   <PropertyGroup>
     <AxodoxMachineLearning-Runtime>desktop</AxodoxMachineLearning-Runtime>
     <AxodoxMachineLearning-Runtime Condition="'$(ApplicationType)'=='Windows Store'">universal</AxodoxMachineLearning-Runtime>
+  </PropertyGroup>
 
+  <PropertyGroup Condition="'$(AxodoxMachineLearning-Location)'==''">
     <AxodoxMachineLearning-Libraries>$(MSBuildThisFileDirectory)..\..\bin\$(AxodoxMachineLearning-Runtime)\$(Platform)\$(Configuration)</AxodoxMachineLearning-Libraries>
     <AxodoxMachineLearning-DependencyRoot>$(MSBuildThisFileDirectory)..\..\lib\$(AxodoxMachineLearning-Runtime)\$(Platform)\$(Configuration)</AxodoxMachineLearning-DependencyRoot>
     <AxodoxMachineLearning-Dependencies>$([MSbuild]::Unescape($([System.String]::Join(';', $([System.IO.Directory]::GetFiles($(AxodoxMachineLearning-DependencyRoot), '*.lib'))))))</AxodoxMachineLearning-Dependencies>    
     <AxodoxMachineLearning-Includes>$(MSBuildThisFileDirectory)..\..\include</AxodoxMachineLearning-Includes>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(AxodoxMachineLearning-Location)'!=''">
+    <AxodoxMachineLearning-Libraries>$(AxodoxMachineLearning-Location)\bin\$(Platform)\$(Configuration)</AxodoxMachineLearning-Libraries>
+    <AxodoxMachineLearning-DependencyRoot>$(AxodoxMachineLearning-Location)\bin\$(Platform)\$(Configuration)</AxodoxMachineLearning-DependencyRoot>
+    <AxodoxMachineLearning-Dependencies>$([MSbuild]::Unescape($([System.String]::Join(';', $([System.IO.Directory]::GetFiles($(AxodoxMachineLearning-DependencyRoot), '*.lib'))))))</AxodoxMachineLearning-Dependencies>    
+    <AxodoxMachineLearning-Includes>$(AxodoxMachineLearning-Location)\..\Axodox.MachineLearning.Shared</AxodoxMachineLearning-Includes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="$(AxodoxMachineLearning-Location)\Axodox.MachineLearning.Desktop.vcxproj" Condition="'$(AxodoxMachineLearning-Location)'!='True' And '$(ApplicationType)'!='Windows Store'">
+      <Project>{cecab444-790c-4018-afb8-bc7aaf493313}</Project>
+    </ProjectReference>
+
+    <ProjectReference Include="$(AxodoxMachineLearning-Location)\Axodox.MachineLearning.Universal.vcxproj" Condition="'$(AxodoxMachineLearning-Location)'=='True' And '$(ApplicationType)'=='Windows Store'">
+      <Project>{b63b5d82-ad8f-4951-89c5-c16af90cedcb}</Project>
+    </ProjectReference>
+  </ItemGroup>
 
   <ItemGroup>
     <None Include="$(AxodoxMachineLearning-Libraries)\*.*">

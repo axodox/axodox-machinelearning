@@ -43,15 +43,16 @@
   <files>
     <file src="Axodox.MachineLearning.targets" target="build/native/Axodox.MachineLearning.targets" />
     <file src="Axodox.MachineLearning.Shared\**\*.h" target="include" />
+    <file src="Axodox.MachineLearning.Shared\Assets\*.*" target="assets" />
     
-    <file src="Axodox.MachineLearning.Desktop\bin\**\*.lib" target="lib\desktop" />
-    <file src="Axodox.MachineLearning.Desktop\bin\**\*.exp" target="lib\desktop" />
-    <file src="Axodox.MachineLearning.Universal\bin\**\*.lib" target="lib\universal" />
-    <file src="Axodox.MachineLearning.Universal\bin\**\*.exp" target="lib\universal" />
+    <file src="Axodox.MachineLearning.Desktop\bin\**\Axodox.MachineLearning.lib" target="lib\desktop" />
+    <file src="Axodox.MachineLearning.Desktop\bin\**\Axodox.MachineLearning.exp" target="lib\desktop" />
+    <file src="Axodox.MachineLearning.Universal\bin\**\Axodox.MachineLearning.lib" target="lib\universal" />
+    <file src="Axodox.MachineLearning.Universal\bin\**\Axodox.MachineLearning.exp" target="lib\universal" />
 
-    <file src="Axodox.MachineLearning.Desktop\bin\**\*.dll" target="bin\desktop" />
-    <file src="Axodox.MachineLearning.Desktop\bin\**\*.pdb" target="bin\desktop" />
-    <file src="Axodox.MachineLearning.Universal\bin\**\*.dll" target="bin\universal" />
-    <file src="Axodox.MachineLearning.Universal\bin\**\*.pdb" target="bin\universal" />    
+    <file src="Axodox.MachineLearning.Desktop\bin\**\Axodox.MachineLearning.dll" target="bin\desktop" />
+    <file src="Axodox.MachineLearning.Desktop\bin\**\Axodox.MachineLearning.pdb" target="bin\desktop" />
+    <file src="Axodox.MachineLearning.Universal\bin\**\Axodox.MachineLearning.dll" target="bin\universal" />
+    <file src="Axodox.MachineLearning.Universal\bin\**\Axodox.MachineLearning.pdb" target="bin\universal" />    
   </files>
 </package>

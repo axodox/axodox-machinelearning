@@ -1,4 +1,7 @@
 # Initialize build environment
+Write-Host 'Update dependencies...' -ForegroundColor Magenta
+.\update_dependencies.ps1
+
 Write-Host 'Finding Visual Studio...' -ForegroundColor Magenta
 $vsPath = .\Tools\vswhere.exe -latest -property installationPath
 Write-Host $vsPath
