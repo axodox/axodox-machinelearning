@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33723.286
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Axodox.MachineLearning.Shared", "Axodox.MachineLearning.Shared\Axodox.MachineLearning.Shared.vcxitems", "{962E7015-1D1B-4CCD-946B-697FCCF51328}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Axodox.MachineLearning.Desktop", "Axodox.MachineLearning.Desktop\Axodox.MachineLearning.Desktop.vcxproj", "{CECAB444-790C-4018-AFB8-BC7AAF493313}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CECAB444-790C-4018-AFB8-BC7AAF493313}.Debug|x64.ActiveCfg = Debug|x64
+		{CECAB444-790C-4018-AFB8-BC7AAF493313}.Debug|x64.Build.0 = Debug|x64
+		{CECAB444-790C-4018-AFB8-BC7AAF493313}.Release|x64.ActiveCfg = Release|x64
+		{CECAB444-790C-4018-AFB8-BC7AAF493313}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {97F69CF1-59D2-4995-BC82-BC969DAD16CE}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Axodox.MachineLearning.Shared\Axodox.MachineLearning.Shared.vcxitems*{962e7015-1d1b-4ccd-946b-697fccf51328}*SharedItemsImports = 9
+		Axodox.MachineLearning.Shared\Axodox.MachineLearning.Shared.vcxitems*{cecab444-790c-4018-afb8-bc7aaf493313}*SharedItemsImports = 4
+	EndGlobalSection
+EndGlobal

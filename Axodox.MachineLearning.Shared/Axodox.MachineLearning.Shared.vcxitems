@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{962e7015-1d1b-4ccd-946b-697fccf51328}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxEnvironment.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxModelStatistics.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Prompts\PromptAttention.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Prompts\PromptParser.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Prompts\PromptScheduler.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\SafetyChecker.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\SafetyCheckerOptions.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\StableDiffusionScheduler.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\StableDiffustionInferer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Tensor.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\TensorType.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\TextEmbedder.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\TextEncoder.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\TextTokenizer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\VaeDecoder.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\VaeEncoder.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Web\HuggingFaceClient.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Web\HuggingFaceSchema.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Include\Axodox.MachineLearning.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Include\Axodox.Web.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)includes.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxEnvironment.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxExtensions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxModelStatistics.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Prompts\PromptAttention.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Prompts\PromptParser.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Prompts\PromptScheduler.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\SafetyChecker.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\SafetyCheckerOptions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\StableDiffusionScheduler.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\StableDiffustionInferer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Tensor.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\TensorType.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\TextEmbedder.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\TextEncoder.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\TextTokenizer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\VaeDecoder.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\VaeEncoder.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Web\HuggingFaceClient.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Web\HuggingFaceSchema.h" />
+  </ItemGroup>
+</Project>
