@@ -1,4 +1,5 @@
 #pragma once
+#include "Include/Axodox.Graphics.h"
 
 #ifdef PLATFORM_WINDOWS
 #include <winrt/windows.foundation.h>
@@ -9,14 +10,8 @@
 #include <winrt/windows.storage.streams.h>
 #endif
 
-#ifdef AXODOX_MACHINELEARNING_EXPORT
-#define USE_ONNX
-#endif
-
-#ifdef USE_ONNX
 #include "onnxruntime_cxx_api.h"
 #include "dml_provider_factory.h"
-#endif
 
 #ifdef AXODOX_MACHINELEARNING_EXPORT
 #define AXODOX_MACHINELEARNING_API __declspec(dllexport)

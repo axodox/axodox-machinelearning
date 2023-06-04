@@ -1,5 +1,4 @@
 #include "pch.h"
-#ifdef USE_ONNX
 #include "TextEmbedder.h"
 #include "Prompts/PromptScheduler.h"
 #include "Prompts/PromptParser.h"
@@ -144,4 +143,3 @@ namespace Axodox::MachineLearning
     return MergeTokenizedChunks(tokenizedTexts, chunks);
   }
 }
-#endif

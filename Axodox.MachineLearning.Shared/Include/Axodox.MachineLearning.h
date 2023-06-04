@@ -1,5 +1,4 @@
 #pragma once
-#define USE_ONNX
 #include "../includes.h"
 
 #include "MachineLearning/Prompts/PromptAttention.h"
@@ -20,3 +19,8 @@
 #include "MachineLearning/TextTokenizer.h"
 #include "MachineLearning/VaeDecoder.h"
 #include "MachineLearning/VaeEncoder.h"
+
+#ifdef PLATFORM_WINDOWS
+#include "Web/HuggingFaceClient.h"
+#include "Web/HuggingFaceSchema.h"
+#endif

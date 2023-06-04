@@ -35,7 +35,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Include\Axodox.MachineLearning.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Include\Axodox.Web.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)includes.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxEnvironment.h" />
@@ -57,5 +56,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\VaeEncoder.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Web\HuggingFaceClient.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Web\HuggingFaceSchema.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)Assets\custom_op_cliptok.onnx"/>
+    <None Include="$(MSBuildThisFileDirectory)Assets\ortextensions.dll"/>
   </ItemGroup>
 </Project>

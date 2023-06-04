@@ -80,8 +80,6 @@ namespace Axodox::MachineLearning
 
   AXODOX_MACHINELEARNING_API size_t GetElementSize(TensorType type);
 
-#ifdef USE_ONNX
   AXODOX_MACHINELEARNING_API TensorType ToTensorType(ONNXTensorElementDataType type);
   AXODOX_MACHINELEARNING_API ONNXTensorElementDataType ToTensorType(TensorType type);
-#endif
 }

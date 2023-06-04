@@ -5,10 +5,7 @@ using namespace Axodox::Graphics;
 using namespace DirectX;
 using namespace DirectX::PackedVector;
 using namespace std;
-
-#ifdef USE_ONNX
 using namespace Ort;
-#endif
 
 namespace Axodox::MachineLearning
 {
@@ -409,7 +406,6 @@ namespace Axodox::MachineLearning
     return results;
   }
 
-#ifdef USE_ONNX
   Tensor Tensor::FromOrtValue(const Ort::Value& value)
   {
     Tensor result;
@@ -464,5 +460,4 @@ namespace Axodox::MachineLearning
 
     return result;
   }
-#endif
 }

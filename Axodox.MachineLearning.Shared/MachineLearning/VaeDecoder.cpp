@@ -1,5 +1,4 @@
 #include "pch.h"
-#ifdef USE_ONNX
 #include "VaeDecoder.h"
 
 using namespace Ort;
@@ -45,4 +44,3 @@ namespace Axodox::MachineLearning
     return results;
   }
 }
-#endif

@@ -1,5 +1,4 @@
 #pragma once
-#ifdef USE_ONNX
 #include "Tensor.h"
 #include "OnnxEnvironment.h"
 #include "StableDiffusionScheduler.h"
@@ -46,4 +45,3 @@ namespace Axodox::MachineLearning
     static Tensor BlendLatentSamples(const Tensor& a, const Tensor& b, const Tensor& weights);
   };
 }
-#endif

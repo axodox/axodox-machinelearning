@@ -1,5 +1,4 @@
 #pragma once
-#ifdef USE_ONNX
 #include "OnnxEnvironment.h"
 #include "Tensor.h"
 #include "TextTokenizer.h"
@@ -42,4 +41,3 @@ namespace Axodox::MachineLearning
     TokenizedPrompt TokenizePrompt(std::string_view text);
   };
 }
-#endif

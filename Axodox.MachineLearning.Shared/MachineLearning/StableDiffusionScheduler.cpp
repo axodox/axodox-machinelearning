@@ -1,5 +1,4 @@
 #include "pch.h"
-#ifdef USE_ONNX
 #include "StableDiffusionScheduler.h"
 
 using namespace std;
@@ -274,4 +273,3 @@ namespace Axodox::MachineLearning
     return sample.BinaryOperation<float>(latentDelta, [](float a, float b) { return a + b; });
   }
 }
-#endif

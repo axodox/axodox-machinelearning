@@ -7,16 +7,52 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Axodox.MachineLearning.Shar
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Axodox.MachineLearning.Desktop", "Axodox.MachineLearning.Desktop\Axodox.MachineLearning.Desktop.vcxproj", "{CECAB444-790C-4018-AFB8-BC7AAF493313}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Axodox.MachineLearning.Universal", "Axodox.MachineLearning.Universal\Axodox.MachineLearning.Universal.vcxproj", "{B63B5D82-AD8F-4951-89C5-C16AF90CEDCB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM = Debug|ARM
+		Debug|ARM64 = Debug|ARM64
 		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|ARM = Release|ARM
+		Release|ARM64 = Release|ARM64
 		Release|x64 = Release|x64
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CECAB444-790C-4018-AFB8-BC7AAF493313}.Debug|ARM.ActiveCfg = Debug|x64
+		{CECAB444-790C-4018-AFB8-BC7AAF493313}.Debug|ARM.Build.0 = Debug|x64
+		{CECAB444-790C-4018-AFB8-BC7AAF493313}.Debug|ARM64.ActiveCfg = Debug|x64
+		{CECAB444-790C-4018-AFB8-BC7AAF493313}.Debug|ARM64.Build.0 = Debug|x64
 		{CECAB444-790C-4018-AFB8-BC7AAF493313}.Debug|x64.ActiveCfg = Debug|x64
 		{CECAB444-790C-4018-AFB8-BC7AAF493313}.Debug|x64.Build.0 = Debug|x64
+		{CECAB444-790C-4018-AFB8-BC7AAF493313}.Debug|x86.ActiveCfg = Debug|Win32
+		{CECAB444-790C-4018-AFB8-BC7AAF493313}.Debug|x86.Build.0 = Debug|Win32
+		{CECAB444-790C-4018-AFB8-BC7AAF493313}.Release|ARM.ActiveCfg = Release|x64
+		{CECAB444-790C-4018-AFB8-BC7AAF493313}.Release|ARM.Build.0 = Release|x64
+		{CECAB444-790C-4018-AFB8-BC7AAF493313}.Release|ARM64.ActiveCfg = Release|x64
+		{CECAB444-790C-4018-AFB8-BC7AAF493313}.Release|ARM64.Build.0 = Release|x64
 		{CECAB444-790C-4018-AFB8-BC7AAF493313}.Release|x64.ActiveCfg = Release|x64
 		{CECAB444-790C-4018-AFB8-BC7AAF493313}.Release|x64.Build.0 = Release|x64
+		{CECAB444-790C-4018-AFB8-BC7AAF493313}.Release|x86.ActiveCfg = Release|Win32
+		{CECAB444-790C-4018-AFB8-BC7AAF493313}.Release|x86.Build.0 = Release|Win32
+		{B63B5D82-AD8F-4951-89C5-C16AF90CEDCB}.Debug|ARM.ActiveCfg = Debug|ARM
+		{B63B5D82-AD8F-4951-89C5-C16AF90CEDCB}.Debug|ARM.Build.0 = Debug|ARM
+		{B63B5D82-AD8F-4951-89C5-C16AF90CEDCB}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{B63B5D82-AD8F-4951-89C5-C16AF90CEDCB}.Debug|ARM64.Build.0 = Debug|ARM64
+		{B63B5D82-AD8F-4951-89C5-C16AF90CEDCB}.Debug|x64.ActiveCfg = Debug|x64
+		{B63B5D82-AD8F-4951-89C5-C16AF90CEDCB}.Debug|x64.Build.0 = Debug|x64
+		{B63B5D82-AD8F-4951-89C5-C16AF90CEDCB}.Debug|x86.ActiveCfg = Debug|Win32
+		{B63B5D82-AD8F-4951-89C5-C16AF90CEDCB}.Debug|x86.Build.0 = Debug|Win32
+		{B63B5D82-AD8F-4951-89C5-C16AF90CEDCB}.Release|ARM.ActiveCfg = Release|ARM
+		{B63B5D82-AD8F-4951-89C5-C16AF90CEDCB}.Release|ARM.Build.0 = Release|ARM
+		{B63B5D82-AD8F-4951-89C5-C16AF90CEDCB}.Release|ARM64.ActiveCfg = Release|ARM64
+		{B63B5D82-AD8F-4951-89C5-C16AF90CEDCB}.Release|ARM64.Build.0 = Release|ARM64
+		{B63B5D82-AD8F-4951-89C5-C16AF90CEDCB}.Release|x64.ActiveCfg = Release|x64
+		{B63B5D82-AD8F-4951-89C5-C16AF90CEDCB}.Release|x64.Build.0 = Release|x64
+		{B63B5D82-AD8F-4951-89C5-C16AF90CEDCB}.Release|x86.ActiveCfg = Release|Win32
+		{B63B5D82-AD8F-4951-89C5-C16AF90CEDCB}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -26,6 +62,7 @@ Global
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Axodox.MachineLearning.Shared\Axodox.MachineLearning.Shared.vcxitems*{962e7015-1d1b-4ccd-946b-697fccf51328}*SharedItemsImports = 9
+		Axodox.MachineLearning.Shared\Axodox.MachineLearning.Shared.vcxitems*{b63b5d82-ad8f-4951-89c5-c16af90cedcb}*SharedItemsImports = 4
 		Axodox.MachineLearning.Shared\Axodox.MachineLearning.Shared.vcxitems*{cecab444-790c-4018-afb8-bc7aaf493313}*SharedItemsImports = 4
 	EndGlobalSection
 EndGlobal

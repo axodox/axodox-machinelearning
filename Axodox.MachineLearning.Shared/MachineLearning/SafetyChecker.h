@@ -1,5 +1,4 @@
 #pragma once
-#ifdef USE_ONNX
 #include "OnnxEnvironment.h"
 #include "Tensor.h"
 #include "SafetyCheckerOptions.h"
@@ -23,4 +22,3 @@ namespace Axodox::MachineLearning
     Tensor ToImageInput(const Graphics::TextureData& texture) const;
   };
 }
-#endif

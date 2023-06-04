@@ -1,5 +1,4 @@
 #include "pch.h"
-#ifdef USE_ONNX
 #include "TextTokenizer.h"
 #include "OnnxExtensions.h"
 
@@ -82,4 +81,3 @@ namespace Axodox::MachineLearning
     return result;
   }
 }
-#endif

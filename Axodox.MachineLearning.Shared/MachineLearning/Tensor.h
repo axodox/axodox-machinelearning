@@ -178,14 +178,12 @@ namespace Axodox::MachineLearning
     Tensor ToSingle() const;
     Tensor ToHalf() const;
 
-#ifdef USE_ONNX
     static Tensor FromOrtValue(const Ort::Value& value);
     Ort::Value ToOrtValue(Ort::MemoryInfo& memoryInfo) const;
 
     void UpdateOrtValue(Ort::Value& value);
 
     static std::pair<TensorType, Tensor::shape_t> ToTypeAndShape(const Ort::TensorTypeAndShapeInfo& info);
-#endif
 
   private:
     static size_t GetDimensionFromIndex(size_t& x, size_t& y, size_t& z, size_t& w);
@@ -194,6 +192,5 @@ namespace Axodox::MachineLearning
 
     static Tensor FromTextureDataRgba8(const Graphics::TextureData& texture);
     static Tensor FromTextureDataGray8(const Graphics::TextureData& texture);
-
   };
 }

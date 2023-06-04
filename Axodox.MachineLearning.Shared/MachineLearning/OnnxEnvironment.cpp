@@ -1,5 +1,4 @@
 #include "pch.h"
-#ifdef USE_ONNX
 #include "OnnxEnvironment.h"
 
 using namespace Ort;
@@ -81,4 +80,3 @@ namespace Axodox::MachineLearning
     return Session{ _environment, sourcePath->c_str(), sessionOptions};
   }
 }
-#endif

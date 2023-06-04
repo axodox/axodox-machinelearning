@@ -1,5 +1,4 @@
 #include "pch.h"
-#ifdef USE_ONNX
 #include "StableDiffustionInferer.h"
 #include "VaeDecoder.h"
 #include "OnnxModelStatistics.h"
@@ -162,4 +161,3 @@ namespace Axodox::MachineLearning
     return Tensor::CreateRandom(shape, context.Randoms, context.Scheduler.InitialNoiseSigma());
   }
 }
-#endif

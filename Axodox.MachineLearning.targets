@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">  
+  <PropertyGroup>
+    <AxodoxCommon-Runtime>desktop</AxodoxCommon-Runtime>
+    <AxodoxCommon-Runtime Condition="'$(ApplicationType)'=='Windows Store'">universal</AxodoxCommon-Runtime>
+
+    <AxodoxCommon-Libraries>$(MSBuildThisFileDirectory)..\..\bin\$(AxodoxCommon-Runtime)\$(Platform)\$(Configuration)</AxodoxCommon-Libraries>
+    <AxodoxCommon-DependencyRoot>$(MSBuildThisFileDirectory)..\..\lib\$(AxodoxCommon-Runtime)\$(Platform)\$(Configuration)</AxodoxCommon-DependencyRoot>
+    <AxodoxCommon-Dependencies>$([MSbuild]::Unescape($([System.String]::Join(';', $([System.IO.Directory]::GetFiles($(AxodoxCommon-DependencyRoot), '*.lib'))))))</AxodoxCommon-Dependencies>    
+    <AxodoxCommon-Includes>$(MSBuildThisFileDirectory)..\..\include</AxodoxCommon-Includes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(AxodoxCommon-Libraries)\*.*">
+      <InProject>False</InProject>
+      <Link>%(FileName)%(Extension)</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemDefinitionGroup>
+    <Link>
+      <AdditionalLibraryDirectories>$(AxodoxCommon-Libraries);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(AxodoxCommon-Dependencies);%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(AxodoxCommon-Includes);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+</Project>

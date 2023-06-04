@@ -1,5 +1,4 @@
 #include "pch.h"
-#ifdef USE_ONNX
 #include "TextEncoder.h"
 
 using namespace Ort;
@@ -33,4 +32,3 @@ namespace Axodox::MachineLearning
     return Tensor::FromOrtValue(outputValues[0]).ToSingle();
   }
 }
-#endif

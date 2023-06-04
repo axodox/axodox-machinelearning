@@ -1,5 +1,4 @@
 #include "pch.h"
-#ifdef USE_ONNX
 #include "SafetyChecker.h"
 #include "Storage/FileIO.h"
 
@@ -98,5 +97,3 @@ namespace Axodox::MachineLearning
     return result;
   }
 }
-
-#endif

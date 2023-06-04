@@ -1,5 +1,4 @@
 #pragma once
-#ifdef USE_ONNX
 #include "Tensor.h"
 
 namespace Axodox::MachineLearning
@@ -79,4 +78,3 @@ namespace Axodox::MachineLearning
     static EulerCoefficients GetEulerCoefficients(size_t step, std::span<const float> sigmas);
   };
 }
-#endif
