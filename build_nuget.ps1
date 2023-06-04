@@ -19,14 +19,14 @@ $platforms = "x64"
 foreach ($platform in $platforms) {
   foreach ($config in $configurations) {
     Write-Host "Building $platform $config..." -ForegroundColor Magenta
-    MSBuild.exe .\Axodox.Common.sln -p:Configuration=$config -p:Platform=$platform -m:$coreCount -v:m
+    MSBuild.exe .\Axodox.MachineLearning.sln -p:Configuration=$config -p:Platform=$platform -m:$coreCount -v:m
   }
 }
 
 # Pack nuget
 New-Item -Path '.\Output' -ItemType Directory -Force
 
-$xml = [xml](Get-Content Axodox.Common.nuspec)
+$xml = [xml](Get-Content Axodox.MachineLearning.nuspec)
 
 $xml.package.metadata.version = if ($null -ne $env:APPVEYOR_BUILD_VERSION) { $env:APPVEYOR_BUILD_VERSION } else { "1.0.0.0" }
 $xml.package.metadata.repository.branch = if ($null -ne $env:APPVEYOR_REPO_BRANCH) { $env:APPVEYOR_REPO_BRANCH } else { "main" }
@@ -35,6 +35,6 @@ if ($null -ne $commit) {
   $xml.package.metadata.repository.SetAttribute("commit", $commit)
 }
 
-$xml.Save('.\Axodox.Common.Patched.nuspec')
-.\Tools\nuget.exe pack .\Axodox.Common.Patched.nuspec -OutputDirectory .\Output
-Remove-Item -Path '.\Axodox.Common.Patched.nuspec'
+$xml.Save('.\Axodox.MachineLearning.Patched.nuspec')
+.\Tools\nuget.exe pack .\Axodox.MachineLearning.Patched.nuspec -OutputDirectory .\Output
+Remove-Item -Path '.\Axodox.MachineLearning.Patched.nuspec'

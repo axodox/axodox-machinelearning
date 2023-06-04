@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">  
   <PropertyGroup>
-    <AxodoxCommon-Runtime>desktop</AxodoxCommon-Runtime>
-    <AxodoxCommon-Runtime Condition="'$(ApplicationType)'=='Windows Store'">universal</AxodoxCommon-Runtime>
+    <AxodoxMachineLearning-Runtime>desktop</AxodoxMachineLearning-Runtime>
+    <AxodoxMachineLearning-Runtime Condition="'$(ApplicationType)'=='Windows Store'">universal</AxodoxMachineLearning-Runtime>
 
-    <AxodoxCommon-Libraries>$(MSBuildThisFileDirectory)..\..\bin\$(AxodoxCommon-Runtime)\$(Platform)\$(Configuration)</AxodoxCommon-Libraries>
-    <AxodoxCommon-DependencyRoot>$(MSBuildThisFileDirectory)..\..\lib\$(AxodoxCommon-Runtime)\$(Platform)\$(Configuration)</AxodoxCommon-DependencyRoot>
-    <AxodoxCommon-Dependencies>$([MSbuild]::Unescape($([System.String]::Join(';', $([System.IO.Directory]::GetFiles($(AxodoxCommon-DependencyRoot), '*.lib'))))))</AxodoxCommon-Dependencies>    
-    <AxodoxCommon-Includes>$(MSBuildThisFileDirectory)..\..\include</AxodoxCommon-Includes>
+    <AxodoxMachineLearning-Libraries>$(MSBuildThisFileDirectory)..\..\bin\$(AxodoxMachineLearning-Runtime)\$(Platform)\$(Configuration)</AxodoxMachineLearning-Libraries>
+    <AxodoxMachineLearning-DependencyRoot>$(MSBuildThisFileDirectory)..\..\lib\$(AxodoxMachineLearning-Runtime)\$(Platform)\$(Configuration)</AxodoxMachineLearning-DependencyRoot>
+    <AxodoxMachineLearning-Dependencies>$([MSbuild]::Unescape($([System.String]::Join(';', $([System.IO.Directory]::GetFiles($(AxodoxMachineLearning-DependencyRoot), '*.lib'))))))</AxodoxMachineLearning-Dependencies>    
+    <AxodoxMachineLearning-Includes>$(MSBuildThisFileDirectory)..\..\include</AxodoxMachineLearning-Includes>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="$(AxodoxCommon-Libraries)\*.*">
+    <None Include="$(AxodoxMachineLearning-Libraries)\*.*">
       <InProject>False</InProject>
       <Link>%(FileName)%(Extension)</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -20,14 +20,14 @@
 
   <ItemDefinitionGroup>
     <Link>
-      <AdditionalLibraryDirectories>$(AxodoxCommon-Libraries);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(AxodoxCommon-Dependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(AxodoxMachineLearning-Libraries);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(AxodoxMachineLearning-Dependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
 
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(AxodoxCommon-Includes);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(AxodoxMachineLearning-Includes);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
 </Project>

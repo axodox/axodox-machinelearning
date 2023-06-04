@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
     <!-- The identifier that must be unique within the hosting gallery -->
-    <id>Axodox.Common</id>
+    <id>Axodox.MachineLearning</id>
 
     <!-- The package version number that is used when resolving dependencies -->
     <version>1.0.0.0</version>
@@ -16,7 +16,7 @@
 
     <!-- License and project URLs provide links for the gallery -->
     <license type="expression">MIT</license>
-    <repository type="git" url="https://github.com/axodox/axodox-common" branch="main"/>
+    <repository type="git" url="https://github.com/axodox/axodox-machinelearning" branch="main"/>
 
     <!-- The icon is used in Visual Studio's package manager UI -->
     <!--<icon>icon.png</icon>-->
@@ -30,7 +30,7 @@
 
     <!-- The description can be used in package manager UI. Note that the
              nuget.org gallery uses information you add in the portal. -->
-    <description>Axodox.Common is an open source framework of reusable C++ components, with an additional emphasis on Windows development.</description>
+    <description>Axodox.MachineLearning is an open source C++ implementation of Stable Diffusion based on the ONNX library.</description>
 
     <!-- Copyright information -->
     <copyright>Copyright ©2023 Peter Major</copyright>
@@ -41,17 +41,17 @@
 
   <!-- A readme.txt will be displayed when the package is installed -->
   <files>
-    <file src="Axodox.Common.targets" target="build/native/Axodox.Common.targets" />
-    <file src="Axodox.Common.Shared\**\*.h" target="include" />
+    <file src="Axodox.MachineLearning.targets" target="build/native/Axodox.MachineLearning.targets" />
+    <file src="Axodox.MachineLearning.Shared\**\*.h" target="include" />
     
-    <file src="Axodox.Common.Desktop\bin\**\*.lib" target="lib\desktop" />
-    <file src="Axodox.Common.Desktop\bin\**\*.exp" target="lib\desktop" />
-    <file src="Axodox.Common.Universal\bin\**\*.lib" target="lib\universal" />
-    <file src="Axodox.Common.Universal\bin\**\*.exp" target="lib\universal" />
+    <file src="Axodox.MachineLearning.Desktop\bin\**\*.lib" target="lib\desktop" />
+    <file src="Axodox.MachineLearning.Desktop\bin\**\*.exp" target="lib\desktop" />
+    <file src="Axodox.MachineLearning.Universal\bin\**\*.lib" target="lib\universal" />
+    <file src="Axodox.MachineLearning.Universal\bin\**\*.exp" target="lib\universal" />
 
-    <file src="Axodox.Common.Desktop\bin\**\*.dll" target="bin\desktop" />
-    <file src="Axodox.Common.Desktop\bin\**\*.pdb" target="bin\desktop" />
-    <file src="Axodox.Common.Universal\bin\**\*.dll" target="bin\universal" />
-    <file src="Axodox.Common.Universal\bin\**\*.pdb" target="bin\universal" />    
+    <file src="Axodox.MachineLearning.Desktop\bin\**\*.dll" target="bin\desktop" />
+    <file src="Axodox.MachineLearning.Desktop\bin\**\*.pdb" target="bin\desktop" />
+    <file src="Axodox.MachineLearning.Universal\bin\**\*.dll" target="bin\universal" />
+    <file src="Axodox.MachineLearning.Universal\bin\**\*.pdb" target="bin\universal" />    
   </files>
 </package>

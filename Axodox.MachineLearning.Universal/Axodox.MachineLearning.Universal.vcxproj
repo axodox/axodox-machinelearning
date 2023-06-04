@@ -15,7 +15,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{b63b5d82-ad8f-4951-89c5-c16af90cedcb}</ProjectGuid>
     <Keyword>DynamicLibrary</Keyword>
-    <RootNamespace>Axodox.MachineLearning.Universal</RootNamespace>
+    <RootNamespace>Axodox.MachineLearning</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
     <AppContainerApplication>true</AppContainerApplication>
