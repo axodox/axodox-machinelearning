@@ -1,6 +1,7 @@
 # Initialize build environment
 Write-Host 'Update dependencies...' -ForegroundColor Magenta
 .\update_dependencies.ps1
+.\Tools\nuget.exe restore .\Axodox.MachineLearning.sln
 
 Write-Host 'Finding Visual Studio...' -ForegroundColor Magenta
 $vsPath = .\Tools\vswhere.exe -latest -property installationPath
