@@ -6,7 +6,7 @@ This repository contains a **fully C++ implementation of Stable Diffusion**-base
 
 The implementation uses the [ONNX](https://onnx.ai/) to store the mathematical models involved in the image generation. These ONNX models are then executed using the [ONNX runtime](https://github.com/microsoft/onnxruntime), which support a variety of platforms (Windows, Linux, MacOS, Android, iOS, WebAssembly etc.), and execution providers (such as NVIDIA CUDA / TensorRT; AMD ROCm, Apple CoreML, Qualcomm QNN, Microsoft DirectML and many more). 
 
-We provide an example integration called [Unpaint](https://github.com/axodox/unpaint) which showcases how the libraries can be integrated in a simple WinUI based user interface. You may download a recent release from [here](https://github.com/axodox/unpaint/releases/tag/main-1.0.8.0) to evaluate the performance characteristics of the solution. 
+We provide an example integration called [Unpaint](https://github.com/axodox/unpaint) which showcases how the libraries can be integrated in a simple WinUI based user interface. You may download a recent release from [here](https://github.com/axodox/unpaint/releases) to evaluate the performance characteristics of the solution. 
 
 > Please note that you will need to install the provided test certificate to run the example app into your Trusted Root Certificate Authorities Store (in the local machine container), you can also [resign the package with your own certificate](https://learn.microsoft.com/en-us/windows/msix/package/create-certificate-package-signing) to make it install.
 
