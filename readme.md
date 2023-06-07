@@ -30,6 +30,7 @@ Prebuilt versions of the project can be retrieved from Nuget under the name `Axo
 
 Basic integration:
 - Add the `Axodox.Common` and `Axodox.MachineLearning` packages to your project
+- Make sure to **only have x64 platform in your project** as this lib is x64 only for now
 - Ensure that your compiler is set to **C++20**, we also recommend enabling all warnings and conformance mode
 - Add the following include statement to your code file or precompiled header: `#include "Include/Axodox.MachineLearning.h"`
 - Follow this example code to integrate the pipeline: https://github.com/axodox/unpaint/blob/main/Unpaint/StableDiffusionModelExecutor.cpp
