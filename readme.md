@@ -2,6 +2,15 @@
 
 This repository contains a **fully C++ implementation of Stable Diffusion**-based image synthesis, including the original txt2img, img2img and inpainting capabilities and the safety checker. This solution **does not depend on Python** and **runs the entire image generation process in a single process with competitive performance**, making deployments significantly simpler and smaller, essentially consisting a few executable and library files, and the model weights. Using the library it is possible to integrate Stable Diffusion into almost any application - as long as it can import C++ or C functions, but it is **most useful for the developers of realtime graphics applications and games**, which are often realized with C++.
 
+<table style="margin: 0px auto;">
+  <tr>
+    <td><img src="https://media.githubusercontent.com/media/axodox/unpaint/main/Unpaint/Showcase/2023-06-03%2020-50-21.png" alt="a samurai drawing his sword to defend his land" width="256" height="256"></td>
+    <td><img src="https://media.githubusercontent.com/media/axodox/unpaint/main/Unpaint/Showcase/2023-06-03%2020-48-40.png" alt="a sailship crossing the high sea, 18st century, impressionist painting, closeup" width="256" height="256"></td>
+    <td><img src="https://media.githubusercontent.com/media/axodox/unpaint/main/Unpaint/Showcase/2023-06-03%2020-57-48.png" alt="a medieval castle on top of a hill, with a beautiful lake in front of it, among mountains" width="256" height="256"></td>
+    <td><img src="https://media.githubusercontent.com/media/axodox/unpaint/main/Unpaint/Showcase/2023-06-03%2019-32-26.png" alt=" close up portrait photo of woman in wastelander clothes, long haircut, pale skin, slim body, background is city ruins, (high detailed skin:1.2)" width="256" height="256"></td>
+  </tr>
+</table>
+
 ## Technical background
 
 The implementation uses the [ONNX](https://onnx.ai/) to store the mathematical models involved in the image generation. These ONNX models are then executed using the [ONNX runtime](https://github.com/microsoft/onnxruntime), which support a variety of platforms (Windows, Linux, MacOS, Android, iOS, WebAssembly etc.), and execution providers (such as NVIDIA CUDA / TensorRT; AMD ROCm, Apple CoreML, Qualcomm QNN, Microsoft DirectML and many more). 
