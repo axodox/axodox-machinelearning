@@ -37,6 +37,8 @@ Basic integration:
 
 > We recommend adding appropriate safety mechanisms to your app to suppress inappropriate outputs of StableDiffusion, the performance overhead is insignificant.
 
+The Stable Diffusion models we use have been generated using [Microsoft Olive](https://github.com/microsoft/Olive/tree/main/examples/directml/stable_diffusion), please follow the linked example to convert models from HuggingFace. By changing the script you can also convert models stored on your disk from various formats (e.g. `*.safetensors`). You can find some preconverted models [here](https://huggingface.co/models?other=unpaint,stable_diffusion_model) for testing.
+
 # Building the project
 
 Building the library is required to make and test changes. You will need to have the following installed to build the library:
