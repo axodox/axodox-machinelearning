@@ -21,5 +21,11 @@ namespace Axodox::MachineLearning
     std::filesystem::path _rootPath;
     Ort::Env _environment;
     Ort::MemoryInfo _memoryInfo;
+    void OrtLoggingFunction(OrtLoggingLevel severity, const char* category, const char* logid, const char* code_location, const char* message);
+    static void ORT_API_CALL OrtLoggingFunctionCallback(void* param, OrtLoggingLevel severity, const char* category, const char* logid, const char* code_location, const char* message);
+#ifdef PLATFORM_WINDOWS
+    winrt::Windows::Foundation::Diagnostics::LoggingChannel _logChannel = nullptr;
+    static winrt::Windows::Foundation::Diagnostics::FileLoggingSession _loggingSession;
+#endif
   };
 }

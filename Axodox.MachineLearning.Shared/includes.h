@@ -3,6 +3,7 @@
 
 #ifdef PLATFORM_WINDOWS
 #include <winrt/windows.foundation.h>
+#include <winrt/windows.foundation.diagnostics.h>
 #include <winrt/windows.web.http.h>
 #include <winrt/windows.web.http.filters.h>
 #include <winrt/windows.web.http.headers.h>

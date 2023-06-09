@@ -3,15 +3,28 @@
 
 using namespace Ort;
 using namespace std;
+#ifdef PLATFORM_WINDOWS
+using namespace winrt::Windows::Foundation;
+using namespace winrt::Windows::Foundation::Diagnostics;
+#endif
 
 namespace Axodox::MachineLearning
 {
+#ifdef PLATFORM_WINDOWS
+    FileLoggingSession OnnxEnvironment::_loggingSession = nullptr;;
+#endif
+
   OnnxEnvironment::OnnxEnvironment(const std::filesystem::path& rootPath) :
     _rootPath(rootPath),
-    _environment(),
+    _environment(nullptr),
     _memoryInfo(MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeDefault))
   {
-    _environment.UpdateEnvWithCustomLogLevel(ORT_LOGGING_LEVEL_ERROR);
+#ifdef PLATFORM_WINDOWS
+     if (!_loggingSession) _loggingSession = FileLoggingSession(L"OnnxEnvironment");
+    _logChannel = LoggingChannel(winrt::to_hstring(_rootPath.string()));
+    _loggingSession.AddLoggingChannel(_logChannel);
+#endif
+    _environment = Ort::Env(ORT_LOGGING_LEVEL_WARNING, _rootPath.string().c_str(), &OrtLoggingFunctionCallback, this);
   }
 
   const std::filesystem::path& OnnxEnvironment::RootPath() const
@@ -39,7 +52,7 @@ namespace Axodox::MachineLearning
   Ort::SessionOptions OnnxEnvironment::CpuSessionOptions()
   {
     Ort::SessionOptions options;
-    options.SetLogSeverityLevel(ORT_LOGGING_LEVEL_ERROR);
+    options.SetLogSeverityLevel(ORT_LOGGING_LEVEL_WARNING);
     options.DisableMemPattern();
     options.SetExecutionMode(ExecutionMode::ORT_SEQUENTIAL);
     return options;
@@ -78,5 +91,47 @@ namespace Axodox::MachineLearning
     }
 
     return Session{ _environment, sourcePath->c_str(), sessionOptions};
+  }
+
+  void ORT_API_CALL OnnxEnvironment::OrtLoggingFunctionCallback(void* param, OrtLoggingLevel severity, const char* category, const char* logid, const char* code_location, const char* message)
+  {
+      reinterpret_cast<OnnxEnvironment*>(param)->OrtLoggingFunction(severity, category, logid, code_location, message);
+  }
+
+  void OnnxEnvironment::OrtLoggingFunction(OrtLoggingLevel severity, const char* category, const char* logid, const char* code_location, const char* message)
+  {
+#ifdef PLATFORM_WINDOWS
+      LoggingLevel level = LoggingLevel::Verbose;
+      const char* levelStr = "";
+      switch (severity)
+      {
+      case ORT_LOGGING_LEVEL_VERBOSE: 
+          levelStr = "ORT_LOGGING_LEVEL_VERBOSE";
+          level = LoggingLevel::Verbose; 
+          break;
+      case ORT_LOGGING_LEVEL_INFO:
+          levelStr = "ORT_LOGGING_LEVEL_INFO";
+          level = LoggingLevel::Information; 
+          break;
+      case ORT_LOGGING_LEVEL_WARNING: 
+          levelStr = "ORT_LOGGING_LEVEL_WARNING";
+          level = LoggingLevel::Warning; 
+          break;
+      case ORT_LOGGING_LEVEL_ERROR: 
+          levelStr = "ORT_LOGGING_LEVEL_ERROR";
+          level = LoggingLevel::Error;
+          break;
+      case ORT_LOGGING_LEVEL_FATAL:
+          levelStr = "ORT_LOGGING_LEVEL_VERBOSE";
+          level = LoggingLevel::Critical; 
+          break;
+      default:
+          throw invalid_argument("severity");
+      }
+      auto logMessage = format("{0}: {1} - {2} - {3} ({4})", levelStr, category, logid, message, code_location);
+      _logChannel.LogMessage(winrt::to_hstring(logMessage), level);
+      logMessage += "\n";
+      ::OutputDebugStringA(logMessage.c_str());
+#endif
   }
 }
