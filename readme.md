@@ -4,9 +4,9 @@ This repository contains a **fully C++ implementation of Stable Diffusion**-base
 
 <table style="margin: 0px auto;">
   <tr>
-    <td><img src="https://media.githubusercontent.com/media/axodox/unpaint/main/Unpaint/Showcase/2023-06-03%2020-50-21.png" alt="a samurai drawing his sword to defend his land" width="256" height="256"></td>
-    <td><img src="https://media.githubusercontent.com/media/axodox/unpaint/main/Unpaint/Showcase/2023-06-03%2020-48-40.png" alt="a sailship crossing the high sea, 18st century, impressionist painting, closeup" width="256" height="256"></td>
-    <td><img src="https://media.githubusercontent.com/media/axodox/unpaint/main/Unpaint/Showcase/2023-06-03%2019-32-26.png" alt=" close up portrait photo of woman in wastelander clothes, long haircut, pale skin, slim body, background is city ruins, (high detailed skin:1.2)" width="256" height="256"></td>
+    <td><img src="https://github.com/axodox/unpaint/blob/main/Unpaint/Showcase/2023-06-03%2020-50-21.png?raw=true" alt="a samurai drawing his sword to defend his land" width="256" height="256"></td>
+    <td><img src="https://github.com/axodox/unpaint/blob/main/Unpaint/Showcase/2023-06-03%2020-48-40.png?raw=true" alt="a sailship crossing the high sea, 18st century, impressionist painting, closeup" width="256" height="256"></td>
+    <td><img src="https://github.com/axodox/unpaint/blob/main/Unpaint/Showcase/2023-06-03%2019-32-26.png?raw=true" alt=" close up portrait photo of woman in wastelander clothes, long haircut, pale skin, slim body, background is city ruins, (high detailed skin:1.2)" width="256" height="256"></td>
   </tr>
 </table>
 
