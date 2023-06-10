@@ -4,9 +4,9 @@ This repository contains a **fully C++ implementation of Stable Diffusion**-base
 
 <table style="margin: 0px auto;">
   <tr>
-    <td><img src="https://media.githubusercontent.com/media/axodox/unpaint/main/Unpaint/Showcase/2023-06-03%2020-50-21.png" alt="a samurai drawing his sword to defend his land" width="256" height="256"></td>
-    <td><img src="https://media.githubusercontent.com/media/axodox/unpaint/main/Unpaint/Showcase/2023-06-03%2020-48-40.png" alt="a sailship crossing the high sea, 18st century, impressionist painting, closeup" width="256" height="256"></td>
-    <td><img src="https://media.githubusercontent.com/media/axodox/unpaint/main/Unpaint/Showcase/2023-06-03%2019-32-26.png" alt=" close up portrait photo of woman in wastelander clothes, long haircut, pale skin, slim body, background is city ruins, (high detailed skin:1.2)" width="256" height="256"></td>
+    <td><img src="https://github.com/axodox/unpaint/blob/main/Unpaint/Showcase/2023-06-03%2020-50-21.png?raw=true" alt="a samurai drawing his sword to defend his land" width="256" height="256"></td>
+    <td><img src="https://github.com/axodox/unpaint/blob/main/Unpaint/Showcase/2023-06-03%2020-48-40.png?raw=true" alt="a sailship crossing the high sea, 18st century, impressionist painting, closeup" width="256" height="256"></td>
+    <td><img src="https://github.com/axodox/unpaint/blob/main/Unpaint/Showcase/2023-06-03%2019-32-26.png?raw=true" alt=" close up portrait photo of woman in wastelander clothes, long haircut, pale skin, slim body, background is city ruins, (high detailed skin:1.2)" width="256" height="256"></td>
   </tr>
 </table>
 
@@ -30,11 +30,14 @@ Prebuilt versions of the project can be retrieved from Nuget under the name `Axo
 
 Basic integration:
 - Add the `Axodox.Common` and `Axodox.MachineLearning` packages to your project
+- Make sure to **only have x64 platform in your project** as this lib is x64 only for now
 - Ensure that your compiler is set to **C++20**, we also recommend enabling all warnings and conformance mode
 - Add the following include statement to your code file or precompiled header: `#include "Include/Axodox.MachineLearning.h"`
 - Follow this example code to integrate the pipeline: https://github.com/axodox/unpaint/blob/main/Unpaint/StableDiffusionModelExecutor.cpp
 
 > We recommend adding appropriate safety mechanisms to your app to suppress inappropriate outputs of StableDiffusion, the performance overhead is insignificant.
+
+The Stable Diffusion models we use have been generated using [Microsoft Olive](https://github.com/microsoft/Olive/tree/main/examples/directml/stable_diffusion), please follow the linked example to convert models from HuggingFace. By changing the script you can also convert models stored on your disk from various formats (e.g. `*.safetensors`). You can find some preconverted models [here](https://huggingface.co/models?other=unpaint,stable_diffusion_model) for testing.
 
 # Building the project
 
@@ -54,4 +57,4 @@ Once you have built the library, you override your existing nuget package instal
 
 > For example `C:\dev\axodox-machinelearning\Axodox.MachineLearning.Universal` for an UWP app and `C:\dev\axodox-machinelearning\Axodox.MachineLearning.Desktop` for a desktop app.
 
-This allows to add all projects into the same solution and make changes on the library and your app seamlessly without copying files repeatedly.
+Then add the project pointed by the path to the solution of your own project. This allows to add all projects into the same solution and make changes on the library and your app seamlessly without copying files repeatedly.
