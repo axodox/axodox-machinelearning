@@ -57,4 +57,4 @@ Once you have built the library, you override your existing nuget package instal
 
 > For example `C:\dev\axodox-machinelearning\Axodox.MachineLearning.Universal` for an UWP app and `C:\dev\axodox-machinelearning\Axodox.MachineLearning.Desktop` for a desktop app.
 
-This allows to add all projects into the same solution and make changes on the library and your app seamlessly without copying files repeatedly.
+Then add the project pointed by the path to the solution of your own project. This allows to add all projects into the same solution and make changes on the library and your app seamlessly without copying files repeatedly.
