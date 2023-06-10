@@ -1,5 +1,5 @@
 #pragma once
-#include "pch.h"
+#include "..\includes.h"
 
 namespace Axodox::MachineLearning
 {
@@ -7,6 +7,8 @@ namespace Axodox::MachineLearning
   {
   public:
     OnnxEnvironment(const std::filesystem::path& rootPath);
+
+    int DeviceId = 0;
 
     const std::filesystem::path& RootPath() const;
     Ort::Env& Environment();

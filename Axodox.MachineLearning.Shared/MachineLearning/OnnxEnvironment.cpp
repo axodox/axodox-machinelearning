@@ -32,7 +32,7 @@ namespace Axodox::MachineLearning
   Ort::SessionOptions OnnxEnvironment::DefaultSessionOptions()
   {
     auto options = CpuSessionOptions();
-    OrtSessionOptionsAppendExecutionProvider_DML(options, 0);
+    OrtSessionOptionsAppendExecutionProvider_DML(options, DeviceId);
     return options;
   }
   
