@@ -5,6 +5,8 @@ namespace Axodox::MachineLearning
 {
   class AXODOX_MACHINELEARNING_API OnnxEnvironment
   {
+    static inline const Infrastructure::logger _logger{"OnnxEnvironment"};
+
   public:
     OnnxEnvironment(const std::filesystem::path& rootPath);
 
@@ -23,5 +25,7 @@ namespace Axodox::MachineLearning
     std::filesystem::path _rootPath;
     Ort::Env _environment;
     Ort::MemoryInfo _memoryInfo;
+
+    static void ORT_API_CALL OnOrtLogAdded(void* param, OrtLoggingLevel severity, const char* category, const char* logId, const char* codeLocation, const char* message);
   };
 }

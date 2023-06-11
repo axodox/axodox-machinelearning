@@ -1,7 +1,7 @@
 #pragma once
-#include "Include/Axodox.Graphics.h"
 
 #ifdef PLATFORM_WINDOWS
+#include <Windows.h>
 #include <winrt/windows.foundation.h>
 #include <winrt/windows.web.http.h>
 #include <winrt/windows.web.http.filters.h>
@@ -12,6 +12,9 @@
 
 #include "onnxruntime_cxx_api.h"
 #include "dml_provider_factory.h"
+
+#include "Include/Axodox.Infrastructure.h"
+#include "Include/Axodox.Graphics.h"
 
 #ifdef AXODOX_MACHINELEARNING_EXPORT
 #define AXODOX_MACHINELEARNING_API __declspec(dllexport)
