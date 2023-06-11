@@ -177,11 +177,12 @@ namespace Axodox::Web
   winrt::Windows::Web::Http::HttpClient HuggingFaceClient::CreateClient()
   {
     HttpBaseProtocolFilter filter{};
+    filter.AllowUI(false);
 
     auto cacheControl = filter.CacheControl();
     cacheControl.ReadBehavior(HttpCacheReadBehavior::MostRecent);
     cacheControl.WriteBehavior(HttpCacheWriteBehavior::NoCache);
-
+    
     return HttpClient{ filter };
   }
 
@@ -196,7 +197,7 @@ namespace Axodox::Web
       {
         request.RequestUri(Uri{ _baseUri + to_wstring(format("api/{}", uri)) });
         request.Method(HttpMethod::Get());
-
+        
         const auto& headers = request.Headers();
         headers.Accept().TryParseAdd(L"application/json");
       }
