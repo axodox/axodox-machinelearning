@@ -107,7 +107,7 @@
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\packages\Microsoft.AI.DirectML.1.12.0\build\Microsoft.AI.DirectML.targets" Condition="Exists('..\packages\Microsoft.AI.DirectML.1.12.0\build\Microsoft.AI.DirectML.targets')" />
     <Import Project="..\packages\Microsoft.ML.OnnxRuntime.DirectML.1.15.0\build\native\Microsoft.ML.OnnxRuntime.DirectML.targets" Condition="Exists('..\packages\Microsoft.ML.OnnxRuntime.DirectML.1.15.0\build\native\Microsoft.ML.OnnxRuntime.DirectML.targets')" />
-    <Import Project="..\packages\Axodox.Common.1.0.12\build\native\Axodox.Common.targets" Condition="Exists('..\packages\Axodox.Common.1.0.12\build\native\Axodox.Common.targets')" />
+    <Import Project="..\packages\Axodox.Common.1.0.19\build\native\Axodox.Common.targets" Condition="Exists('..\packages\Axodox.Common.1.0.19\build\native\Axodox.Common.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -117,6 +117,6 @@
     <Error Condition="!Exists('..\packages\Microsoft.AI.DirectML.1.12.0\build\Microsoft.AI.DirectML.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.AI.DirectML.1.12.0\build\Microsoft.AI.DirectML.targets'))" />
     <Error Condition="!Exists('..\packages\Microsoft.ML.OnnxRuntime.DirectML.1.15.0\build\native\Microsoft.ML.OnnxRuntime.DirectML.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.ML.OnnxRuntime.DirectML.1.15.0\build\native\Microsoft.ML.OnnxRuntime.DirectML.props'))" />
     <Error Condition="!Exists('..\packages\Microsoft.ML.OnnxRuntime.DirectML.1.15.0\build\native\Microsoft.ML.OnnxRuntime.DirectML.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.ML.OnnxRuntime.DirectML.1.15.0\build\native\Microsoft.ML.OnnxRuntime.DirectML.targets'))" />
-    <Error Condition="!Exists('..\packages\Axodox.Common.1.0.12\build\native\Axodox.Common.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Axodox.Common.1.0.12\build\native\Axodox.Common.targets'))" />
+    <Error Condition="!Exists('..\packages\Axodox.Common.1.0.19\build\native\Axodox.Common.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Axodox.Common.1.0.19\build\native\Axodox.Common.targets'))" />
   </Target>
 </Project>
