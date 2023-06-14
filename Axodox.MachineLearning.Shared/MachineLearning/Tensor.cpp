@@ -150,6 +150,7 @@ namespace Axodox::MachineLearning
 
   Tensor Tensor::ToSingle() const
   {
+    if (Type == TensorType::Single) return *this;
     if (Type != TensorType::Half) throw bad_cast();
 
     auto size = Size();
@@ -162,6 +163,7 @@ namespace Axodox::MachineLearning
 
   Tensor Tensor::ToHalf() const
   {
+    if (Type == TensorType::Half) return *this;
     if (Type != TensorType::Single) throw bad_cast();
 
     auto size = Size();

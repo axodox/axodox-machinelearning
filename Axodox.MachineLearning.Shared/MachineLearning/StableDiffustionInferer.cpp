@@ -11,8 +11,23 @@ namespace Axodox::MachineLearning
 {
   StableDiffusionInferer::StableDiffusionInferer(OnnxEnvironment& environment) :
     _environment(environment),
-    _session(environment.CreateSession(_environment.RootPath() / L"unet/model.onnx"))
-  { }
+    _session(environment.CreateSession(_environment.RootPath() / L"unet/model.onnx")),
+    _isHalfModel(true)
+  { 
+      Ort::AllocatorWithDefaultOptions ortAlloc;
+      const size_t inputCount = _session.GetInputCount();
+      for (size_t i = 0; i < inputCount; i++)
+      {
+          if (strcmp(_session.GetInputNameAllocated(i, ortAlloc).get(), "encoder_hidden_states") == 0)
+          {
+              if (_session.GetInputTypeInfo(i).GetTensorTypeAndShapeInfo().GetElementType() == ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT)
+              {
+                  _isHalfModel = false;
+              }
+              break;
+          }
+      }
+  }
 
   Tensor StableDiffusionInferer::RunInference(const StableDiffusionOptions& options, Threading::async_operation_source* async)
   {
@@ -22,7 +37,7 @@ namespace Axodox::MachineLearning
     if (holds_alternative<ScheduledTensor>(options.TextEmbeddings) && get<ScheduledTensor>(options.TextEmbeddings).size() != options.StepCount) throw logic_error("Scehduled text embedding size must match sample count.");
 
     if (async) async->update_state("Preparing latent sample...");
-
+    
     //Build context
     StableDiffusionContext context{
       .Options = options
@@ -48,7 +63,7 @@ namespace Axodox::MachineLearning
 
     if (holds_alternative<Tensor>(options.TextEmbeddings))
     {
-      binding.BindInput("encoder_hidden_states", get<Tensor>(options.TextEmbeddings).ToHalf().Duplicate(options.BatchSize).ToOrtValue(_environment.MemoryInfo()));
+      binding.BindInput("encoder_hidden_states", (_isHalfModel ? get<Tensor>(options.TextEmbeddings).ToHalf() : get<Tensor>(options.TextEmbeddings).ToSingle()).Duplicate(options.BatchSize).ToOrtValue(_environment.MemoryInfo()));
     }
 
     //Run iteration
@@ -69,16 +84,16 @@ namespace Axodox::MachineLearning
         if (currentEmbedding != embedding)
         {
           currentEmbedding = embedding;
-          binding.BindInput("encoder_hidden_states", currentEmbedding->ToHalf().Duplicate(options.BatchSize).ToOrtValue(_environment.MemoryInfo()));
+          binding.BindInput("encoder_hidden_states", (_isHalfModel ? currentEmbedding->ToHalf() : currentEmbedding->ToSingle()).Duplicate(options.BatchSize).ToOrtValue(_environment.MemoryInfo()));
         }
       }
 
       //Update sample
       auto scaledSample = latentSample.Duplicate().Swizzle(options.BatchSize) / sqrt(steps.Sigmas[i] * steps.Sigmas[i] + 1);
-      binding.BindInput("sample", scaledSample.ToHalf().ToOrtValue(_environment.MemoryInfo()));
+      binding.BindInput("sample", (_isHalfModel ? scaledSample.ToHalf() : scaledSample.ToSingle()).ToOrtValue(_environment.MemoryInfo()));
 
       //Update timestep
-      binding.BindInput("timestep", Tensor(steps.Timesteps[i]).ToHalf().ToOrtValue(_environment.MemoryInfo()));
+      binding.BindInput("timestep", (_isHalfModel ? Tensor(steps.Timesteps[i]).ToHalf() : Tensor(steps.Timesteps[i]).ToSingle()).ToOrtValue(_environment.MemoryInfo()));
 
       //Run inference
       _session.Run({}, binding);

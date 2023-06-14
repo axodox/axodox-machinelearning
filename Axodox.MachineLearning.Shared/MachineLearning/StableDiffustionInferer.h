@@ -39,6 +39,7 @@ namespace Axodox::MachineLearning
   private:
     OnnxEnvironment& _environment;
     Ort::Session _session;
+    bool _isHalfModel;
 
     static Tensor GenerateLatentSample(StableDiffusionContext& context);
     static Tensor PrepareLatentSample(StableDiffusionContext& context, const Tensor& latents, float initialSigma);

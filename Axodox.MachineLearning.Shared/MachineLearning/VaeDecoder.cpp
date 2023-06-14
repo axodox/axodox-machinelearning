@@ -8,8 +8,23 @@ namespace Axodox::MachineLearning
 {
   VaeDecoder::VaeDecoder(OnnxEnvironment& environment) :
     _environment(environment),
-    _session(environment.CreateSession(_environment.RootPath() / L"vae_decoder/model.onnx"))
-  { }
+    _session(environment.CreateSession(_environment.RootPath() / L"vae_decoder/model.onnx")),
+    _isHalfModel(true)
+  { 
+    Ort::AllocatorWithDefaultOptions ortAlloc;
+    const size_t inputCount = _session.GetInputCount();
+    for (size_t i = 0; i < inputCount; i++)
+    {
+        if (strcmp(_session.GetInputNameAllocated(i, ortAlloc).get(), "latent_sample") == 0)
+        {
+            if (_session.GetInputTypeInfo(i).GetTensorTypeAndShapeInfo().GetElementType() == ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT)
+            {
+                _isHalfModel = false;
+            }
+            break;
+        }
+    }
+  }
 
   Tensor VaeDecoder::DecodeVae(const Tensor& image)
   {
@@ -21,7 +36,7 @@ namespace Axodox::MachineLearning
     {
       //Bind values
       IoBinding bindings{ _session };
-      bindings.BindInput("latent_sample", inputValues[i].ToHalf().ToOrtValue(_environment.MemoryInfo()));
+      bindings.BindInput("latent_sample", (_isHalfModel ? inputValues[i].ToHalf() : inputValues[i].ToSingle()).ToOrtValue(_environment.MemoryInfo()));
       bindings.BindOutput("sample", _environment.MemoryInfo());
 
       //Run inference
