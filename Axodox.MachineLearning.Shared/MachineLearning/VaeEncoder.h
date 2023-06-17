@@ -7,7 +7,7 @@ namespace Axodox::MachineLearning
   class AXODOX_MACHINELEARNING_API VaeEncoder
   {
   public:
-    VaeEncoder(OnnxEnvironment& environment);
+    VaeEncoder(OnnxEnvironment& environment, std::optional<ModelSource> source = {});
 
     Tensor EncodeVae(const Tensor& text);
 

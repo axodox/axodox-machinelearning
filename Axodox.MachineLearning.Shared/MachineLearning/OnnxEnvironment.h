@@ -3,6 +3,8 @@
 
 namespace Axodox::MachineLearning
 {
+  typedef std::variant<std::filesystem::path, std::span<const uint8_t>> ModelSource;
+
   class AXODOX_MACHINELEARNING_API OnnxEnvironment
   {
     static inline const Infrastructure::logger _logger{"OnnxEnvironment"};
@@ -18,7 +20,7 @@ namespace Axodox::MachineLearning
     Ort::SessionOptions DefaultSessionOptions();
     Ort::SessionOptions CpuSessionOptions();
 
-    Ort::Session CreateSession(const std::filesystem::path& modelPath);
+    Ort::Session CreateSession(ModelSource modelPath);
     Ort::Session CreateOptimizedSession(const std::filesystem::path& modelPath);
 
   private:

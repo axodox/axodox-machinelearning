@@ -8,9 +8,9 @@ namespace Axodox::MachineLearning
 {
   const size_t TextEncoder::_maxTokenCount = 77;
 
-  TextEncoder::TextEncoder(OnnxEnvironment& environment) :
+  TextEncoder::TextEncoder(OnnxEnvironment& environment, std::optional<ModelSource> source) :
     _environment(environment),
-    _session(environment.CreateSession(_environment.RootPath() / L"text_encoder/model.onnx"))
+    _session(environment.CreateSession(source ? *source : (_environment.RootPath() / L"text_encoder/model.onnx")))
   { }
 
   Tensor TextEncoder::EncodeText(const Tensor& text)
