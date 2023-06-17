@@ -32,7 +32,7 @@ namespace Axodox::MachineLearning
     };
 
   public:
-    StableDiffusionInferer(OnnxEnvironment& environment);
+    StableDiffusionInferer(OnnxEnvironment& environment, std::optional<ModelSource> source = {});
 
     Tensor RunInference(const StableDiffusionOptions& options, Threading::async_operation_source* async = nullptr);
 

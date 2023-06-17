@@ -44,15 +44,23 @@ namespace Axodox::MachineLearning
     return options;
   }
   
-  Ort::Session OnnxEnvironment::CreateSession(const std::filesystem::path& modelPath)
+  Ort::Session OnnxEnvironment::CreateSession(ModelSource modelSource)
   {
     auto sessionOptions = DefaultSessionOptions();
     sessionOptions.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_DISABLE_ALL);
 
-    auto preferredModelPath = modelPath;
-    preferredModelPath.make_preferred();
+    if (holds_alternative<filesystem::path>(modelSource))
+    {
+      auto preferredModelPath = get<filesystem::path>(modelSource);
+      preferredModelPath.make_preferred();
 
-    return Session{ _environment, preferredModelPath.c_str(), sessionOptions };
+      return Session{ _environment, preferredModelPath.c_str(), sessionOptions };
+    }
+    else
+    {
+      auto modelData = get<span<const uint8_t>>(modelSource);
+      return Session{ _environment, modelData.data(), modelData.size(), sessionOptions};
+    }
   }
 
   Ort::Session OnnxEnvironment::CreateOptimizedSession(const std::filesystem::path& modelPath)

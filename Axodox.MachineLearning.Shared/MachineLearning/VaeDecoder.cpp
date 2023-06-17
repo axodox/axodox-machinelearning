@@ -6,9 +6,9 @@ using namespace std;
 
 namespace Axodox::MachineLearning
 {
-  VaeDecoder::VaeDecoder(OnnxEnvironment& environment) :
+  VaeDecoder::VaeDecoder(OnnxEnvironment& environment, std::optional<ModelSource> source) :
     _environment(environment),
-    _session(environment.CreateSession(_environment.RootPath() / L"vae_decoder/model.onnx"))
+    _session(environment.CreateSession(source ? *source : (_environment.RootPath() / L"vae_decoder/model.onnx")))
   { }
 
   Tensor VaeDecoder::DecodeVae(const Tensor& image)

@@ -12,15 +12,15 @@ using namespace std;
 
 namespace Axodox::MachineLearning
 {
-  SafetyChecker::SafetyChecker(OnnxEnvironment& environment) :
+  SafetyChecker::SafetyChecker(OnnxEnvironment& environment, std::optional<ModelSource> source) :
     _environment(environment),
-    _session(environment.CreateSession(_environment.RootPath() / L"safety_checker/model.onnx"))
+    _session(environment.CreateSession(source ? *source : (_environment.RootPath() / L"safety_checker/model.onnx")))
   {
     auto text = try_read_text(_environment.RootPath() / L"feature_extractor/preprocessor_config.json");
-    if (!text) throw runtime_error("Failed to read feature extractor settings file.");
+    if (!text) return;
 
     auto value = try_parse_json<SafetyCheckerOptions>(*text);
-    if(!value) throw runtime_error("Failed to parse feature extractor settings file.");
+    if(!value) return;
 
     _options = move(*value);
   }
