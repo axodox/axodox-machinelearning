@@ -23,7 +23,7 @@ namespace Axodox::MachineLearning
     };
 
   public:
-    TextEmbedder(OnnxEnvironment& environment, const std::filesystem::path& sourcePath = {});
+    TextEmbedder(OnnxEnvironment& environment, const std::filesystem::path& tokenizerPath = {}, std::optional<ModelSource> encoderSource = {});
 
     int32_t ValidatePrompt(std::string_view text);
 

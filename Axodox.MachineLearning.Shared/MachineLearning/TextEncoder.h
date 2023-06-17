@@ -7,7 +7,7 @@ namespace Axodox::MachineLearning
   class AXODOX_MACHINELEARNING_API TextEncoder
   {
   public:
-    TextEncoder(OnnxEnvironment& environment);
+    TextEncoder(OnnxEnvironment& environment, std::optional<ModelSource> source = {});
 
     Tensor EncodeText(const Tensor& text);
 

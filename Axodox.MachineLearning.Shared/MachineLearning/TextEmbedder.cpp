@@ -9,9 +9,9 @@ using namespace std;
 
 namespace Axodox::MachineLearning
 {
-  TextEmbedder::TextEmbedder(OnnxEnvironment& environment, const std::filesystem::path& sourcePath) :
+  TextEmbedder::TextEmbedder(OnnxEnvironment& environment, const std::filesystem::path& sourcePath, std::optional<ModelSource> encoderSource) :
     _textTokenizer(environment, sourcePath),
-    _textEncoder(environment)
+    _textEncoder(environment, encoderSource)
   { }
 
   int32_t TextEmbedder::ValidatePrompt(std::string_view text)

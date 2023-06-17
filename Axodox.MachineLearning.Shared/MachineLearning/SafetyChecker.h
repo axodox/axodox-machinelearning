@@ -9,7 +9,7 @@ namespace Axodox::MachineLearning
   class AXODOX_MACHINELEARNING_API SafetyChecker
   {
   public:
-    SafetyChecker(OnnxEnvironment& environment);
+    SafetyChecker(OnnxEnvironment& environment, std::optional<ModelSource> source = {});
 
     bool IsSafe(const Graphics::TextureData& texture);
 
