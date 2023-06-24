@@ -99,7 +99,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DepthEstimatorTest.cpp" />
+    <ClCompile Include="FeatureExtractorTest.cpp" />
     <ClCompile Include="PromptAttentionTest.cpp" />
     <ClCompile Include="PromptSchedulerTest.cpp" />
     <ClCompile Include="pch.cpp">

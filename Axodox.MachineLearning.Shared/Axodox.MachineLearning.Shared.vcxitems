@@ -15,6 +15,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\DepthEstimator.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\EdgeDetector.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxEnvironment.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxModelStatistics.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Prompts\PromptAttention.cpp" />
@@ -38,6 +39,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Include\Axodox.MachineLearning.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)includes.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\DepthEstimator.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\EdgeDetector.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxEnvironment.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxExtensions.h" />

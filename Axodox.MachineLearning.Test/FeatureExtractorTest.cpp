@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "CppUnitTest.h"
 #include "MachineLearning/DepthEstimator.h"
+#include "MachineLearning/EdgeDetector.h"
 #include "Storage/FileIO.h"
 
 using namespace Axodox::Graphics;
@@ -11,15 +12,24 @@ using namespace std;
 
 namespace Axodox::MachineLearning::Test
 {
-  TEST_CLASS(DepthEstimationTest)
+  TEST_CLASS(FeatureExtractorTest)
   {
+  private:
+    inline static TextureData _imageTexture;
+
   public:
-    TEST_METHOD(TestDepthEstimation)
+    TEST_CLASS_INITIALIZE(FeatureExtractorInitialize)
     {
       //Load input data
       auto imagePath = lib_folder() / "..\\..\\..\\inputs\\bedroom.png";
       auto imageData = read_file(imagePath);
-      auto imageTexture = TextureData::FromBuffer(imageData).Resize(512, 512);
+      _imageTexture = TextureData::FromBuffer(imageData);
+    }
+
+    TEST_METHOD(TestDepthEstimation)
+    {
+      //Prepare input
+      auto imageTexture = _imageTexture.Resize(512, 512);
       auto imageTensor = Tensor::FromTextureData(imageTexture, ColorNormalization::LinearZeroToOne);
 
       //Load model
@@ -51,6 +61,28 @@ namespace Axodox::MachineLearning::Test
       auto depthData = depthTexture[0].ToBuffer();      
       auto outputPath = lib_folder() / "depth.png";
       write_file(outputPath, depthData);
+    }
+
+    TEST_METHOD(TestCannyEdgeDetection)
+    {
+      //Prepare input
+      auto imageTensor = Tensor::FromTextureData(_imageTexture, ColorNormalization::LinearZeroToOne);
+
+      //Load model
+      auto modelFolder = (lib_folder() / "..\\..\\..\\models").lexically_normal();
+
+      //Run depth estimation
+      OnnxEnvironment environment{ modelFolder };
+      EdgeDetector edgeDetector{ environment };
+
+      //Convert output to image
+      auto result = edgeDetector.DetectEdges(imageTensor);
+      auto values = result.AsSpan<float>();
+
+      auto edgeTexture = result.ToTextureData(ColorNormalization::LinearZeroToOne);
+      auto edgeData = edgeTexture[0].ToBuffer();
+      auto outputPath = lib_folder() / "canny.png";
+      write_file(outputPath, edgeData);
 
       printf("asd");
     }
