@@ -52,12 +52,7 @@ namespace Axodox::MachineLearning
       texture = texture.UniformResize(*_options.CropSize->Width, *_options.CropSize->Height);
     }
 
-    auto tensor = Tensor::FromTextureData(texture);
-
-    for (auto& value : tensor.AsSpan<float>())
-    {
-      value = value / 2.f + 0.5f;
-    }
+    auto tensor = Tensor::FromTextureData(texture, ColorNormalization::LinearZeroToOne);
 
     if (*_options.DoNormalize)
     {

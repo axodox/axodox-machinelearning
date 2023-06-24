@@ -14,6 +14,7 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\DepthEstimator.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxEnvironment.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxModelStatistics.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Prompts\PromptAttention.cpp" />
@@ -36,6 +37,7 @@
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Include\Axodox.MachineLearning.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)includes.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\DepthEstimator.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxEnvironment.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxExtensions.h" />
@@ -58,7 +60,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Web\HuggingFaceSchema.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)Assets\custom_op_cliptok.onnx"/>
-    <None Include="$(MSBuildThisFileDirectory)Assets\ortextensions.dll"/>
+    <None Include="$(MSBuildThisFileDirectory)Assets\custom_op_cliptok.onnx" />
+    <None Include="$(MSBuildThisFileDirectory)Assets\ortextensions.dll" />
   </ItemGroup>
 </Project>
