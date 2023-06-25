@@ -99,12 +99,14 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ControlNetTest.cpp" />
     <ClCompile Include="FeatureExtractorTest.cpp" />
     <ClCompile Include="PromptAttentionTest.cpp" />
     <ClCompile Include="PromptSchedulerTest.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="StableDiffusionTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />

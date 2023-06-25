@@ -23,6 +23,8 @@
 #include "MachineLearning/VaeDecoder.h"
 #include "MachineLearning/VaeEncoder.h"
 
+#include "MachineLearning/ControlNetInferer.h"
+
 //Depth estimation
 #include "MachineLearning/DepthEstimator.h"
 

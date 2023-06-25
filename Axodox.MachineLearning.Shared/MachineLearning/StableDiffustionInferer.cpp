@@ -17,15 +17,13 @@ namespace Axodox::MachineLearning
   Tensor StableDiffusionInferer::RunInference(const StableDiffusionOptions& options, Threading::async_operation_source* async)
   {
     //Validate inputs
-    if (options.MaskInput && !options.LatentInput) throw logic_error("Mask input cannot be set without latent input!");
-    if (options.MaskInput && (options.MaskInput.Shape[2] != options.LatentInput.Shape[2] || options.MaskInput.Shape[3] != options.LatentInput.Shape[3])) throw logic_error("Mask and latent inputs must have a matching width and height.");
-    if (holds_alternative<ScheduledTensor>(options.TextEmbeddings) && get<ScheduledTensor>(options.TextEmbeddings).size() != options.StepCount) throw logic_error("Scehduled text embedding size must match sample count.");
+    options.Validate();
 
     if (async) async->update_state("Preparing latent sample...");
 
     //Build context
     StableDiffusionContext context{
-      .Options = options
+      .Options = &options
     };
 
     context.Randoms.reserve(options.BatchSize);
@@ -113,13 +111,13 @@ namespace Axodox::MachineLearning
 
   Tensor StableDiffusionInferer::PrepareLatentSample(StableDiffusionContext& context, const Tensor& latents, float initialSigma)
   {
-    auto replicatedLatents = latents.DuplicateToSize(context.Options.BatchSize);
+    auto replicatedLatents = latents.DuplicateToSize(context.Options->BatchSize);
 
     auto result = Tensor::CreateRandom(replicatedLatents.Shape, context.Randoms);
     
-    if (context.Options.MaskInput)
+    if (context.Options->MaskInput)
     {
-      auto maskInput = context.Options.MaskInput.Duplicate(latents.Shape[1]);
+      auto maskInput = context.Options->MaskInput.Duplicate(latents.Shape[1]);
       swap(maskInput.Shape[0], maskInput.Shape[1]);
 
       result.UnaryOperation<float>(maskInput, [=](float a, float b) { return a * b; });
@@ -157,7 +155,14 @@ namespace Axodox::MachineLearning
 
   Tensor StableDiffusionInferer::GenerateLatentSample(StableDiffusionContext& context)
   {
-    Tensor::shape_t shape{ context.Options.BatchSize, 4, context.Options.Height / 8, context.Options.Width / 8 };
+    Tensor::shape_t shape{ context.Options->BatchSize, 4, context.Options->Height / 8, context.Options->Width / 8 };
     return Tensor::CreateRandom(shape, context.Randoms, context.Scheduler.InitialNoiseSigma());
+  }
+
+  void StableDiffusionOptions::Validate() const
+  {
+    if (MaskInput && !LatentInput) throw logic_error("Mask input cannot be set without latent input!");
+    if (MaskInput && (MaskInput.Shape[2] != LatentInput.Shape[2] || MaskInput.Shape[3] != LatentInput.Shape[3])) throw logic_error("Mask and latent inputs must have a matching width and height.");
+    if (holds_alternative<ScheduledTensor>(TextEmbeddings) && get<ScheduledTensor>(TextEmbeddings).size() != StepCount) throw logic_error("Scheduled text embedding size must match sample count.");
   }
 }

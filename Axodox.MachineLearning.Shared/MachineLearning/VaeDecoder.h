@@ -9,7 +9,7 @@ namespace Axodox::MachineLearning
   public:
     VaeDecoder(OnnxEnvironment& environment, std::optional<ModelSource> source = {});
 
-    Tensor DecodeVae(const Tensor& text);
+    Tensor DecodeVae(const Tensor& image);
 
   private:
     OnnxEnvironment& _environment;

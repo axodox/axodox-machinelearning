@@ -20,28 +20,30 @@ namespace Axodox::MachineLearning
     Tensor LatentInput;
     Tensor MaskInput;
     float DenoisingStrength = 1.f;
+
+    virtual void Validate() const;
+  };
+
+  struct StableDiffusionContext
+  {
+    const StableDiffusionOptions* Options;
+    StableDiffusionScheduler Scheduler;
+    std::vector<std::minstd_rand> Randoms;
   };
 
   class AXODOX_MACHINELEARNING_API StableDiffusionInferer
   {
-    struct StableDiffusionContext
-    {
-      StableDiffusionOptions Options;
-      StableDiffusionScheduler Scheduler;
-      std::vector<std::minstd_rand> Randoms;
-    };
-
   public:
     StableDiffusionInferer(OnnxEnvironment& environment, std::optional<ModelSource> source = {});
 
     Tensor RunInference(const StableDiffusionOptions& options, Threading::async_operation_source* async = nullptr);
 
-  private:
-    OnnxEnvironment& _environment;
-    Ort::Session _session;
-
     static Tensor GenerateLatentSample(StableDiffusionContext& context);
     static Tensor PrepareLatentSample(StableDiffusionContext& context, const Tensor& latents, float initialSigma);
     static Tensor BlendLatentSamples(const Tensor& a, const Tensor& b, const Tensor& weights);
+
+  private:
+    OnnxEnvironment& _environment;
+    Ort::Session _session;
   };
 }

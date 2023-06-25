@@ -14,6 +14,7 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\ControlNetInferer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\DepthEstimator.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\EdgeDetector.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxEnvironment.cpp" />
@@ -38,6 +39,7 @@
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Include\Axodox.MachineLearning.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)includes.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\ControlNetInferer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\DepthEstimator.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\EdgeDetector.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />

@@ -25,7 +25,7 @@ namespace Axodox::MachineLearning
       bindings.BindOutput("sample", _environment.MemoryInfo());
 
       //Run inference
-      _session.Run(_environment.RunOptions(), bindings);
+      _session.Run({}, bindings);
 
       //Get result
       auto outputValues = bindings.GetOutputValues();

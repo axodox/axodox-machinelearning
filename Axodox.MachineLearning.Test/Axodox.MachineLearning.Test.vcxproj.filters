@@ -27,6 +27,12 @@
     <ClCompile Include="PromptSchedulerTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ControlNetTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StableDiffusionTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -47,5 +53,16 @@
     <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
     <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
     <None Include="packages.config" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
   </ItemGroup>
 </Project>
