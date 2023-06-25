@@ -73,7 +73,7 @@ namespace Axodox::MachineLearning::Test
 
       //Run depth estimation
       OnnxEnvironment environment{ modelFolder };
-      EdgeDetector edgeDetector{ environment };
+      EdgeDetector edgeDetector{ environment, EdgeDetectionMode::Canny };
 
       //Convert output to image
       auto result = edgeDetector.DetectEdges(imageTensor);
@@ -83,8 +83,28 @@ namespace Axodox::MachineLearning::Test
       auto edgeData = edgeTexture[0].ToBuffer();
       auto outputPath = lib_folder() / "canny.png";
       write_file(outputPath, edgeData);
+    }
 
-      printf("asd");
+    TEST_METHOD(TestHedEdgeDetection)
+    {
+      //Prepare input
+      auto imageTensor = Tensor::FromTextureData(_imageTexture, ColorNormalization::LinearZeroToOne);
+
+      //Load model
+      auto modelFolder = (lib_folder() / "..\\..\\..\\models").lexically_normal();
+
+      //Run depth estimation
+      OnnxEnvironment environment{ modelFolder };
+      EdgeDetector edgeDetector{ environment, EdgeDetectionMode::Hed };
+
+      //Convert output to image
+      auto result = edgeDetector.DetectEdges(imageTensor);
+      auto values = result.AsSpan<float>();
+
+      auto edgeTexture = result.ToTextureData(ColorNormalization::LinearZeroToOne);
+      auto edgeData = edgeTexture[0].ToBuffer();
+      auto outputPath = lib_folder() / "hed.png";
+      write_file(outputPath, edgeData);
     }
   };
 }
