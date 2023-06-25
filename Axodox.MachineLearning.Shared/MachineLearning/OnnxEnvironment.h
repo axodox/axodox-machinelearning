@@ -19,6 +19,7 @@ namespace Axodox::MachineLearning
     Ort::MemoryInfo& MemoryInfo();
     Ort::SessionOptions DefaultSessionOptions();
     Ort::SessionOptions CpuSessionOptions();
+    Ort::RunOptions& RunOptions();
 
     Ort::Session CreateSession(ModelSource modelPath);
     Ort::Session CreateOptimizedSession(const std::filesystem::path& modelPath);
@@ -27,6 +28,7 @@ namespace Axodox::MachineLearning
     std::filesystem::path _rootPath;
     Ort::Env _environment;
     Ort::MemoryInfo _memoryInfo;
+    Ort::RunOptions _runOptions;
 
     static void ORT_API_CALL OnOrtLogAdded(void* param, OrtLoggingLevel severity, const char* category, const char* logId, const char* codeLocation, const char* message);
   };
