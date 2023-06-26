@@ -13,8 +13,9 @@ namespace Axodox::MachineLearning
     _memoryInfo(MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeDefault)),
     _runOptions()
   {
-    _environment.CreateAndRegisterAllocator(_memoryInfo, ArenaCfg(0, -1, -1, -1));
-    _runOptions.AddConfigEntry("memory.enable_memory_arena_shrinkage", "cpu:0;gpu:0");
+    _environment.CreateAndRegisterAllocator(_memoryInfo, ArenaCfg(0, 1, -1, -1));
+    _environment.DisableTelemetryEvents();
+    //_runOptions.AddConfigEntry("memory.enable_memory_arena_shrinkage", "gpu:0");
   }
 
   const std::filesystem::path& OnnxEnvironment::RootPath() const
@@ -45,6 +46,7 @@ namespace Axodox::MachineLearning
     options.AddConfigEntry("session.use_env_allocators", "1");
     options.SetLogSeverityLevel(ORT_LOGGING_LEVEL_WARNING);
     options.DisableMemPattern();
+    options.DisableCpuMemArena();
     options.SetExecutionMode(ExecutionMode::ORT_SEQUENTIAL);
     return options;
   }

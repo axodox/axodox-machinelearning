@@ -21,7 +21,7 @@ namespace Axodox::MachineLearning
     Tensor MaskInput;
     float DenoisingStrength = 1.f;
 
-    virtual void Validate() const;
+    void Validate() const;
   };
 
   struct StableDiffusionContext

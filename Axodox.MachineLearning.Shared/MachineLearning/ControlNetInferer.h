@@ -17,7 +17,7 @@ namespace Axodox::MachineLearning
     Tensor ConditionInput;
     float ConditioningScale = 1.f;
 
-    virtual void Validate() const override;
+    void Validate() const;
   };
 
   class AXODOX_MACHINELEARNING_API ControlNetInferer
