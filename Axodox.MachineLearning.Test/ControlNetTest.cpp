@@ -22,22 +22,20 @@ namespace Axodox::MachineLearning::Test
       //Create text embedding
       {
         TextEmbedder textEmbedder(environment);
-        //auto positiveEmbedding = textEmbedder.ProcessPrompt("a clean bedroom");
-        auto positiveEmbedding = textEmbedder.ProcessPrompt("jpop singer on stage, best quality, extremely detailed");
-        //auto negativeEmbedding = textEmbedder.ProcessPrompt("blurry, render");
-        auto negativeEmbedding = textEmbedder.ProcessPrompt("monochrome, lowres, bad anatomy, worst quality, low quality");
+        auto positiveEmbedding = textEmbedder.ProcessPrompt("a clean bedroom");
+        auto negativeEmbedding = textEmbedder.ProcessPrompt("blurry, render");
 
         options.TextEmbeddings = negativeEmbedding.Concat(positiveEmbedding);
       }
       
       //Load conditioning input
       {
-        auto imagePath = (lib_folder() / "..\\..\\..\\inputs\\canny.png").lexically_normal();
+        auto imagePath = (lib_folder() / "..\\..\\..\\inputs\\depth.png").lexically_normal();
         auto imageData = read_file(imagePath);
         auto imageTexture = TextureData::FromBuffer(imageData);
         
         options.ConditionInput = Tensor::FromTextureData(imageTexture, ColorNormalization::LinearZeroToOne);
-        options.ConditionType = ControlNetType::Canny;
+        options.ConditionType = ControlNetType::Depth;
       }
 
       //Run ControlNet
