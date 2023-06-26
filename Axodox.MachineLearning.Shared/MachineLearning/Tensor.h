@@ -185,13 +185,15 @@ namespace Axodox::MachineLearning
     Tensor ToHalf() const;
 
     static Tensor FromOrtValue(const Ort::Value& value);
-    Ort::Value ToOrtValue(Ort::MemoryInfo& memoryInfo) const;
+    Ort::Value ToOrtValue() const;
 
     void UpdateOrtValue(Ort::Value& value);
 
     static std::pair<TensorType, Tensor::shape_t> ToTypeAndShape(const Ort::TensorTypeAndShapeInfo& info);
 
   private:
+    static const Ort::MemoryInfo _ortMemoryInfo;
+
     static size_t GetDimensionFromIndex(size_t& x, size_t& y, size_t& z, size_t& w);
     static bool AreShapesEqual(shape_t a, shape_t b, size_t startDimension = 0);
     static size_t ElementCount(shape_t shape);

@@ -46,7 +46,7 @@ namespace Axodox::MachineLearning
 
     if (holds_alternative<Tensor>(options.TextEmbeddings))
     {
-      binding.BindInput("encoder_hidden_states", get<Tensor>(options.TextEmbeddings).ToHalf().Duplicate(options.BatchSize).ToOrtValue(_environment.MemoryInfo()));
+      binding.BindInput("encoder_hidden_states", get<Tensor>(options.TextEmbeddings).ToHalf().Duplicate(options.BatchSize).ToOrtValue());
     }
 
     //Run iteration
@@ -67,16 +67,16 @@ namespace Axodox::MachineLearning
         if (currentEmbedding != embedding)
         {
           currentEmbedding = embedding;
-          binding.BindInput("encoder_hidden_states", currentEmbedding->ToHalf().Duplicate(options.BatchSize).ToOrtValue(_environment.MemoryInfo()));
+          binding.BindInput("encoder_hidden_states", currentEmbedding->ToHalf().Duplicate(options.BatchSize).ToOrtValue());
         }
       }
 
       //Update sample
       auto scaledSample = latentSample.Duplicate().Swizzle(options.BatchSize) / sqrt(steps.Sigmas[i] * steps.Sigmas[i] + 1);
-      binding.BindInput("sample", scaledSample.ToHalf().ToOrtValue(_environment.MemoryInfo()));
+      binding.BindInput("sample", scaledSample.ToHalf().ToOrtValue());
 
       //Update timestep
-      binding.BindInput("timestep", Tensor(steps.Timesteps[i]).ToHalf().ToOrtValue(_environment.MemoryInfo()));
+      binding.BindInput("timestep", Tensor(steps.Timesteps[i]).ToHalf().ToOrtValue());
 
       //Run inference
       _session.Run({}, binding);

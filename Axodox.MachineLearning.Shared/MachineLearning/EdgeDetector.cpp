@@ -15,7 +15,7 @@ namespace Axodox::MachineLearning
   {
     //Bind values
     IoBinding bindings{ _session };
-    bindings.BindInput("input", image.ToOrtValue(_environment.MemoryInfo()));
+    bindings.BindInput("input", image.ToOrtValue());
     bindings.BindOutput("output", _environment.MemoryInfo());
 
     //Run inference

@@ -9,6 +9,8 @@ using namespace Ort;
 
 namespace Axodox::MachineLearning
 {
+  const MemoryInfo Tensor::_ortMemoryInfo = MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeDefault);
+
   Tensor::Tensor() :
     Type(TensorType::Unknown),
     Shape({ 0, 0, 0, 0 })
@@ -505,7 +507,7 @@ namespace Axodox::MachineLearning
     return result;
   }
 
-  Ort::Value Tensor::ToOrtValue(Ort::MemoryInfo& memoryInfo) const
+  Ort::Value Tensor::ToOrtValue() const
   {
     std::vector<int64_t> shape;
     for (auto dimension : Shape)
@@ -513,7 +515,7 @@ namespace Axodox::MachineLearning
       if (dimension != 0) shape.push_back(int64_t(dimension));
     }
 
-    return Value::CreateTensor(memoryInfo, const_cast<uint8_t*>(Buffer.data()), Buffer.size(), shape.data(), shape.size(), ToTensorType(Type));
+    return Value::CreateTensor(_ortMemoryInfo, const_cast<uint8_t*>(Buffer.data()), Buffer.size(), shape.data(), shape.size(), ToTensorType(Type));
   }
 
   void Tensor::UpdateOrtValue(Ort::Value& value)

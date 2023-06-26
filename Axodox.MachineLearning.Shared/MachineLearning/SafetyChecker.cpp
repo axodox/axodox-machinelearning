@@ -31,8 +31,8 @@ namespace Axodox::MachineLearning
     auto imageInput = ToImageInput(texture);
 
     IoBinding bindings{ _session };
-    bindings.BindInput("clip_input", clipInput.ToHalf().ToOrtValue(_environment.MemoryInfo()));
-    bindings.BindInput("images", imageInput.ToHalf().ToOrtValue(_environment.MemoryInfo()));
+    bindings.BindInput("clip_input", clipInput.ToHalf().ToOrtValue());
+    bindings.BindInput("images", imageInput.ToHalf().ToOrtValue());
     bindings.BindOutput("has_nsfw_concepts", _environment.MemoryInfo());
 
     _session.Run({}, bindings);

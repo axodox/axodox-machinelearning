@@ -21,7 +21,7 @@ namespace Axodox::MachineLearning
     {
       //Bind values
       IoBinding bindings{ _session };
-      bindings.BindInput("sample", inputValues[i].ToHalf().ToOrtValue(_environment.MemoryInfo()));
+      bindings.BindInput("sample", inputValues[i].ToHalf().ToOrtValue());
       bindings.BindOutput("latent_sample", _environment.MemoryInfo());
 
       //Run inference

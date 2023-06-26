@@ -46,23 +46,38 @@ namespace Axodox::MachineLearning
 
     //Bind constant inputs / outputs  
     IoBinding controlnetBinding{ _controlnetSession };
-    for (auto i = 0; i < 12; i++)
+    /*for (auto i = 0; i < 12; i++)
     {
       controlnetBinding.BindOutput(format("down_block_{}_additional_residual", i).c_str(), _environment.MemoryInfo());
     }
-    controlnetBinding.BindOutput("mid_block_additional_residual", _environment.MemoryInfo());
-    controlnetBinding.BindInput("controlnet_cond", options.ConditionInput.ToHalf().ToOrtValue(_environment.MemoryInfo()));
-    controlnetBinding.BindInput("conditioning_scale", Tensor(double(options.ConditioningScale)).ToOrtValue(_environment.MemoryInfo()));
+    controlnetBinding.BindOutput("mid_block_additional_residual", _environment.MemoryInfo());*/
+    {
+      controlnetBinding.BindOutput("down_block_res_samples", _environment.MemoryInfo());
+      controlnetBinding.BindOutput("mid_block_res_sample", _environment.MemoryInfo());
+      controlnetBinding.BindOutput("19820", _environment.MemoryInfo());
+      controlnetBinding.BindOutput("19822", _environment.MemoryInfo());
+      controlnetBinding.BindOutput("19824", _environment.MemoryInfo());
+      controlnetBinding.BindOutput("19826", _environment.MemoryInfo());
+      controlnetBinding.BindOutput("19828", _environment.MemoryInfo());
+      controlnetBinding.BindOutput("19830", _environment.MemoryInfo());
+      controlnetBinding.BindOutput("19832", _environment.MemoryInfo());
+      controlnetBinding.BindOutput("19834", _environment.MemoryInfo());
+      controlnetBinding.BindOutput("19836", _environment.MemoryInfo());
+      controlnetBinding.BindOutput("19838", _environment.MemoryInfo());
+      controlnetBinding.BindOutput("19840", _environment.MemoryInfo());
+    }
+
+    controlnetBinding.BindInput("controlnet_cond", options.ConditionInput/*.ToHalf()*/.ToOrtValue());
+    controlnetBinding.BindInput("conditioning_scale", Tensor(double(options.ConditioningScale)).ToOrtValue());
     
     IoBinding unetBinding{ _unetSession };
     unetBinding.BindOutput("out_sample", _environment.MemoryInfo());
 
     if (holds_alternative<Tensor>(options.TextEmbeddings))
     {
-      auto encoderHiddenStates = get<Tensor>(options.TextEmbeddings).ToHalf().Duplicate(options.BatchSize).ToOrtValue(_environment.MemoryInfo());
-
-      controlnetBinding.BindInput("encoder_hidden_states", encoderHiddenStates);
-      unetBinding.BindInput("encoder_hidden_states", encoderHiddenStates);
+      auto encoderHiddenStates = get<Tensor>(options.TextEmbeddings)/*.ToHalf()*/.Duplicate(options.BatchSize);
+      controlnetBinding.BindInput("encoder_hidden_states", encoderHiddenStates.ToOrtValue());
+      unetBinding.BindInput("encoder_hidden_states", encoderHiddenStates.ToOrtValue());
     }
 
     //Run iteration
@@ -82,25 +97,24 @@ namespace Axodox::MachineLearning
         auto embedding = get<ScheduledTensor>(options.TextEmbeddings)[i].get();
         if (currentEmbedding != embedding)
         {
-          auto encoderHiddenStates = currentEmbedding->ToHalf().Duplicate(options.BatchSize).ToOrtValue(_environment.MemoryInfo());
-
-          controlnetBinding.BindInput("encoder_hidden_states", encoderHiddenStates);
-          unetBinding.BindInput("encoder_hidden_states", encoderHiddenStates);
+          auto encoderHiddenStates = currentEmbedding->/*ToHalf().*/Duplicate(options.BatchSize);
+          controlnetBinding.BindInput("encoder_hidden_states", encoderHiddenStates.ToOrtValue());
+          unetBinding.BindInput("encoder_hidden_states", encoderHiddenStates.ToOrtValue());
         }
       }
 
       //Update sample
       {
-        auto scaledSample = (latentSample.Duplicate().Swizzle(options.BatchSize) / sqrt(steps.Sigmas[i] * steps.Sigmas[i] + 1)).ToHalf().ToOrtValue(_environment.MemoryInfo());
-        controlnetBinding.BindInput("sample", scaledSample);
-        unetBinding.BindInput("sample", scaledSample);
+        auto scaledSample = (latentSample.Duplicate().Swizzle(options.BatchSize) / sqrt(steps.Sigmas[i] * steps.Sigmas[i] + 1))/*.ToHalf()*/;
+        controlnetBinding.BindInput("sample", scaledSample.ToOrtValue());
+        unetBinding.BindInput("sample", scaledSample.ToOrtValue());
       }
 
       //Update timestep
       {
-        auto timestep = Tensor(steps.Timesteps[i]).ToHalf().ToOrtValue(_environment.MemoryInfo());
-        controlnetBinding.BindInput("timestep", timestep);
-        unetBinding.BindInput("timestep", timestep);
+        auto timestep = Tensor(steps.Timesteps[i])/*.ToHalf()*/;
+        controlnetBinding.BindInput("timestep", timestep.ToOrtValue());
+        unetBinding.BindInput("timestep", timestep.ToOrtValue());
       }
 
       //Run ControlNet
@@ -111,7 +125,12 @@ namespace Axodox::MachineLearning
         auto controlnetOutputs = controlnetBinding.GetOutputValues();
         for (auto i = 0; i < 12; i++)
         {
-          unetBinding.BindInput(format("down_block_{}_additional_residual", i).c_str(), controlnetOutputs[i]);
+          //unetBinding.BindInput(format("down_block_{}_additional_residual", i).c_str(), controlnetOutputs[i]);
+          auto x = Tensor::FromOrtValue(controlnetOutputs[i]);
+          auto y = x.AsSpan<float>();
+
+          unetBinding.BindInput(format("down_block_{}", i).c_str(), controlnetOutputs[i]);
+          printf("asd");
         }
         unetBinding.BindInput("mid_block_additional_residual", controlnetOutputs.back());
       }
@@ -121,7 +140,8 @@ namespace Axodox::MachineLearning
 
       //Read output
       auto outputs = unetBinding.GetOutputValues();
-      auto output = Tensor::FromOrtValue(outputs[0]).ToSingle();
+      auto output = Tensor::FromOrtValue(outputs[0])/*.ToSingle()*/;
+
 
       auto outputComponents = output.Swizzle().Split();
 
@@ -133,6 +153,8 @@ namespace Axodox::MachineLearning
 
       //Refine latent image
       latentSample = steps.ApplyStep(latentSample, guidedNoise, derivatives, context.Randoms, i);
+
+      auto y = latentSample.AsSpan<float>();
 
       //Apply mask
       if (options.MaskInput)

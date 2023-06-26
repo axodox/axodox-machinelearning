@@ -15,12 +15,9 @@ namespace Axodox::MachineLearning
 
   Tensor TextEncoder::EncodeText(const Tensor& text)
   {
-    //Load inputs
-    auto inputValue = text.ToOrtValue(_environment.MemoryInfo());
-
     //Bind values
     IoBinding bindings{ _session };
-    bindings.BindInput("input_ids", inputValue);
+    bindings.BindInput("input_ids", text.ToOrtValue());
     bindings.BindOutput("last_hidden_state", _environment.MemoryInfo());
 
     //Run inference
