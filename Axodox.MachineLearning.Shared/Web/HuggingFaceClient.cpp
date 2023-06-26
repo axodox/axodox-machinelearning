@@ -80,7 +80,7 @@ namespace Axodox::Web
 
     try
     {
-      auto fileCount = modelInfo->Files->size();
+      auto fileCount = fileset.size();
       size_t fileIndex = 0;
       for (auto& file : fileset)
       {
@@ -158,6 +158,14 @@ namespace Axodox::Web
       else
       {
         async.update_state(async_operation_state::cancelled, 1.f, "Operation cancelled.");
+
+        for (auto& file : fileset)
+        {
+          auto targetFilePath = (targetPath / file).make_preferred();
+
+          error_code ec;
+          filesystem::remove(targetFilePath, ec);
+        }
       }
 
       return !async.is_cancelled();
