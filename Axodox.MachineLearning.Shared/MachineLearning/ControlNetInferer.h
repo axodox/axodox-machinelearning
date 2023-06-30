@@ -3,17 +3,9 @@
 
 namespace Axodox::MachineLearning
 {
-  enum class ControlNetType
-  {
-    Unknown,
-    Canny,
-    Hed,
-    Depth
-  };
-
   struct AXODOX_MACHINELEARNING_API ControlNetOptions : public StableDiffusionOptions
   {
-    ControlNetType ConditionType = ControlNetType::Unknown;
+    std::string ConditionType = "";
     Tensor ConditionInput;
     float ConditioningScale = 1.f;
 
@@ -30,11 +22,9 @@ namespace Axodox::MachineLearning
   private:
     OnnxEnvironment& _environment;
     Ort::Session _unetSession, _controlnetSession;
-    ControlNetType _controlnetType = ControlNetType::Unknown;
+    std::string _controlnetType = "";
     std::filesystem::path _controlnetPath;
     
-    void EnsureControlNet(ControlNetType type);
-
-    static const wchar_t* ToString(ControlNetType type);
+    void EnsureControlNet(std::string_view type);
   };
 }

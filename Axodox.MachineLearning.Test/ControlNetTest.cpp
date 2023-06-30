@@ -35,7 +35,7 @@ namespace Axodox::MachineLearning::Test
         auto imageTexture = TextureData::FromBuffer(imageData);
         
         options.ConditionInput = Tensor::FromTextureData(imageTexture, ColorNormalization::LinearZeroToOne);
-        options.ConditionType = ControlNetType::Depth;
+        options.ConditionType = "depth";
       }
 
       //Run ControlNet

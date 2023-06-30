@@ -145,30 +145,15 @@ namespace Axodox::MachineLearning
     return latentSample;
   }
 
-  void ControlNetInferer::EnsureControlNet(ControlNetType type)
+  void ControlNetInferer::EnsureControlNet(std::string_view type)
   {
     if (_controlnetType == type) return;
 
     _controlnetSession = Session{ nullptr };
 
-    auto modelPath = _controlnetPath / format(L"{}.onnx", ToString(type));
+    auto modelPath = _controlnetPath / format("{}.onnx", type);
     _controlnetSession = _environment.CreateSession(modelPath);
     _controlnetType = type;
-  }
-
-  const wchar_t* ControlNetInferer::ToString(ControlNetType type)
-  {
-    switch (type)
-    {
-    case ControlNetType::Canny:
-      return L"canny";
-    case ControlNetType::Hed:
-      return L"hed";
-    case ControlNetType::Depth:
-      return L"depth";
-    default:
-      throw logic_error("ControlNet type not implemented.");
-    }
   }
 
   void ControlNetOptions::Validate() const
