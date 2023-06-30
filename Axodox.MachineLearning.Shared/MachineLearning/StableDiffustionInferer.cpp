@@ -159,6 +159,11 @@ namespace Axodox::MachineLearning
     return Tensor::CreateRandom(shape, context.Randoms, context.Scheduler.InitialNoiseSigma());
   }
 
+  ImageDiffusionInfererKind StableDiffusionInferer::Type() const
+  {
+    return ImageDiffusionInfererKind::StableDiffusion;
+  }
+
   void StableDiffusionOptions::Validate() const
   {
     if (MaskInput && !LatentInput) throw logic_error("Mask input cannot be set without latent input!");

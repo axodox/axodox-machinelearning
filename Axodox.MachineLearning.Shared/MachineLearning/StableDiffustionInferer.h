@@ -31,7 +31,21 @@ namespace Axodox::MachineLearning
     std::vector<std::minstd_rand> Randoms;
   };
 
-  class AXODOX_MACHINELEARNING_API StableDiffusionInferer
+  enum class ImageDiffusionInfererKind
+  {
+    StableDiffusion,
+    ControlNet
+  };
+
+  class AXODOX_MACHINELEARNING_API ImageDiffusionInferer
+  {
+  public:
+    virtual ~ImageDiffusionInferer() = default;
+
+    virtual ImageDiffusionInfererKind Type() const = 0;
+  };
+
+  class AXODOX_MACHINELEARNING_API StableDiffusionInferer : public ImageDiffusionInferer
   {
   public:
     StableDiffusionInferer(OnnxEnvironment& environment, std::optional<ModelSource> source = {});
@@ -41,6 +55,8 @@ namespace Axodox::MachineLearning
     static Tensor GenerateLatentSample(StableDiffusionContext& context);
     static Tensor PrepareLatentSample(StableDiffusionContext& context, const Tensor& latents, float initialSigma);
     static Tensor BlendLatentSamples(const Tensor& a, const Tensor& b, const Tensor& weights);
+
+    virtual ImageDiffusionInfererKind Type() const override;
 
   private:
     OnnxEnvironment& _environment;

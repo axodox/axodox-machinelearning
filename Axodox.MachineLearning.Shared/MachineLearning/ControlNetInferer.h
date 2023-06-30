@@ -12,12 +12,14 @@ namespace Axodox::MachineLearning
     void Validate() const;
   };
 
-  class AXODOX_MACHINELEARNING_API ControlNetInferer
+  class AXODOX_MACHINELEARNING_API ControlNetInferer : public ImageDiffusionInferer
   {
   public:
     ControlNetInferer(OnnxEnvironment& environment, const std::filesystem::path& controlnetPath, std::optional<ModelSource> unetSource = {});
 
     Tensor RunInference(const ControlNetOptions& options, Threading::async_operation_source* async = nullptr);
+
+    virtual ImageDiffusionInfererKind Type() const override;
 
   private:
     OnnxEnvironment& _environment;

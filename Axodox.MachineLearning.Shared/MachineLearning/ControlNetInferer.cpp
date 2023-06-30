@@ -81,9 +81,11 @@ namespace Axodox::MachineLearning
         auto embedding = get<ScheduledTensor>(options.TextEmbeddings)[i].get();
         if (currentEmbedding != embedding)
         {
-          auto encoderHiddenStates = currentEmbedding->ToHalf().Duplicate(options.BatchSize);
+          auto encoderHiddenStates = embedding->ToHalf().Duplicate(options.BatchSize);
           controlnetBinding.BindInput("encoder_hidden_states", encoderHiddenStates.ToOrtValue());
           unetBinding.BindInput("encoder_hidden_states", encoderHiddenStates.ToOrtValue());
+
+          currentEmbedding = embedding;
         }
       }
 
@@ -154,6 +156,11 @@ namespace Axodox::MachineLearning
     auto modelPath = _controlnetPath / format("{}.onnx", type);
     _controlnetSession = _environment.CreateSession(modelPath);
     _controlnetType = type;
+  }
+
+  ImageDiffusionInfererKind ControlNetInferer::Type() const
+  {
+    return ImageDiffusionInfererKind::ControlNet;
   }
 
   void ControlNetOptions::Validate() const
