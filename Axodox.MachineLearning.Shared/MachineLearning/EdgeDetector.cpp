@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "EdgeDetector.h"
 
+using namespace Axodox::Graphics;
 using namespace Ort;
 using namespace std;
 
@@ -8,7 +9,7 @@ namespace Axodox::MachineLearning
 {
   EdgeDetector::EdgeDetector(OnnxEnvironment& environment, EdgeDetectionMode mode, std::optional<ModelSource> source) :
     _environment(environment),
-    _session(environment.CreateSession(source ? *source : (_environment.RootPath() / format(L"edge_detector/{}.onnx", ToModelName(mode)))))
+    _session(environment.CreateSession(source ? *source : (_environment.RootPath() / format(L"annotators/{}.onnx", ToModelName(mode)))))
   { }
 
   Tensor EdgeDetector::DetectEdges(const Tensor& image)
@@ -26,6 +27,13 @@ namespace Axodox::MachineLearning
     auto result = Tensor::FromOrtValue(outputValues[0]);
 
     return result;
+  }
+
+  Graphics::TextureData EdgeDetector::ExtractFeatures(const Graphics::TextureData& value)
+  {
+    auto inputTensor = Tensor::FromTextureData(value, ColorNormalization::LinearZeroToOne);
+    auto outputTensor = DetectEdges(inputTensor);
+    return TextureData(outputTensor.ToTextureData(ColorNormalization::LinearZeroToOne).front());
   }
 
   const wchar_t* EdgeDetector::ToModelName(EdgeDetectionMode mode)

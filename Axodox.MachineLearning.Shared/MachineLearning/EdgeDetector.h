@@ -1,6 +1,7 @@
 #pragma once
 #include "OnnxEnvironment.h"
 #include "Tensor.h"
+#include "ImageFeatureExtractor.h"
 
 namespace Axodox::MachineLearning
 {
@@ -10,12 +11,14 @@ namespace Axodox::MachineLearning
     Hed
   };
 
-  class AXODOX_MACHINELEARNING_API EdgeDetector
+  class AXODOX_MACHINELEARNING_API EdgeDetector : public ImageFeatureExtractor
   {
   public:
     EdgeDetector(OnnxEnvironment& environment, EdgeDetectionMode mode, std::optional<ModelSource> source = {});
 
     Tensor DetectEdges(const Tensor& image);
+
+    virtual Graphics::TextureData ExtractFeatures(const Graphics::TextureData& value) override;
 
   private:
     OnnxEnvironment& _environment;

@@ -13,7 +13,7 @@ namespace Axodox::MachineLearning
     _memoryInfo(MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeDefault)),
     _runOptions()
   {
-    _environment.CreateAndRegisterAllocator(_memoryInfo, ArenaCfg(0, 1, -1, -1));
+    //_environment.CreateAndRegisterAllocator(_memoryInfo, ArenaCfg(0, 1, -1, -1));
     _environment.DisableTelemetryEvents();
     //_runOptions.AddConfigEntry("memory.enable_memory_arena_shrinkage", "gpu:0");
   }

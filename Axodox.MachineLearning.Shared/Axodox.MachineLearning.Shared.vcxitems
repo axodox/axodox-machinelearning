@@ -42,6 +42,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\ControlNetInferer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\DepthEstimator.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\EdgeDetector.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\ImageFeatureExtractor.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxEnvironment.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxExtensions.h" />
