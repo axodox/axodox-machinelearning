@@ -100,6 +100,10 @@ namespace Axodox::MachineLearning
     );
   }
 
+  OnnxEnvironment::OnnxEnvironment(const std::filesystem::path& rootPath) :
+    OnnxEnvironment(make_shared<OnnxHost>(), rootPath)
+  { }
+
   OnnxEnvironment::OnnxEnvironment(const std::shared_ptr<OnnxHost>& host, const std::filesystem::path& rootPath) :
     _host(host),
     _rootPath(rootPath)

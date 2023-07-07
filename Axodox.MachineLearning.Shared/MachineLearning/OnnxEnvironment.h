@@ -34,6 +34,7 @@ namespace Axodox::MachineLearning
   class AXODOX_MACHINELEARNING_API OnnxEnvironment
   {
   public:
+    OnnxEnvironment(const std::filesystem::path& rootPath);
     OnnxEnvironment(const std::shared_ptr<OnnxHost>& host, const std::filesystem::path& rootPath);
 
     const std::filesystem::path& RootPath() const;
