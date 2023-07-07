@@ -147,7 +147,7 @@ namespace Axodox::MachineLearning
     return latentSample;
   }
 
-  void ControlNetInferer::EnsureControlNet(std::string_view type)
+  void ControlNetInferer::EnsureControlNet(const std::string& type)
   {
     if (_controlnetType == type) return;
 

@@ -34,6 +34,10 @@ namespace Axodox::Web
     "vae_decoder/model.onnx",
     "vae_encoder/model.onnx"
   };
+  
+  const std::set<std::string> HuggingFaceModelDetails::StableDiffusionOnnxOptionals = {
+    "controlnet/model.onnx"
+  };
 
   bool HuggingFaceModelDetails::IsValidModel(const std::set<std::string>& fileset)
   {

@@ -47,7 +47,7 @@ namespace Axodox::Web
     return try_parse_json<HuggingFaceModelDetails>(result);
   }
 
-  bool HuggingFaceClient::TryDownloadModel(std::string_view modelId, const std::set<std::string>& fileset, const std::filesystem::path& targetPath, Threading::async_operation& operation)
+  bool HuggingFaceClient::TryDownloadModel(std::string_view modelId, const std::set<std::string>& fileset, const std::set<std::string>& optionals, const std::filesystem::path& targetPath, Threading::async_operation& operation)
   {
     async_operation_source async;
     operation.set_source(async);
@@ -80,9 +80,12 @@ namespace Axodox::Web
 
     try
     {
-      auto fileCount = fileset.size();
+      auto files = fileset;
+      files.insert(optionals.begin(), optionals.end());
+
+      auto fileCount = files.size();
       size_t fileIndex = 0;
-      for (auto& file : fileset)
+      for (auto& file : files)
       {
         //Exit loop if cancelled
         if (async.is_cancelled()) break;
@@ -159,7 +162,7 @@ namespace Axodox::Web
       {
         async.update_state(async_operation_state::cancelled, 1.f, "Operation cancelled.");
 
-        for (auto& file : fileset)
+        for (auto& file : files)
         {
           auto targetFilePath = (targetPath / file).make_preferred();
 

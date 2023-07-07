@@ -27,6 +27,6 @@ namespace Axodox::MachineLearning
     std::string _controlnetType = "";
     std::filesystem::path _controlnetPath;
     
-    void EnsureControlNet(std::string_view type);
+    void EnsureControlNet(const std::string& type);
   };
 }
