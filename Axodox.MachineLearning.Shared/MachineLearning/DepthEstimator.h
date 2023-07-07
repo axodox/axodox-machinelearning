@@ -14,6 +14,8 @@ namespace Axodox::MachineLearning
 
     virtual Graphics::TextureData ExtractFeatures(const Graphics::TextureData& value) override;
 
+    static void NormalizeDepthTensor(Tensor& value);
+
   private:
     OnnxEnvironment& _environment;
     Ort::Session _session;

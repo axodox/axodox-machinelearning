@@ -33,7 +33,26 @@ namespace Axodox::MachineLearning
   Graphics::TextureData DepthEstimator::ExtractFeatures(const Graphics::TextureData& value)
   {
     auto inputTensor = Tensor::FromTextureData(value.Resize(512, 512), ColorNormalization::LinearZeroToOne);
-    auto outputTensor = EstimateDepth(inputTensor);
+    auto outputTensor = EstimateDepth(inputTensor);    
+    NormalizeDepthTensor(outputTensor);
     return outputTensor.ToTextureData(ColorNormalization::LinearZeroToOne).front().Resize(value.Width, value.Height);
+  }
+
+  void DepthEstimator::NormalizeDepthTensor(Tensor& value)
+  {
+    auto values = value.AsSpan<float>();
+
+    float min = INFINITY, max = -INFINITY;
+    for (auto value : values)
+    {
+      if (min > value) min = value;
+      if (max < value) max = value;
+    }
+
+    auto range = max - min;
+    for (auto& value : values)
+    {
+      value = (value - min) / range;
+    }
   }
 }

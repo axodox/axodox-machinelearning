@@ -40,22 +40,8 @@ namespace Axodox::MachineLearning::Test
       DepthEstimator depthEstimator{ environment };
 
       //Convert output to image
-      auto result = depthEstimator.EstimateDepth(imageTensor);
-      auto values = result.AsSpan<float>();
-
-      //float min = 3000, max = 5000;
-      float min = INFINITY, max = -INFINITY;
-      for (auto value : values)
-      {
-        if (min > value) min = value;
-        if (max < value) max = value;
-      }
-      
-      auto range = max - min;
-      for (auto& value : values)
-      {
-        value = (value - min) / range;
-      }
+      auto result = depthEstimator.EstimateDepth(imageTensor);      
+      DepthEstimator::NormalizeDepthTensor(result);
 
       auto depthTexture = result.ToTextureData(ColorNormalization::LinearZeroToOne);
       auto depthData = depthTexture[0].ToBuffer();      
