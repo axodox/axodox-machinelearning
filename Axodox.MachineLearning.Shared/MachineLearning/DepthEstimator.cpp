@@ -9,7 +9,7 @@ namespace Axodox::MachineLearning
 {
   DepthEstimator::DepthEstimator(OnnxEnvironment& environment, std::optional<ModelSource> source) :
     _environment(environment),
-    _session(environment.CreateSession(source ? *source : (_environment.RootPath() / L"annotators/depth.onnx")))
+    _session(environment->CreateSession(source ? *source : (_environment.RootPath() / L"annotators/depth.onnx")))
   { }
 
   Tensor DepthEstimator::EstimateDepth(const Tensor& image)
@@ -17,7 +17,7 @@ namespace Axodox::MachineLearning
     //Bind values
     IoBinding bindings{ _session };
     bindings.BindInput("x", image.ToHalf().ToOrtValue());
-    bindings.BindOutput("y", _environment.MemoryInfo());
+    bindings.BindOutput("y", _environment->MemoryInfo());
 
     //Run inference
     _session.Run({}, bindings);

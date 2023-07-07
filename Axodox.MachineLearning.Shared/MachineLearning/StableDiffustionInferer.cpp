@@ -11,7 +11,7 @@ namespace Axodox::MachineLearning
 {
   StableDiffusionInferer::StableDiffusionInferer(OnnxEnvironment& environment, std::optional<ModelSource> source) :
     _environment(environment),
-    _session(environment.CreateSession(source ? *source : (_environment.RootPath() / L"unet/model.onnx")))
+    _session(environment->CreateSession(source ? *source : (_environment.RootPath() / L"unet/model.onnx")))
   { }
 
   Tensor StableDiffusionInferer::RunInference(const StableDiffusionOptions& options, Threading::async_operation_source* async)
@@ -42,7 +42,7 @@ namespace Axodox::MachineLearning
 
     //Bind constant inputs    
     IoBinding binding{ _session };
-    binding.BindOutput("out_sample", _environment.MemoryInfo());
+    binding.BindOutput("out_sample", _environment->MemoryInfo());
 
     if (holds_alternative<Tensor>(options.TextEmbeddings))
     {

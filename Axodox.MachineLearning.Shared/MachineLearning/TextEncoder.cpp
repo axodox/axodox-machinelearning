@@ -10,7 +10,7 @@ namespace Axodox::MachineLearning
 
   TextEncoder::TextEncoder(OnnxEnvironment& environment, std::optional<ModelSource> source) :
     _environment(environment),
-    _session(environment.CreateSession(source ? *source : (_environment.RootPath() / L"text_encoder/model.onnx")))
+    _session(environment->CreateSession(source ? *source : (_environment.RootPath() / L"text_encoder/model.onnx")))
   { }
 
   Tensor TextEncoder::EncodeText(const Tensor& text)
@@ -18,7 +18,7 @@ namespace Axodox::MachineLearning
     //Bind values
     IoBinding bindings{ _session };
     bindings.BindInput("input_ids", text.ToOrtValue());
-    bindings.BindOutput("last_hidden_state", _environment.MemoryInfo());
+    bindings.BindOutput("last_hidden_state", _environment->MemoryInfo());
 
     //Run inference
     _session.Run({}, bindings);

@@ -9,7 +9,7 @@ namespace Axodox::MachineLearning
 {
   ControlNetInferer::ControlNetInferer(OnnxEnvironment& environment, const std::filesystem::path& controlnetPath, std::optional<ModelSource> unetSource) :
     _environment(environment),
-    _unetSession(environment.CreateSession(unetSource ? *unetSource : (_environment.RootPath() / L"controlnet/model.onnx"))),
+    _unetSession(environment->CreateSession(unetSource ? *unetSource : (_environment.RootPath() / L"controlnet/model.onnx"))),
     _controlnetPath(controlnetPath),
     _controlnetSession(nullptr)
   { }
@@ -48,14 +48,14 @@ namespace Axodox::MachineLearning
     IoBinding controlnetBinding{ _controlnetSession };
     for (auto i = 0; i < 12; i++)
     {
-      controlnetBinding.BindOutput(format("down_block_{}_additional_residual", i).c_str(), _environment.MemoryInfo());
+      controlnetBinding.BindOutput(format("down_block_{}_additional_residual", i).c_str(), _environment->MemoryInfo());
     }
-    controlnetBinding.BindOutput("mid_block_additional_residual", _environment.MemoryInfo());    
+    controlnetBinding.BindOutput("mid_block_additional_residual", _environment->MemoryInfo());
     controlnetBinding.BindInput("controlnet_cond", options.ConditionInput.ToHalf().ToOrtValue());
     controlnetBinding.BindInput("conditioning_scale", Tensor(double(options.ConditioningScale)).ToOrtValue());
     
     IoBinding unetBinding{ _unetSession };
-    unetBinding.BindOutput("out_sample", _environment.MemoryInfo());
+    unetBinding.BindOutput("out_sample", _environment->MemoryInfo());
 
     if (holds_alternative<Tensor>(options.TextEmbeddings))
     {
@@ -154,7 +154,7 @@ namespace Axodox::MachineLearning
     _controlnetSession = Session{ nullptr };
 
     auto modelPath = _controlnetPath / format("{}.onnx", type);
-    _controlnetSession = _environment.CreateSession(modelPath);
+    _controlnetSession = _environment->CreateSession(modelPath);
     _controlnetType = type;
   }
 

@@ -14,7 +14,7 @@ namespace Axodox::MachineLearning
 {
   SafetyChecker::SafetyChecker(OnnxEnvironment& environment, std::optional<ModelSource> source) :
     _environment(environment),
-    _session(environment.CreateSession(source ? *source : (_environment.RootPath() / L"safety_checker/model.onnx")))
+    _session(environment->CreateSession(source ? *source : (_environment.RootPath() / L"safety_checker/model.onnx")))
   {
     auto text = try_read_text(_environment.RootPath() / L"feature_extractor/preprocessor_config.json");
     if (!text) return;
@@ -33,7 +33,7 @@ namespace Axodox::MachineLearning
     IoBinding bindings{ _session };
     bindings.BindInput("clip_input", clipInput.ToHalf().ToOrtValue());
     bindings.BindInput("images", imageInput.ToHalf().ToOrtValue());
-    bindings.BindOutput("has_nsfw_concepts", _environment.MemoryInfo());
+    bindings.BindOutput("has_nsfw_concepts", _environment->MemoryInfo());
 
     _session.Run({}, bindings);
 

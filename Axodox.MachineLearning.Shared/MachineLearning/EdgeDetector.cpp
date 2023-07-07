@@ -9,7 +9,7 @@ namespace Axodox::MachineLearning
 {
   EdgeDetector::EdgeDetector(OnnxEnvironment& environment, EdgeDetectionMode mode, std::optional<ModelSource> source) :
     _environment(environment),
-    _session(environment.CreateSession(source ? *source : (_environment.RootPath() / format(L"annotators/{}.onnx", ToModelName(mode)))))
+    _session(environment->CreateSession(source ? *source : (_environment.RootPath() / format(L"annotators/{}.onnx", ToModelName(mode)))))
   { }
 
   Tensor EdgeDetector::DetectEdges(const Tensor& image)
@@ -17,7 +17,7 @@ namespace Axodox::MachineLearning
     //Bind values
     IoBinding bindings{ _session };
     bindings.BindInput("input", image.ToOrtValue());
-    bindings.BindOutput("output", _environment.MemoryInfo());
+    bindings.BindOutput("output", _environment->MemoryInfo());
 
     //Run inference
     _session.Run({}, bindings);
