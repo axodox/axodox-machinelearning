@@ -19,6 +19,13 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\EdgeDetector.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxEnvironment.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxModelStatistics.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Openpose\Openpose.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Openpose\parse\connect_parts.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Openpose\parse\find_peaks.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Openpose\parse\munkres.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Openpose\parse\paf_score_graph.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Openpose\parse\refine_peaks.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\PoseDetector.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Prompts\PromptAttention.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Prompts\PromptParser.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Prompts\PromptScheduler.cpp" />
@@ -43,6 +50,15 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\DepthEstimator.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\EdgeDetector.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\ImageFeatureExtractor.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Openpose\Openpose.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Openpose\parse\connect_parts.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Openpose\parse\find_peaks.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Openpose\parse\munkres.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Openpose\parse\paf_score_graph.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Openpose\parse\refine_peaks.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Openpose\parse\utils\CoverTable.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Openpose\parse\utils\PairGraph.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\PoseDetector.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxEnvironment.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxExtensions.h" />
@@ -67,5 +83,6 @@
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Assets\custom_op_cliptok.onnx" />
     <None Include="$(MSBuildThisFileDirectory)Assets\ortextensions.dll" />
+    <None Include="$(MSBuildThisFileDirectory)MachineLearning\Openpose\parse\README.md" />
   </ItemGroup>
 </Project>

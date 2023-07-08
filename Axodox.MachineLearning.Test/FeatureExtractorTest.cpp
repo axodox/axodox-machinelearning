@@ -2,6 +2,7 @@
 #include "CppUnitTest.h"
 #include "MachineLearning/DepthEstimator.h"
 #include "MachineLearning/EdgeDetector.h"
+#include "MachineLearning/PoseDetector.h"
 #include "Storage/FileIO.h"
 
 using namespace Axodox::Graphics;
@@ -91,6 +92,24 @@ namespace Axodox::MachineLearning::Test
       auto edgeData = edgeTexture[0].ToBuffer();
       auto outputPath = lib_folder() / "hed.png";
       write_file(outputPath, edgeData);
+    }
+
+    TEST_METHOD(TestPoseDetection)
+    {
+      //Prepare input
+      auto imagePath = lib_folder() / "..\\..\\..\\inputs\\football.jpg";
+      auto imageData = read_file(imagePath);
+      auto imageTexture = TextureData::FromBuffer(imageData);
+
+      //Load model
+      auto modelFolder = (lib_folder() / "..\\..\\..\\models").lexically_normal();
+
+      //Run depth estimation
+      OnnxEnvironment environment{ modelFolder };
+      PoseDetector poseDetector{ environment };
+
+      //Convert output to image
+      poseDetector.ExtractFeatures(imageTexture);
     }
   };
 }
