@@ -24,7 +24,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxEnvironment.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxModelStatistics.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Openpose\Openpose.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Openpose\OpenposeHelper.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Openpose\parse\connect_parts.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Openpose\parse\find_peaks.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Openpose\parse\munkres.cpp" />
@@ -60,7 +59,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Munkres\Munkres2.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Munkres\PairGraph.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Openpose\Openpose.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Openpose\OpenposeHelper.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Openpose\parse\connect_parts.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Openpose\parse\find_peaks.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Openpose\parse\munkres.hpp" />

@@ -16,8 +16,8 @@ class Openpose
 public:
 	Openpose(Axodox::MachineLearning::Tensor::shape_t inputDims) {
 
-		cmap_threshold = 0.1;
-		link_threshold = 0.1;
+		cmap_threshold = 0.1f;
+		link_threshold = 0.1f;
 		cmap_window = 5;
 		line_integral_samples = 7;
 		max_num_objects = 100;
