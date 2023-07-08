@@ -1,5 +1,13 @@
 #include "pch.h"
 #include "Openpose.h"
+#include "Graphics/Devices/GraphicsDevice.h"
+#include "Graphics/Devices/DrawingController.h"
+#include "Graphics/Textures/DrawingTarget2D.h"
+#include "Graphics/Textures/StagingTexture2D.h"
+
+using namespace Axodox::Graphics;
+using namespace D2D1;
+using namespace winrt;
 
 void Openpose::detect(const float *input_ptr, const float *paf_ptr, Axodox::Graphics::TextureData& frame)
 {
@@ -68,6 +76,21 @@ void Openpose::detect(const float *input_ptr, const float *paf_ptr, Axodox::Grap
 	trt_pose::parse::connect_parts_out_batch(object_counts, objects, connections, topology, peak_counts, N, K, C, M, max_num_objects, merge_workspace);
 
 	// ****** DRAWING SKELETON ***** //
+	GraphicsDevice device{};
+	DrawingController drawing{ device };
+	
+	Texture2DDefinition textureDefinition{ frame.Width, frame.Height, frame.Format, Texture2DFlags::None };
+	DrawingTarget2D target{ drawing, textureDefinition };
+	StagingTexture2D stage{ device, textureDefinition };
+
+	auto factory = drawing.DrawFactory();
+	auto context = drawing.DrawingContext();
+
+	com_ptr<ID2D1SolidColorBrush> brush;
+	check_hresult(context->CreateSolidColorBrush(D2D1::ColorF(1.f, 0.f, 0.f), brush.put()));
+
+	context->BeginDraw();	
+	context->SetTarget(target.Bitmap());
 
 	for (int i = 0; i < object_counts[0]; i++) {
 
@@ -97,7 +120,9 @@ void Openpose::detect(const float *input_ptr, const float *paf_ptr, Axodox::Grap
 				int y0 = (int)(peak0[(int)obj[c_a] * 2] * frame.Height);
 				int x1 = (int)(peak1[(int)obj[c_b] * 2 + 1] * frame.Width);
 				int y1 = (int)(peak1[(int)obj[c_b] * 2] * frame.Height);
+
 				////line(frame, cv::Point(x0, y0), cv::Point(x1, y1), cv::Scalar(0, 255, 0), 2, 1);
+				context->DrawLine(Point2F(x0, y0), Point2F(x1, y1), brush.get());
 
 				//if ((c_a == 5 && c_b == 7) || (c_a == 7 && c_b == 9))
 				//{
@@ -124,6 +149,11 @@ void Openpose::detect(const float *input_ptr, const float *paf_ptr, Axodox::Grap
 		}
 		obj = NULL;
 	}
+
+	check_hresult(context->EndDraw());
+	target.Copy(&stage);
+
+	frame = stage.Download();
 
 	delete[] peaks;
 	peaks = NULL;

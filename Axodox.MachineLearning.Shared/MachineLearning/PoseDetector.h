@@ -10,7 +10,7 @@ namespace Axodox::MachineLearning
   public:
     PoseDetector(OnnxEnvironment& environment, std::optional<ModelSource> source = {});
 
-    void DetectPose(const Tensor& image);
+    Graphics::TextureData DetectPose(const Tensor& image);
 
     virtual Graphics::TextureData ExtractFeatures(const Graphics::TextureData& value) override;
 

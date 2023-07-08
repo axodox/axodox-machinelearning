@@ -13,7 +13,7 @@ namespace Axodox::MachineLearning
     _session(environment->CreateSession(source ? *source : (_environment.RootPath() / L"annotators/openpose.onnx")))
   { }
 
-  void PoseDetector::DetectPose(const Tensor & image)
+  Graphics::TextureData PoseDetector::DetectPose(const Tensor & image)
   {
     //Bind values
     IoBinding bindings{ _session };
@@ -33,14 +33,15 @@ namespace Axodox::MachineLearning
 
     Openpose op{ cmap.Shape };
     op.detect(cmap.AsPointer<float>(), paf.AsPointer<float>(), frame);
+
+    return frame;
   }
 
   Graphics::TextureData PoseDetector::ExtractFeatures(const Graphics::TextureData& value)
   {
     auto inputTensor = Tensor::FromTextureData(value.Resize(224, 224), ColorNormalization::LinearZeroToOne);
 
-    DetectPose(inputTensor);
-
-    return Graphics::TextureData();
+    auto outputImage = DetectPose(inputTensor).Resize(value.Width, value.Height);
+    return outputImage;
   }
 }

@@ -109,7 +109,10 @@ namespace Axodox::MachineLearning::Test
       PoseDetector poseDetector{ environment };
 
       //Convert output to image
-      poseDetector.ExtractFeatures(imageTexture);
+      auto poseTexture = poseDetector.ExtractFeatures(imageTexture);
+      auto edgeData = poseTexture.ToBuffer();
+      auto outputPath = lib_folder() / "pose.png";
+      write_file(outputPath, edgeData);
     }
   };
 }
