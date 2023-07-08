@@ -19,7 +19,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\EdgeDetector.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Munkres\CostGraph.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Munkres\CoverTable.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Munkres\Munkres.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Munkres\Munkres2.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Munkres\PairGraph.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxEnvironment.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxModelStatistics.cpp" />
@@ -57,7 +57,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\ImageFeatureExtractor.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Munkres\CostGraph.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Munkres\CoverTable.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Munkres\Munkres.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Munkres\Munkres2.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Munkres\PairGraph.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Openpose\Openpose.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Openpose\OpenposeHelper.h" />

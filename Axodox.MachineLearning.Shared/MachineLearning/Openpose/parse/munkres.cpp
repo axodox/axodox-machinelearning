@@ -2,7 +2,7 @@
 #include "munkres.hpp"
 #include "utils/CoverTable.hpp"
 #include "utils/PairGraph.hpp"
-#include "Munkres.h"
+#include "Munkres.hpp"
 
 namespace trt_pose {
 namespace parse {

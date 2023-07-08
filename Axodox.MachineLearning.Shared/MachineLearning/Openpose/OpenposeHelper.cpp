@@ -2,7 +2,7 @@
 #include "OpenposeHelper.h"
 #include "MachineLearning/Munkres/CostGraph.h"
 #include "MachineLearning/Munkres/PairGraph.h"
-#include "MachineLearning/Munkres/Munkres.h"
+#include "MachineLearning/Munkres/Munkres2.h"
 
 using namespace Axodox::MachineLearning::Munkres;
 using namespace DirectX;
@@ -11,46 +11,47 @@ using namespace std;
 namespace Axodox::MachineLearning
 {
   const float PoseConfidenceMapThreshold = 0.1f;
-  const int PoseConfidenceWindowSize = 5;
+  const int PoseJointSearchRadius = 5;
   const int PosePartAffinityIntegralSamples = 7;
 
-  PosePeakCandidateCollection FindPeaks(const Tensor& confidenceMap)
+  std::vector<PoseJointPositionCandidates> FindPeaks(const Tensor& jointPositionConfidenceMap)
   {
-    if (confidenceMap.Shape[1] != PoseChannelCount) throw logic_error("The number of channels in the confidence map is invalid.");
+    //The input tensor is laid out the following way: (batch, joint, height, width)
+    if (jointPositionConfidenceMap.Shape[1] != PoseJointCount) throw logic_error("The number of channels in the confidence map is invalid.");
 
-    auto width = int(confidenceMap.Shape[3]);
-    auto height = int(confidenceMap.Shape[2]);
+    auto width = int(jointPositionConfidenceMap.Shape[3]);
+    auto height = int(jointPositionConfidenceMap.Shape[2]);
 
-    PosePeakCandidateCollection results;
-    results.reserve(confidenceMap.Shape[0]);
+    vector<PoseJointPositionCandidates> results;
+    results.reserve(jointPositionConfidenceMap.Shape[0]);
 
-    for (size_t batch = 0; batch < confidenceMap.Shape[0]; batch++)
+    for (size_t batch = 0; batch < jointPositionConfidenceMap.Shape[0]; batch++)
     {
-      PosePeakCandidates candidate;
+      PoseJointPositionCandidates joints;
 
-      for (size_t channel = 0; channel < confidenceMap.Shape[1]; channel++)
+      for (size_t joint = 0; joint < jointPositionConfidenceMap.Shape[1]; joint++)
       {
-        auto& peaks = candidate[channel];
+        auto& jointPositions = joints[joint];
 
-        auto value = confidenceMap.AsPointer<float>(batch, channel);
+        auto value = jointPositionConfidenceMap.AsPointer<float>(batch, joint);
         for (auto y = 0; y < height; y++)
         {
           for (auto x = 0; x < width; x++, value++)
           {
-            //When we find a value above the threshold            
+            //When we find a value above the threshold
             if (*value < PoseConfidenceMapThreshold) continue;
 
             //We check the area around it
-            auto xMin = max(0, x - PoseConfidenceWindowSize);
-            auto yMin = max(0, y - PoseConfidenceWindowSize);
-            auto xMax = min(0, x + PoseConfidenceWindowSize);
-            auto yMax = min(0, y + PoseConfidenceWindowSize);
+            auto xMin = max(0, x - PoseJointSearchRadius);
+            auto yMin = max(0, y - PoseJointSearchRadius);
+            auto xMax = min(0, x + PoseJointSearchRadius);
+            auto yMax = min(0, y + PoseJointSearchRadius);
 
             auto isPeak = true;
             auto peakValue = *value;
             for (auto yWindow = yMin; isPeak && yWindow < yMax; yWindow++)
             {
-              auto neighbour = confidenceMap.AsPointer<float>(batch, channel, yWindow);
+              auto neighbour = jointPositionConfidenceMap.AsPointer<float>(batch, joint, yWindow);
               for (auto xWindow = xMin; isPeak && xWindow < xMax; xWindow++, neighbour++)
               {
                 if (*neighbour > peakValue)
@@ -69,7 +70,7 @@ namespace Axodox::MachineLearning
 
             for (auto yWindow = yMin; isPeak && yWindow < yMax; yWindow++)
             {
-              auto neighbour = confidenceMap.AsPointer<float>(batch, channel, yWindow);
+              auto neighbour = jointPositionConfidenceMap.AsPointer<float>(batch, joint, yWindow);
               for (auto xWindow = xMin; isPeak && xWindow < xMax; xWindow++, neighbour++)
               {
                 auto weight = *neighbour;
@@ -81,51 +82,53 @@ namespace Axodox::MachineLearning
 
             refinedLocation.x /= weightSum;
             refinedLocation.y /= weightSum;
-            peaks.push_back(refinedLocation);
+            jointPositions.push_back(refinedLocation);
           }
         }
 
-        results.push_back(candidate);
+        results.push_back(joints);
       }
     }
 
     return results;
   }
 
-  Tensor CalculatePartAffinityScores(const Tensor& partAffinityMap, const PosePeakCandidateCollection& peakCollection)
+  Tensor CalculatePartAffinityScores(const Tensor& partAffinityMap, const std::vector<PoseJointPositionCandidates>& jointConfigurations)
   {
-    if (partAffinityMap.Shape[1] != 2 * size(PoseTopology)) throw logic_error("The number of channels in the part affinity map is invalid.");
+    //The input tensor is laid out the following way: (batch, bone, height, width)
+    if (partAffinityMap.Shape[1] != 2 * size(PoseBones)) throw logic_error("The number of channels in the part affinity map is invalid.");
 
     auto batchCount = partAffinityMap.Shape[0];
     auto width = int(partAffinityMap.Shape[3]);
     auto height = int(partAffinityMap.Shape[2]);
 
-    Tensor result{ TensorType::Single, batchCount, size(PoseTopology), PoseMaxBodyCount, PoseMaxBodyCount };
+    //The output tensor describes the bone affinities for each joint position
+    Tensor result{ TensorType::Single, batchCount, size(PoseBones), PoseMaxBodyCount, PoseMaxBodyCount };
 
     for (size_t batch = 0; batch < batchCount; batch++)
     {
-      auto& peaks = peakCollection[batch];
+      auto& jointConfiguration = jointConfigurations[batch];
 
-      for (size_t channel = 0; channel < size(PoseTopology); channel++)
+      for (size_t bone = 0; bone < size(PoseBones); bone++)
       {
-        auto graph = result.AsPointer<float>(batch, channel);
-        auto topology = PoseTopology[channel];
+        auto graph = result.AsPointer<float>(batch, bone);
+        auto boneJointMapping = PoseBones[bone];
 
-        auto& peaksA = peaks[topology.ConfidenceA];
-        auto& peaksB = peaks[topology.ConfidenceB];
+        auto& jointPositionsA = jointConfiguration[boneJointMapping.ConfidenceA];
+        auto& jointPositionsB = jointConfiguration[boneJointMapping.ConfidenceB];
 
-        auto pafA = partAffinityMap.AsPointer<float>(batch, topology.PartAffinityA);
-        auto pafB = partAffinityMap.AsPointer<float>(batch, topology.PartAffinityB);
+        auto partAffinityA = partAffinityMap.AsPointer<float>(batch, boneJointMapping.PartAffinityA);
+        auto partAffinityB = partAffinityMap.AsPointer<float>(batch, boneJointMapping.PartAffinityB);
 
-        for (auto a = 0; a < peaksA.size(); a++)
+        for (auto a = 0; a < jointPositionsA.size(); a++)
         {
-          auto peakA = XMLoadFloat2(&peaksA[a]);
-          for (auto b = 0; b < peaksB.size(); b++)
+          auto jointPositionA = XMLoadFloat2(&jointPositionsA[a]);
+          for (auto b = 0; b < jointPositionsB.size(); b++)
           {
-            auto peakB = XMLoadFloat2(&peaksB[b]);
+            auto jointPositionB = XMLoadFloat2(&jointPositionsB[b]);
 
-            auto vectorAB = peakA - peakB;
-            auto normAB = XMVector2Normalize(vectorAB);
+            auto jointDistanceVector = jointPositionA - jointPositionB;
+            auto normalizedJointDistanceVector = XMVector2Normalize(jointDistanceVector);
 
             auto integral = 0.f;
             auto increment = 1.f / (PosePartAffinityIntegralSamples - 1);
@@ -133,14 +136,14 @@ namespace Axodox::MachineLearning
             for (auto t = 0; t < PosePartAffinityIntegralSamples; t++)
             {
               XMINT2 pixel;
-              XMStoreSInt2(&pixel, XMConvertVectorFloatToInt(peakA + progress * vectorAB, 0));
+              XMStoreSInt2(&pixel, XMConvertVectorFloatToInt(jointPositionA + progress * jointDistanceVector, 0));
 
               if (pixel.x < 0 || pixel.y < 0 || pixel.x >= width || pixel.y >= height) continue;
 
-              auto paf = XMVectorSet(pafA[pixel.y * width + pixel.x], pafB[pixel.y * width + pixel.x], 0, 0);
+              auto partAffinity = XMVectorSet(partAffinityA[pixel.y * width + pixel.x], partAffinityB[pixel.y * width + pixel.x], 0, 0);
 
-              auto dot = XMVectorGetX(XMVector2Dot(paf, normAB));
-              integral += dot;
+              auto partAffinityScore = XMVectorGetX(XMVector2Dot(partAffinity, normalizedJointDistanceVector));
+              integral += partAffinityScore;
 
               progress += increment;
             }
@@ -155,26 +158,27 @@ namespace Axodox::MachineLearning
     return result;
   }
 
-  Tensor CalculatePartAssignments(const Tensor& partAffinityScores, const PosePeakCandidateCollection& peaks)
+  Tensor CalculatePartAssignments(const Tensor& partAffinityScores, const std::vector<PoseJointPositionCandidates>& jointConfiguration)
   {
     auto batchCount = partAffinityScores.Shape[0];
 
-    Tensor result{ TensorType::Int32, batchCount, size(PoseTopology), 2, PoseMaxBodyCount };
+    Tensor result{ TensorType::Int32, batchCount, size(PoseBones), 2, PoseMaxBodyCount };
+    ranges::fill(result.AsSpan<int32_t>(), -1);
 
     for (size_t batch = 0; batch < batchCount; batch++)
     {
       auto connections = result.AsPointer<int32_t>();
 
-      for (size_t channel = 0; channel < size(PoseTopology); channel++)
+      for (size_t bone = 0; bone < size(PoseBones); bone++)
       {
-        auto topology = PoseTopology[channel];
+        auto boneJointMapping = PoseBones[bone];
 
-        auto rowCount = peaks[batch][topology.PartAffinityA].size();
-        auto columnCount = peaks[batch][topology.PartAffinityB].size();
+        auto rowCount = jointConfiguration[batch][boneJointMapping.PartAffinityA].size();
+        auto columnCount = jointConfiguration[batch][boneJointMapping.PartAffinityB].size();
 
         CostGraph costGraph{ rowCount, columnCount };
         auto costs = costGraph.AsSpan();
-        auto pafs = partAffinityScores.AsSubSpan<float>(batch, channel);
+        auto pafs = partAffinityScores.AsSubSpan<float>(batch, bone);
         copy(pafs.begin(), pafs.end(), costs.begin());
 
         for (auto& value : costs)
@@ -199,71 +203,75 @@ namespace Axodox::MachineLearning
     return result;
   }
 
-  void ConnectParts(const Tensor& connectionMap, const PosePeakCandidateCollection& peaks)
+  std::vector<std::vector<PoseJointPositions>> ConnectParts(const Tensor& connectionMap, const std::vector<PoseJointPositionCandidates>& jointConfiguration)
   {
     auto batchCount = connectionMap.Shape[0];
-    Tensor results{ TensorType::Int32, batchCount, PoseMaxBodyCount, PoseChannelCount };
+    vector<vector<PoseJointPositions>> results;
+    results.reserve(jointConfiguration.size());
 
     vector<bool> visitations;
-    visitations.resize(PoseChannelCount * PoseMaxBodyCount);
+    visitations.resize(PoseJointCount * PoseMaxBodyCount);
 
     for (size_t batch = 0; batch < batchCount; batch++)
     {
-      auto connections = connectionMap.AsSubSpan<int32_t>(batch);
-
-      auto objects = results.AsSubSpan<int32_t>(batch);
-      ranges::fill(objects, -1);
+      vector<PoseJointPositions> bodies;
 
       auto objectCount = 0;
-      for (size_t channel = 0; channel < PoseChannelCount && objectCount < PoseMaxBodyCount; channel++)
+      for (size_t joint = 0; joint < PoseJointCount && objectCount < PoseMaxBodyCount; joint++)
       {
-        auto count = peaks[batch][channel].size();
+        auto positionCandidateCount = jointConfiguration[batch][joint].size();
 
-        for (size_t i = 0; i < count && objectCount < PoseMaxBodyCount; i++)
+        for (size_t positionCandidate = 0; positionCandidate < positionCandidateCount && objectCount < PoseMaxBodyCount; positionCandidate++)
         {
           bool isNewObject = false;
 
-          queue<pair<int, int>> queue;
-          queue.push({ channel, i });
+          queue<pair<size_t, size_t>> candidateQueue;
+          candidateQueue.push({ joint, positionCandidate });
 
-          while (!queue.empty())
+          PoseJointPositions bodyJointPositions;
+          ranges::fill(bodyJointPositions, XMFLOAT2{ NAN, NAN });
+
+          while (!candidateQueue.empty())
           {
-            auto [nodeC, nodeI] = queue.front();
-            queue.pop();
+            auto [currentJoint, currentPositionCandidate] = candidateQueue.front();
+            candidateQueue.pop();
 
-            auto visitationIndex = nodeC * PoseMaxBodyCount + nodeI;
+            auto visitationIndex = currentJoint * PoseMaxBodyCount + currentPositionCandidate;
             if (visitations[visitationIndex]) continue;
 
             visitations[visitationIndex] = true;
             isNewObject = true;
-            objects[objectCount * PoseChannelCount + nodeC] = nodeI;
+            bodyJointPositions[currentJoint] = jointConfiguration[batch][joint][currentPositionCandidate];
 
-            for (size_t k = 0; k < size(PoseTopology); k++)
+            for (size_t bone = 0; bone < size(PoseBones); bone++)
             {
-              auto topology = PoseTopology[k];
-              auto connection = &connections[k * 2 * PoseMaxBodyCount];
+              auto boneJointMapping = PoseBones[bone];
+              auto connections = connectionMap.AsSubSpan<int32_t>(batch, bone);
 
-              if (topology.ConfidenceA == nodeC)
+              if (boneJointMapping.ConfidenceA == currentJoint)
               {
-                auto i_b = connection[nodeI];
-                if (i_b >= 0) queue.push({ topology.ConfidenceB, i_b });
+                auto connection = connections[currentPositionCandidate];
+                if (connection >= 0) candidateQueue.push({ boneJointMapping.ConfidenceB, connection });
               }
 
-              if (topology.ConfidenceB == nodeC)
+              if (boneJointMapping.ConfidenceB == currentJoint)
               {
-                auto i_a = connection[M + nodeI];
-                if (i_a >= 0) queue.push({ topology.ConfidenceA, i_a });
+                auto connection = connections[PoseMaxBodyCount + currentPositionCandidate];
+                if (connection >= 0) candidateQueue.push({ boneJointMapping.ConfidenceA, connection });
               }
             }
           }
 
-          if (isNewObject) objectCount++;
+          if (isNewObject)
+          {
+            bodies.push_back(bodyJointPositions);
+          }
         }
       }
 
-
+      results.push_back(bodies);
     }
 
-
+    return results;
   }
 }
