@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "PoseEstimator.h"
-#include "Openpose/Openpose.h"
 #include "MachineLearning/Munkres/CostGraph.h"
 #include "MachineLearning/Munkres/PairGraph.h"
 #include "MachineLearning/Munkres/MunkresSolver.h"
@@ -482,11 +481,6 @@ namespace Axodox::MachineLearning
 
     //Extract skeletons
     auto skeletons = ExtractSkeletons(jointPositionConfidenceMap, boneAffinityMap);
-
-    //auto frame = move(image.ToTextureData(ColorNormalization::LinearZeroToOne).front());
-    //Openpose op{ jointPositionConfidenceMap.Shape };
-    //op.detect(jointPositionConfidenceMap.AsPointer<float>(), boneAffinityMap.AsPointer<float>(), frame);
-
     return skeletons;
   }
 
