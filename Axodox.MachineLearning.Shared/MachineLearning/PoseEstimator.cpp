@@ -3,6 +3,7 @@
 #include "MachineLearning/Munkres/CostGraph.h"
 #include "MachineLearning/Munkres/PairGraph.h"
 #include "MachineLearning/Munkres/MunkresSolver.h"
+#include "Storage/FileIO.h"
 
 using namespace Axodox::Graphics;
 using namespace Axodox::MachineLearning;
@@ -142,7 +143,7 @@ namespace {
 
             for (auto yWindow = yMin; isPeak && yWindow < yMax; yWindow++)
             {
-              auto neighbour = jointPositionConfidenceMap.AsPointer<float>(batch, joint, yWindow);
+              auto neighbour = jointPositionConfidenceMap.AsPointer<float>(batch, joint, yWindow, xMin);
               for (auto xWindow = xMin; isPeak && xWindow < xMax; xWindow++, neighbour++)
               {
                 auto weight = *neighbour;
