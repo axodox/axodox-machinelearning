@@ -15,6 +15,10 @@ using namespace std;
 using namespace winrt;
 
 namespace {
+  const uint32_t PoseImageSize = 224;
+  const float PoseImageMean[] = { 0.485f, 0.456f, 0.406f };
+  const float PoseImageStandardDeviation[] = { 0.229f, 0.224f, 0.225f };
+
   const size_t PoseMaxBodyCount = 100;
   const size_t PoseMinJointCount = 2;
   const float PoseConfidenceMapThreshold = 0.1f;
@@ -405,6 +409,7 @@ namespace {
 
     context->BeginDraw();
     context->SetTarget(target.Bitmap());
+    context->Clear();
 
     for (auto& body : bodies)
     {
@@ -438,7 +443,7 @@ namespace {
           auto textRect = RectF(joint.x * width - jointIndexMargin, joint.y * height - jointIndexMargin, joint.x * width + jointIndexMargin, joint.y * height + jointIndexMargin);
 
           auto text = to_wstring(jointId);
-          context->DrawTextW(text.c_str(), uint32_t(text.length()), textFormat.get(), textRect, brush.get());
+          context->DrawText(text.c_str(), uint32_t(text.length()), textFormat.get(), textRect, brush.get());
         }
 
         jointId++;
@@ -487,9 +492,41 @@ namespace Axodox::MachineLearning
 
   Graphics::TextureData PoseEstimator::ExtractFeatures(const Graphics::TextureData& value)
   {
-    auto inputTensor = Tensor::FromTextureData(value.Resize(224, 224), ColorNormalization::LinearZeroToOne);
+    //Prepare source image
+    Graphics::Rect sourceRect;
+    auto inputTensor = Tensor::FromTextureData(value.UniformResize(PoseImageSize, PoseImageSize, &sourceRect), ColorNormalization::LinearZeroToOne);
 
+    for (auto channel = 0; channel < 3; channel++)
+    {
+      for (auto& item : inputTensor.AsSubSpan<float>(0, channel))
+      {
+        item = (item - PoseImageMean[channel]) / PoseImageStandardDeviation[channel];
+      }
+    }
+
+    //Estimate pose
     auto skeletons = EstimatePose(inputTensor);
+
+    //Visualize output
+    {
+      auto offsetX = float(sourceRect.Left) / float(PoseImageSize);
+      auto offsetY = float(sourceRect.Top) / float(PoseImageSize);
+      auto scaleX = float(PoseImageSize) / sourceRect.Width();
+      auto scaleY = float(PoseImageSize) / sourceRect.Height();
+
+      for (auto& frame : skeletons)
+      {
+        for (auto& body : frame)
+        {
+          for (auto& joint : body)
+          {
+            joint.x = (joint.x - offsetX) * scaleX;
+            joint.y = (joint.y - offsetY) * scaleY;
+          }
+        }
+      }
+    }
+
     return VisualizeBodies(skeletons[0], value.Width, value.Height);
   }
 }

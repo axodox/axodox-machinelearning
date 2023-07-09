@@ -28,6 +28,7 @@
 //Depth estimation
 #include "MachineLearning/DepthEstimator.h"
 #include "MachineLearning/EdgeDetector.h"
+#include "MachineLearning/PoseEstimator.h"
 
 //Model downloads
 #ifdef PLATFORM_WINDOWS

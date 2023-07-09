@@ -31,9 +31,16 @@ namespace Axodox::MachineLearning
 
   Graphics::TextureData EdgeDetector::ExtractFeatures(const Graphics::TextureData& value)
   {
-    auto inputTensor = Tensor::FromTextureData(value, ColorNormalization::LinearZeroToOne);
+    //Prepare input
+    Graphics::Rect sourceRect;
+    auto maxDimension = max(value.Width, value.Height);
+    auto inputTensor = Tensor::FromTextureData(value.UniformResize(maxDimension, maxDimension, &sourceRect), ColorNormalization::LinearZeroToOne);
+
+    //Detect edges
     auto outputTensor = DetectEdges(inputTensor);
-    return TextureData(outputTensor.ToTextureData(ColorNormalization::LinearZeroToOne).front());
+
+    //Return output
+    return TextureData(outputTensor.ToTextureData(ColorNormalization::LinearZeroToOne).front().GetTexture(sourceRect));
   }
 
   const wchar_t* EdgeDetector::ToModelName(EdgeDetectionMode mode)
