@@ -3,6 +3,7 @@
 #include "MachineLearning/DepthEstimator.h"
 #include "MachineLearning/EdgeDetector.h"
 #include "MachineLearning/PoseEstimator.h"
+#include "Storage/FileIO.h"
 
 using namespace Axodox::Graphics;
 using namespace Axodox::Storage;
