@@ -8,9 +8,11 @@
 using namespace Axodox::Graphics;
 using namespace Axodox::MachineLearning;
 using namespace Axodox::MachineLearning::Munkres;
+using namespace D2D1;
 using namespace DirectX;
 using namespace Ort;
 using namespace std;
+using namespace winrt;
 
 namespace {
   const size_t PoseMaxBodyCount = 100;
@@ -267,8 +269,6 @@ namespace {
 
         for (size_t positionCandidate = 0; positionCandidate < positionCandidateCount && objectCount < PoseMaxBodyCount; positionCandidate++)
         {
-          bool isNewObject = false;
-
           queue<pair<size_t, size_t>> candidateQueue;
           candidateQueue.push({ joint, positionCandidate });
 
@@ -286,7 +286,6 @@ namespace {
             if (visitations[visitationIndex]) continue;
 
             visitations[visitationIndex] = true;
-            isNewObject = true;
 
             bodyJointPositions[currentJoint] = jointConfigurationCollection[batch][currentJoint][currentPositionCandidate];
             locatedJointCount++;
@@ -310,7 +309,7 @@ namespace {
             }
           }
 
-          if (isNewObject && locatedJointCount > PoseMinJointCount)
+          if (locatedJointCount > PoseMinJointCount)
           {
             bodies.push_back(bodyJointPositions);
           }
@@ -328,7 +327,62 @@ namespace {
     auto jointConfigurationCollection = EstimateJointLocations(jointPositionConfidenceMap);
     auto boneAffinityScores = CalculateBoneAffinityScores(boneAffinityMap, jointConfigurationCollection);
     auto boneAssignments = CalculateBoneAssignments(boneAffinityScores, jointConfigurationCollection);
-    return AssembleBodies(boneAssignments, jointConfigurationCollection);
+    auto results = AssembleBodies(boneAssignments, jointConfigurationCollection);
+
+    auto width = float(boneAffinityMap.Shape[3] - 1);
+    auto height = float(boneAffinityMap.Shape[2] - 1);
+    for (auto& frame : results)
+    {
+      for (auto& body : frame)
+      {
+        for (auto& joint : body)
+        {
+          joint.x /= width;
+          joint.y /= height;
+        }
+      }
+    }
+
+    return results;
+  }
+
+  TextureData VisualizeBodies(std::span<const PoseJointPositions> bodies, uint32_t width, uint32_t height)
+  {
+    GraphicsDevice device{};
+    DrawingController drawing{ device };
+
+    Texture2DDefinition textureDefinition{ width, height, DXGI_FORMAT_B8G8R8A8_UNORM_SRGB, Texture2DFlags::None };
+    DrawingTarget2D target{ drawing, textureDefinition };
+    StagingTexture2D stage{ device, textureDefinition };
+
+    auto factory = drawing.DrawFactory();
+    auto context = drawing.DrawingContext();
+
+    com_ptr<ID2D1SolidColorBrush> brush;
+    check_hresult(context->CreateSolidColorBrush(D2D1::ColorF(1.f, 0.f, 0.f), brush.put()));
+
+    context->BeginDraw();
+    context->SetTarget(target.Bitmap());
+
+    for (auto& body : bodies)
+    {
+      for (auto bone : PoseBones)
+      {
+        auto jointA = body[bone.JointA];
+        auto jointB = body[bone.JointB];
+
+        if (isnan(jointA.x) || isnan(jointA.y) || isnan(jointB.x) || isnan(jointB.y)) continue;
+
+        auto positionA = Point2F(jointA.x * width, jointA.y * height);
+        auto positionB = Point2F(jointB.x * width, jointB.y * height);
+        context->DrawLine(positionA, positionB, brush.get());
+      }
+    }
+
+    check_hresult(context->EndDraw());
+
+    target.Copy(&stage);
+    return stage.Download();
   }
 }
 
@@ -389,7 +443,7 @@ namespace Axodox::MachineLearning
     auto inputTensor = Tensor::FromTextureData(value.Resize(224, 224), ColorNormalization::LinearZeroToOne);
 
     auto skeletons = EstimatePose(inputTensor);
-    auto outputImage = DetectPose(inputTensor).Resize(value.Width, value.Height);
-    return outputImage;
+    return VisualizeBodies(skeletons[0], value.Width, value.Height);
+    //auto outputImage = DetectPose(inputTensor).Resize(value.Width, value.Height);
   }
 }
