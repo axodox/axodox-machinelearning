@@ -4,6 +4,7 @@
 #include "MachineLearning/Munkres/CostGraph.h"
 #include "MachineLearning/Munkres/PairGraph.h"
 #include "MachineLearning/Munkres/MunkresSolver.h"
+#include "Storage/FileIO.h"
 
 using namespace Axodox::Graphics;
 using namespace Axodox::MachineLearning;
@@ -143,7 +144,7 @@ namespace {
 
             for (auto yWindow = yMin; isPeak && yWindow < yMax; yWindow++)
             {
-              auto neighbour = jointPositionConfidenceMap.AsPointer<float>(batch, joint, yWindow);
+              auto neighbour = jointPositionConfidenceMap.AsPointer<float>(batch, joint, yWindow, xMin);
               for (auto xWindow = xMin; isPeak && xWindow < xMax; xWindow++, neighbour++)
               {
                 auto weight = *neighbour;
@@ -483,9 +484,10 @@ namespace Axodox::MachineLearning
     //Extract skeletons
     auto skeletons = ExtractSkeletons(jointPositionConfidenceMap, boneAffinityMap);
 
-    //auto frame = move(image.ToTextureData(ColorNormalization::LinearZeroToOne).front());
-    //Openpose op{ jointPositionConfidenceMap.Shape };
-    //op.detect(jointPositionConfidenceMap.AsPointer<float>(), boneAffinityMap.AsPointer<float>(), frame);
+    auto frame = move(image.ToTextureData(ColorNormalization::LinearZeroToOne).front());
+    Openpose op{ jointPositionConfidenceMap.Shape };
+    op.detect(jointPositionConfidenceMap.AsPointer<float>(), boneAffinityMap.AsPointer<float>(), frame);
+    Storage::write_file("C:\\dev\\axodox-machinelearning\\Axodox.MachineLearning.Test\\bin\\x64\\Debug\\pose2.png", frame.ToBuffer());
 
     return skeletons;
   }

@@ -97,7 +97,7 @@ namespace Axodox::MachineLearning::Test
     TEST_METHOD(TestPoseDetection)
     {
       //Prepare input
-      auto imagePath = lib_folder() / "..\\..\\..\\inputs\\football.jpg";
+      auto imagePath = lib_folder() / "..\\..\\..\\inputs\\football3.jpeg";
       auto imageData = read_file(imagePath);
       auto imageTexture = TextureData::FromBuffer(imageData);
 
