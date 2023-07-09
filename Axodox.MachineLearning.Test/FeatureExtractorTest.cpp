@@ -2,7 +2,7 @@
 #include "CppUnitTest.h"
 #include "MachineLearning/DepthEstimator.h"
 #include "MachineLearning/EdgeDetector.h"
-#include "MachineLearning/PoseDetector.h"
+#include "MachineLearning/PoseEstimator.h"
 #include "Storage/FileIO.h"
 
 using namespace Axodox::Graphics;
@@ -106,7 +106,7 @@ namespace Axodox::MachineLearning::Test
 
       //Run depth estimation
       OnnxEnvironment environment{ modelFolder };
-      PoseDetector poseDetector{ environment };
+      PoseEstimator poseDetector{ environment };
 
       //Convert output to image
       auto poseTexture = poseDetector.ExtractFeatures(imageTexture);

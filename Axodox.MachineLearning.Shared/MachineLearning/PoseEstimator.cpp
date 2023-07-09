@@ -1,9 +1,9 @@
 #include "pch.h"
-#include "PoseDetector.h"
+#include "PoseEstimator.h"
 #include "Openpose/Openpose.h"
 #include "MachineLearning/Munkres/CostGraph.h"
 #include "MachineLearning/Munkres/PairGraph.h"
-#include "MachineLearning/Munkres/Munkres2.h"
+#include "MachineLearning/Munkres/MunkresSolver.h"
 
 using namespace Axodox::Graphics;
 using namespace Axodox::MachineLearning;
@@ -22,36 +22,60 @@ namespace {
   const int PoseJointSearchRadius = 5;
   const int PoseJointRefineRadius = 2;
   const int PoseBoneAffinityIntegralSamples = 7;
+  const bool PoseVisualizationShowJointIndices = false;
+  const float PoseVisualizationJointRadius = 5.f;
 
   typedef std::array<std::vector<DirectX::XMFLOAT2>, PoseJointCount> PoseJointPositionCandidates;
 
   struct PoseBoneJointMapping
   {
     size_t BoneA, BoneB, JointA, JointB;
+    uint32_t Color;
   };
 
   const PoseBoneJointMapping PoseBones[] = {
-    { 0, 1, 15, 13 },
-    { 2, 3, 13, 11 },
-    { 4, 5, 16, 14 },
-    { 6, 7, 14, 12 },
-    { 8, 9, 11, 12 },
-    { 10, 11, 5, 7 },
-    { 12, 13, 6, 8 },
-    { 14, 15, 7, 9 },
-    { 16, 17, 8, 10 },
-    { 18, 19, 1, 2 },
-    { 20, 21, 0, 1 },
-    { 22, 23, 0, 2 },
-    { 24, 25, 1, 3 },
-    { 26, 27, 2, 4 },
-    { 28, 29, 3, 5 },
-    { 30, 31, 4, 6 },
-    { 32, 33, 17, 0 },
-    { 34, 35, 17, 5 },
-    { 36, 37, 17, 6 },
-    { 38, 39, 17, 11 },
-    { 40, 41, 17, 12 }
+    { 0, 1, 15, 13, 0x003bb3u },
+    { 2, 3, 13, 11, 0x0077b3u },
+    { 4, 5, 16, 14, 0x00b377u },
+    { 6, 7, 14, 12, 0x00b33bu },
+    { 8, 9, 11, 12, 0x000000u },
+    { 10, 11, 5, 7, 0x77b300u },
+    { 12, 13, 6, 8, 0xb37700u },
+    { 14, 15, 7, 9, 0x3bb300u },
+    { 16, 17, 8, 10, 0xb3b300u },
+    { 18, 19, 1, 2, 0x000000u },
+    { 20, 21, 0, 1, 0xb300b3u },
+    { 22, 23, 0, 2, 0x3b00b3u },
+    { 24, 25, 1, 3, 0xb30077u },
+    { 26, 27, 2, 4, 0x7700b3u },
+    { 28, 29, 3, 5, 0x000000u },
+    { 30, 31, 4, 6, 0x000000u },
+    { 32, 33, 17, 0, 0x0000b3u },
+    { 34, 35, 17, 5, 0xb33b00u },
+    { 36, 37, 17, 6, 0xb30000u },
+    { 38, 39, 17, 11, 0x00b3b3u },
+    { 40, 41, 17, 12, 0x00b300u }
+  };
+
+  const uint32_t PoseJointColors[] = {
+    0x0000ffu, //0
+    0xff00ffu, //1
+    0xaa00ffu, //2
+    0xff0055u, //3
+    0xff00aau, //4
+    0xaaff00u, //5
+    0xffaa00u, //6
+    0x55ff00u, //7
+    0xffff00u, //8
+    0x00ff00u, //9
+    0xff5500u, //10
+    0x00aaffu, //11
+    0x00ff55u, //12
+    0x0055ffu, //13
+    0x00ffaau, //14
+    0x5500ffu, //15
+    0x00ffffu, //16
+    0xff0000u, //17
   };
 
   std::vector<PoseJointPositionCandidates> EstimateJointLocations(const Tensor& jointPositionConfidenceMap)
@@ -235,9 +259,9 @@ namespace {
         for (size_t row = 0; row < rowCount; row++)
         {
           auto boneAffinityScore = boneAffinityScores.AsPointer<float>(batch, bone, row);
-          for (size_t column = 0; column < columnCount; column++)
+          for (size_t column = 0; column < columnCount; column++, boneAffinityScore++)
           {
-            if (!starGraph.IsPair(row, column) || *boneAffinityScore++ < BoneAffinityThreshold) continue;
+            if (!starGraph.IsPair(row, column) || *boneAffinityScore < BoneAffinityThreshold) continue;
 
             connections[row] = int32_t(column);
             connections[PoseMaxBodyCount + column] = int32_t(row);
@@ -351,12 +375,30 @@ namespace {
     GraphicsDevice device{};
     DrawingController drawing{ device };
 
-    Texture2DDefinition textureDefinition{ width, height, DXGI_FORMAT_B8G8R8A8_UNORM_SRGB, Texture2DFlags::None };
+    Texture2DDefinition textureDefinition{ width, height, DXGI_FORMAT_B8G8R8A8_UNORM, Texture2DFlags::None };
     DrawingTarget2D target{ drawing, textureDefinition };
     StagingTexture2D stage{ device, textureDefinition };
 
-    auto factory = drawing.DrawFactory();
+    auto drawFactory = drawing.DrawFactory();
+    auto writeFactory = drawing.WriteFactory();
     auto context = drawing.DrawingContext();
+
+    com_ptr<IDWriteTextFormat> textFormat;
+    if constexpr (PoseVisualizationShowJointIndices)
+    {
+      check_hresult(writeFactory->CreateTextFormat(
+        L"Segoe UI",
+        nullptr,
+        DWRITE_FONT_WEIGHT_NORMAL,
+        DWRITE_FONT_STYLE_NORMAL,
+        DWRITE_FONT_STRETCH_NORMAL,
+        15,
+        L"en-US",
+        textFormat.put()
+      ));
+      textFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+      textFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+    }
 
     com_ptr<ID2D1SolidColorBrush> brush;
     check_hresult(context->CreateSolidColorBrush(D2D1::ColorF(1.f, 0.f, 0.f), brush.put()));
@@ -371,11 +413,35 @@ namespace {
         auto jointA = body[bone.JointA];
         auto jointB = body[bone.JointB];
 
-        if (isnan(jointA.x) || isnan(jointA.y) || isnan(jointB.x) || isnan(jointB.y)) continue;
+        if (bone.Color == 0u || isnan(jointA.x) || isnan(jointA.y) || isnan(jointB.x) || isnan(jointB.y)) continue;
 
+        brush->SetColor(ColorF(bone.Color));
         auto positionA = Point2F(jointA.x * width, jointA.y * height);
         auto positionB = Point2F(jointB.x * width, jointB.y * height);
-        context->DrawLine(positionA, positionB, brush.get());
+        context->DrawLine(positionA, positionB, brush.get(), 10.f);
+      }
+
+      for (auto jointId = 0; auto & joint : body)
+      {
+        if (PoseJointColors[jointId] != 0u)
+        {
+          brush->SetColor(ColorF(PoseJointColors[jointId]));
+          auto ellipse = Ellipse(Point2F(joint.x * width, joint.y * height), PoseVisualizationJointRadius, PoseVisualizationJointRadius);
+          context->FillEllipse(ellipse, brush.get());
+        }
+
+        if constexpr (PoseVisualizationShowJointIndices)
+        {
+          brush->SetColor(ColorF(1.f, 1.f, 1.f));
+
+          const auto jointIndexMargin = 20.f;
+          auto textRect = RectF(joint.x * width - jointIndexMargin, joint.y * height - jointIndexMargin, joint.x * width + jointIndexMargin, joint.y * height + jointIndexMargin);
+
+          auto text = to_wstring(jointId);
+          context->DrawTextW(text.c_str(), uint32_t(text.length()), textFormat.get(), textRect, brush.get());
+        }
+
+        jointId++;
       }
     }
 
@@ -388,12 +454,12 @@ namespace {
 
 namespace Axodox::MachineLearning
 {
-  PoseDetector::PoseDetector(OnnxEnvironment& environment, std::optional<ModelSource> source) :
+  PoseEstimator::PoseEstimator(OnnxEnvironment& environment, std::optional<ModelSource> source) :
     _environment(environment),
     _session(environment->CreateSession(source ? *source : (_environment.RootPath() / L"annotators/openpose.onnx")))
   { }
 
-  std::vector<std::vector<PoseJointPositions>> PoseDetector::EstimatePose(const Tensor & image)
+  std::vector<std::vector<PoseJointPositions>> PoseEstimator::EstimatePose(const Tensor& image)
   {
     //Bind values
     IoBinding bindings{ _session };
@@ -411,39 +477,19 @@ namespace Axodox::MachineLearning
 
     //Extract skeletons
     auto skeletons = ExtractSkeletons(jointPositionConfidenceMap, boneAffinityMap);
+
+    //auto frame = move(image.ToTextureData(ColorNormalization::LinearZeroToOne).front());
+    //Openpose op{ jointPositionConfidenceMap.Shape };
+    //op.detect(jointPositionConfidenceMap.AsPointer<float>(), boneAffinityMap.AsPointer<float>(), frame);
+
     return skeletons;
   }
 
-  Graphics::TextureData PoseDetector::DetectPose(const Tensor & image)
-  {
-    //Bind values
-    IoBinding bindings{ _session };
-    bindings.BindInput("input", image.ToHalf().ToOrtValue());
-    bindings.BindOutput("cmap", _environment->MemoryInfo());
-    bindings.BindOutput("paf", _environment->MemoryInfo());
-
-    //Run inference
-    _session.Run({}, bindings);
-
-    //Get result
-    auto outputValues = bindings.GetOutputValues();
-    auto cmap = Tensor::FromOrtValue(outputValues[0]).ToSingle();
-    auto paf = Tensor::FromOrtValue(outputValues[1]).ToSingle();
-
-    auto frame = move(image.ToTextureData(ColorNormalization::LinearZeroToOne).front());
-
-    Openpose op{ cmap.Shape };
-    op.detect(cmap.AsPointer<float>(), paf.AsPointer<float>(), frame);
-
-    return frame;
-  }
-
-  Graphics::TextureData PoseDetector::ExtractFeatures(const Graphics::TextureData& value)
+  Graphics::TextureData PoseEstimator::ExtractFeatures(const Graphics::TextureData& value)
   {
     auto inputTensor = Tensor::FromTextureData(value.Resize(224, 224), ColorNormalization::LinearZeroToOne);
 
     auto skeletons = EstimatePose(inputTensor);
     return VisualizeBodies(skeletons[0], value.Width, value.Height);
-    //auto outputImage = DetectPose(inputTensor).Resize(value.Width, value.Height);
   }
 }
