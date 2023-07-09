@@ -14,8 +14,16 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\ControlNetInferer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\DepthEstimator.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\EdgeDetector.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Munkres\CostGraph.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Munkres\CoverTable.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Munkres\MunkresSolver.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Munkres\PairGraph.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxEnvironment.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxModelStatistics.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\PoseEstimator.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Prompts\PromptAttention.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Prompts\PromptParser.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Prompts\PromptScheduler.cpp" />
@@ -36,6 +44,15 @@
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Include\Axodox.MachineLearning.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)includes.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\ControlNetInferer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\DepthEstimator.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\EdgeDetector.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\ImageFeatureExtractor.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Munkres\CostGraph.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Munkres\CoverTable.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Munkres\MunkresSolver.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Munkres\PairGraph.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\PoseEstimator.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxEnvironment.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxExtensions.h" />
@@ -58,7 +75,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Web\HuggingFaceSchema.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)Assets\custom_op_cliptok.onnx"/>
-    <None Include="$(MSBuildThisFileDirectory)Assets\ortextensions.dll"/>
+    <None Include="$(MSBuildThisFileDirectory)Assets\custom_op_cliptok.onnx" />
+    <None Include="$(MSBuildThisFileDirectory)Assets\ortextensions.dll" />
   </ItemGroup>
 </Project>

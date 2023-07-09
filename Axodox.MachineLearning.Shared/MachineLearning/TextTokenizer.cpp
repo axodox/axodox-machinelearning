@@ -21,7 +21,7 @@ namespace Axodox::MachineLearning
     _sessionOptions.SetGraphOptimizationLevel(ORT_DISABLE_ALL);
     _sessionOptions.SetExecutionMode(ExecutionMode::ORT_SEQUENTIAL);
     _sessionOptions.RegisterCustomOpsLibrary((rootPath / L"ortextensions.dll").c_str());
-    _session = { _environment.Environment(), (rootPath / L"custom_op_cliptok.onnx").c_str(), _sessionOptions};
+    _session = { _environment->Environment(), (rootPath / L"custom_op_cliptok.onnx").c_str(), _sessionOptions};
   }
 
   Tensor TextTokenizer::TokenizeText(std::string_view text)
@@ -32,7 +32,7 @@ namespace Axodox::MachineLearning
   Tensor TextTokenizer::TokenizeText(const std::vector<const char*>& texts)
   {
     //Load inputs
-    Allocator allocator{ _session, _environment.MemoryInfo() };
+    Allocator allocator{ _session, _environment->MemoryInfo() };
     
     vector<int64_t> inputShape{ int64_t(texts.size()) };
     auto inputValue = Value::CreateTensor(allocator, inputShape.data(), inputShape.size(), ONNX_TENSOR_ELEMENT_DATA_TYPE_STRING);
@@ -42,8 +42,8 @@ namespace Axodox::MachineLearning
     //Bind values
     IoBinding bindings{ _session };
     bindings.BindInput("string_input", inputValue);
-    bindings.BindOutput("input_ids", _environment.MemoryInfo());
-    bindings.BindOutput("attention_mask", _environment.MemoryInfo());
+    bindings.BindOutput("input_ids", _environment->MemoryInfo());
+    bindings.BindOutput("attention_mask", _environment->MemoryInfo());
 
     //Run inference
     _session.Run({}, bindings);

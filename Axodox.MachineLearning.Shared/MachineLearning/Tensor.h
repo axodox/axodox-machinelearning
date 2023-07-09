@@ -5,6 +5,12 @@
 
 namespace Axodox::MachineLearning
 {
+  enum class ColorNormalization
+  {
+    LinearZeroToOne,
+    LinearPlusMinusOne
+  };
+
   struct AXODOX_MACHINELEARNING_API Tensor
   {
     static const size_t shape_dimension = 4;
@@ -45,8 +51,8 @@ namespace Axodox::MachineLearning
 
     size_t Size(size_t dimension = 0) const;
 
-    static Tensor FromTextureData(const Graphics::TextureData& texture);
-    std::vector<Graphics::TextureData> ToTextureData() const;    
+    static Tensor FromTextureData(const Graphics::TextureData& texture, ColorNormalization normalization);
+    std::vector<Graphics::TextureData> ToTextureData(ColorNormalization normalization) const;
 
     const uint8_t* AsPointer(size_t x = 0, size_t y = 0, size_t z = 0, size_t w = 0) const;
     uint8_t* AsPointer(size_t x = 0, size_t y = 0, size_t z = 0, size_t w = 0);
@@ -179,18 +185,24 @@ namespace Axodox::MachineLearning
     Tensor ToHalf() const;
 
     static Tensor FromOrtValue(const Ort::Value& value);
-    Ort::Value ToOrtValue(Ort::MemoryInfo& memoryInfo) const;
+    Ort::Value ToOrtValue() const;
 
     void UpdateOrtValue(Ort::Value& value);
 
     static std::pair<TensorType, Tensor::shape_t> ToTypeAndShape(const Ort::TensorTypeAndShapeInfo& info);
 
   private:
+    static const Ort::MemoryInfo _ortMemoryInfo;
+
     static size_t GetDimensionFromIndex(size_t& x, size_t& y, size_t& z, size_t& w);
     static bool AreShapesEqual(shape_t a, shape_t b, size_t startDimension = 0);
     static size_t ElementCount(shape_t shape);
 
-    static Tensor FromTextureDataRgba8(const Graphics::TextureData& texture);
-    static Tensor FromTextureDataGray8(const Graphics::TextureData& texture);
+    static Tensor FromTextureDataRgba8(const Graphics::TextureData& texture, ColorNormalization normalization);
+    static Tensor FromTextureDataGray8(const Graphics::TextureData& texture, ColorNormalization normalization);
+
+    std::vector<Graphics::TextureData> ToTextureDataRgba8(ColorNormalization normalization) const;
+    std::vector<Graphics::TextureData> ToTextureDataGray8(ColorNormalization normalization) const;
+
   };
 }

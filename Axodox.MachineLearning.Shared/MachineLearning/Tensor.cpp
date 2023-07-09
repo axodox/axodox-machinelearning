@@ -9,6 +9,8 @@ using namespace Ort;
 
 namespace Axodox::MachineLearning
 {
+  const MemoryInfo Tensor::_ortMemoryInfo = MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeDefault);
+
   Tensor::Tensor() :
     Type(TensorType::Unknown),
     Shape({ 0, 0, 0, 0 })
@@ -224,7 +226,7 @@ namespace Axodox::MachineLearning
     return result;
   }
 
-  Tensor Tensor::FromTextureDataRgba8(const Graphics::TextureData& texture)
+  Tensor Tensor::FromTextureDataRgba8(const Graphics::TextureData& texture, ColorNormalization normalization)
   {
     Tensor result(TensorType::Single, 1, 3, texture.Width, texture.Height);
 
@@ -240,7 +242,17 @@ namespace Axodox::MachineLearning
       auto pSource = texture.Row<XMUBYTEN4>(y);
       for (uint32_t x = 0u; x < texture.Width; x++)
       {
-        XMStoreFloat4A(&color, XMVectorScale(XMLoadUByteN4(pSource++) - XMVectorReplicate(0.5f), 2.f));
+        switch (normalization)
+        {
+        case ColorNormalization::LinearPlusMinusOne:
+          XMStoreFloat4A(&color, XMVectorScale(XMLoadUByteN4(pSource++) - XMVectorReplicate(0.5f), 2.f));
+          break;
+        case ColorNormalization::LinearZeroToOne:
+          XMStoreFloat4A(&color, XMLoadUByteN4(pSource++));
+          break;
+        default:
+          throw logic_error("Normalization mode not implemented.");
+        }
 
         *rTarget++ = color.z;
         *gTarget++ = color.y;
@@ -251,7 +263,7 @@ namespace Axodox::MachineLearning
     return result;
   }
 
-  Tensor Tensor::FromTextureDataGray8(const Graphics::TextureData& texture)
+  Tensor Tensor::FromTextureDataGray8(const Graphics::TextureData& texture, ColorNormalization normalization)
   {
     Tensor result(TensorType::Single, 1, 1, texture.Width, texture.Height);
 
@@ -263,33 +275,25 @@ namespace Axodox::MachineLearning
       auto pSource = texture.Row<uint8_t>(y);
       for (uint32_t x = 0u; x < texture.Width; x++)
       {
-        *pTarget++ = *pSource++ / 255.f;
+        switch (normalization)
+        {
+        case ColorNormalization::LinearPlusMinusOne:
+          *pTarget++ = 2.f * (*pSource++ / 255.f - 0.5f);
+          break;
+        case ColorNormalization::LinearZeroToOne:
+          *pTarget++ = *pSource++ / 255.f;
+          break;
+        default:
+          throw logic_error("Normalization mode not implemented.");
+        }
       }
     }
 
     return result;
   }
 
-  Tensor Tensor::FromTextureData(const Graphics::TextureData& texture)
+  std::vector<Graphics::TextureData> Tensor::ToTextureDataRgba8(ColorNormalization normalization) const
   {
-    if (!texture) return {};
-
-    switch (texture.Format)
-    {
-    case DXGI_FORMAT_B8G8R8A8_UNORM:
-    case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB:
-      return FromTextureDataRgba8(texture);
-    case DXGI_FORMAT_R8_UNORM:
-      return FromTextureDataGray8(texture);
-    default:
-      throw logic_error("Unsupported texture format");
-    }
-  }
-
-  std::vector<Graphics::TextureData> Tensor::ToTextureData() const
-  {
-    if (Type != TensorType::Single) throw bad_cast();
-
     vector<TextureData> results;
     results.reserve(Shape[0]);
 
@@ -307,8 +311,19 @@ namespace Axodox::MachineLearning
         auto pTarget = result.Row<XMUBYTEN4>(y);
         for (uint32_t x = 0u; x < width; x++)
         {
-          auto color = XMVectorSaturate(XMVectorSet(*bSource++, *gSource++, *rSource++, 1.f) / 2.f + XMVectorReplicate(0.5f));
-          XMStoreUByteN4(pTarget++, color);
+          XMVECTOR color;
+          switch (normalization)
+          {
+          case ColorNormalization::LinearPlusMinusOne:
+            color = XMVectorSet(*bSource++, *gSource++, *rSource++, 1.f) / 2.f + XMVectorReplicate(0.5f);
+            break;
+          case ColorNormalization::LinearZeroToOne:
+            color = XMVectorSet(*bSource++, *gSource++, *rSource++, 1.f);
+            break;
+          default:
+            throw logic_error("Normalization mode not implemented.");
+          }
+          XMStoreUByteN4(pTarget++, XMVectorSaturate(color));
         }
       }
 
@@ -316,6 +331,76 @@ namespace Axodox::MachineLearning
     }
 
     return results;
+  }
+
+  std::vector<Graphics::TextureData> Tensor::ToTextureDataGray8(ColorNormalization normalization) const
+  {
+    vector<TextureData> results;
+    results.reserve(Shape[0]);
+
+    auto width = uint32_t(Shape[2]);
+    auto height = uint32_t(Shape[3]);
+    for (size_t i = 0u; i < Shape[0]; i++)
+    {
+      TextureData result{ width, height, DXGI_FORMAT_R8_UNORM };
+
+      auto pSource = AsPointer<float>(i);
+      for (uint32_t y = 0u; y < height; y++)
+      {
+        auto pTarget = result.Row<uint8_t>(y);
+        for (uint32_t x = 0u; x < width; x++)
+        {
+          float color;
+          switch (normalization)
+          {
+          case ColorNormalization::LinearPlusMinusOne:
+            color = *pSource++ / 2.f + 0.5f;
+            break;
+          case ColorNormalization::LinearZeroToOne:
+            color = *pSource++;
+            break;
+          default:
+            throw logic_error("Normalization mode not implemented.");
+          }
+          *pTarget++ = uint8_t(clamp(color, 0.f, 1.f) * 255.f);
+        }
+      }
+
+      results.push_back(move(result));
+    }
+
+    return results;
+  }
+
+  Tensor Tensor::FromTextureData(const Graphics::TextureData& texture, ColorNormalization normalization)
+  {
+    if (!texture) return {};
+
+    switch (texture.Format)
+    {
+    case DXGI_FORMAT_B8G8R8A8_UNORM:
+    case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB:
+      return FromTextureDataRgba8(texture, normalization);
+    case DXGI_FORMAT_R8_UNORM:
+      return FromTextureDataGray8(texture, normalization);
+    default:
+      throw logic_error("Unsupported texture format.");
+    }
+  }
+
+  std::vector<Graphics::TextureData> Tensor::ToTextureData(ColorNormalization normalization) const
+  {
+    if (Type != TensorType::Single) throw bad_cast();
+
+    switch (Shape[1])
+    {
+    case 1:
+      return ToTextureDataGray8(normalization);
+    case 3:
+      return ToTextureDataRgba8(normalization);
+    default:
+      throw logic_error("Unsupported channel count.");
+    }
   }
 
   const uint8_t* Tensor::AsPointer(size_t x, size_t y, size_t z, size_t w) const
@@ -422,7 +507,7 @@ namespace Axodox::MachineLearning
     return result;
   }
 
-  Ort::Value Tensor::ToOrtValue(Ort::MemoryInfo& memoryInfo) const
+  Ort::Value Tensor::ToOrtValue() const
   {
     std::vector<int64_t> shape;
     for (auto dimension : Shape)
@@ -430,7 +515,7 @@ namespace Axodox::MachineLearning
       if (dimension != 0) shape.push_back(int64_t(dimension));
     }
 
-    return Value::CreateTensor(memoryInfo, const_cast<uint8_t*>(Buffer.data()), Buffer.size(), shape.data(), shape.size(), ToTensorType(Type));
+    return Value::CreateTensor(_ortMemoryInfo, const_cast<uint8_t*>(Buffer.data()), Buffer.size(), shape.data(), shape.size(), ToTensorType(Type));
   }
 
   void Tensor::UpdateOrtValue(Ort::Value& value)

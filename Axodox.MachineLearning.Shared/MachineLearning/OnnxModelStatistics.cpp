@@ -72,7 +72,7 @@ namespace Axodox::MachineLearning
 
   void OnnxPrintStatistics(OnnxEnvironment& environment, Ort::Session& session)
   {
-    Allocator allocator{ session, environment.MemoryInfo() };
+    Allocator allocator{ session, environment->MemoryInfo() };
     printf("Graph statistics\n");
 
     auto graphName = session.GetModelMetadata().GetGraphNameAllocated(allocator);

@@ -15,10 +15,22 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Axodox.MachineLearning.Test.cpp">
+    <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="pch.cpp">
+    <ClCompile Include="FeatureExtractorTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PromptAttentionTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PromptSchedulerTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ControlNetTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StableDiffusionTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -26,5 +38,31 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)..\..\runtimes\win-x64\native\onnxruntime.dll" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="packages.config" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
   </ItemGroup>
 </Project>

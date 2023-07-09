@@ -22,6 +22,7 @@ namespace Axodox::Web
   struct AXODOX_MACHINELEARNING_API HuggingFaceModelDetails : public Json::json_object_base
   {
     static const std::set<std::string> StableDiffusionOnnxFileset;
+    static const std::set<std::string> StableDiffusionOnnxOptionals;
 
     Json::json_property<std::string> Id;
     Json::json_property<std::string> Author;

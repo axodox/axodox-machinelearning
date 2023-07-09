@@ -14,7 +14,7 @@ namespace Axodox::MachineLearning
 {
   SafetyChecker::SafetyChecker(OnnxEnvironment& environment, std::optional<ModelSource> source) :
     _environment(environment),
-    _session(environment.CreateSession(source ? *source : (_environment.RootPath() / L"safety_checker/model.onnx")))
+    _session(environment->CreateSession(source ? *source : (_environment.RootPath() / L"safety_checker/model.onnx")))
   {
     auto text = try_read_text(_environment.RootPath() / L"feature_extractor/preprocessor_config.json");
     if (!text) return;
@@ -31,9 +31,9 @@ namespace Axodox::MachineLearning
     auto imageInput = ToImageInput(texture);
 
     IoBinding bindings{ _session };
-    bindings.BindInput("clip_input", clipInput.ToHalf().ToOrtValue(_environment.MemoryInfo()));
-    bindings.BindInput("images", imageInput.ToHalf().ToOrtValue(_environment.MemoryInfo()));
-    bindings.BindOutput("has_nsfw_concepts", _environment.MemoryInfo());
+    bindings.BindInput("clip_input", clipInput.ToHalf().ToOrtValue());
+    bindings.BindInput("images", imageInput.ToHalf().ToOrtValue());
+    bindings.BindOutput("has_nsfw_concepts", _environment->MemoryInfo());
 
     _session.Run({}, bindings);
 
@@ -52,12 +52,7 @@ namespace Axodox::MachineLearning
       texture = texture.UniformResize(*_options.CropSize->Width, *_options.CropSize->Height);
     }
 
-    auto tensor = Tensor::FromTextureData(texture);
-
-    for (auto& value : tensor.AsSpan<float>())
-    {
-      value = value / 2.f + 0.5f;
-    }
+    auto tensor = Tensor::FromTextureData(texture, ColorNormalization::LinearZeroToOne);
 
     if (*_options.DoNormalize)
     {

@@ -8,7 +8,7 @@ namespace Axodox::MachineLearning
 {
   VaeDecoder::VaeDecoder(OnnxEnvironment& environment, std::optional<ModelSource> source) :
     _environment(environment),
-    _session(environment.CreateSession(source ? *source : (_environment.RootPath() / L"vae_decoder/model.onnx")))
+    _session(environment->CreateSession(source ? *source : (_environment.RootPath() / L"vae_decoder/model.onnx")))
   { }
 
   Tensor VaeDecoder::DecodeVae(const Tensor& image)
@@ -21,8 +21,8 @@ namespace Axodox::MachineLearning
     {
       //Bind values
       IoBinding bindings{ _session };
-      bindings.BindInput("latent_sample", inputValues[i].ToHalf().ToOrtValue(_environment.MemoryInfo()));
-      bindings.BindOutput("sample", _environment.MemoryInfo());
+      bindings.BindInput("latent_sample", inputValues[i].ToHalf().ToOrtValue());
+      bindings.BindOutput("sample", _environment->MemoryInfo());
 
       //Run inference
       _session.Run({}, bindings);

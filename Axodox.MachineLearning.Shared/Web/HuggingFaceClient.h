@@ -15,7 +15,7 @@ namespace Axodox::Web
 
     std::optional<HuggingFaceModelDetails> GetModel(std::string_view modelId);
 
-    bool TryDownloadModel(std::string_view modelId, const std::set<std::string>& fileset, const std::filesystem::path& targetPath, Threading::async_operation& operation);
+    bool TryDownloadModel(std::string_view modelId, const std::set<std::string>& fileset, const std::set<std::string>& optionals, const std::filesystem::path& targetPath, Threading::async_operation& operation);
 
   private:
     static const wchar_t* const _baseUri;

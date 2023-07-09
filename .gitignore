@@ -351,4 +351,6 @@ MigrationBackup/
 
 # Custom
 model/
+models/
+inputs/
 ~vs]~*

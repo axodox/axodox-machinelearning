@@ -20,28 +20,46 @@ namespace Axodox::MachineLearning
     Tensor LatentInput;
     Tensor MaskInput;
     float DenoisingStrength = 1.f;
+
+    void Validate() const;
   };
 
-  class AXODOX_MACHINELEARNING_API StableDiffusionInferer
+  struct StableDiffusionContext
   {
-    struct StableDiffusionContext
-    {
-      StableDiffusionOptions Options;
-      StableDiffusionScheduler Scheduler;
-      std::vector<std::minstd_rand> Randoms;
-    };
+    const StableDiffusionOptions* Options;
+    StableDiffusionScheduler Scheduler;
+    std::vector<std::minstd_rand> Randoms;
+  };
 
+  enum class ImageDiffusionInfererKind
+  {
+    StableDiffusion,
+    ControlNet
+  };
+
+  class AXODOX_MACHINELEARNING_API ImageDiffusionInferer
+  {
+  public:
+    virtual ~ImageDiffusionInferer() = default;
+
+    virtual ImageDiffusionInfererKind Type() const = 0;
+  };
+
+  class AXODOX_MACHINELEARNING_API StableDiffusionInferer : public ImageDiffusionInferer
+  {
   public:
     StableDiffusionInferer(OnnxEnvironment& environment, std::optional<ModelSource> source = {});
 
     Tensor RunInference(const StableDiffusionOptions& options, Threading::async_operation_source* async = nullptr);
 
-  private:
-    OnnxEnvironment& _environment;
-    Ort::Session _session;
-
     static Tensor GenerateLatentSample(StableDiffusionContext& context);
     static Tensor PrepareLatentSample(StableDiffusionContext& context, const Tensor& latents, float initialSigma);
     static Tensor BlendLatentSamples(const Tensor& a, const Tensor& b, const Tensor& weights);
+
+    virtual ImageDiffusionInfererKind Type() const override;
+
+  private:
+    OnnxEnvironment& _environment;
+    Ort::Session _session;
   };
 }
