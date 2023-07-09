@@ -24,8 +24,7 @@ namespace {
   const size_t PoseMinJointCount = 2;
   const float PoseConfidenceMapThreshold = 0.1f;
   const float BoneAffinityThreshold = 0.1f;
-  const int PoseJointSearchRadius = 5;
-  const int PoseJointRefineRadius = 2;
+  const int PoseJointSearchRadius = 2;
   const int PoseBoneAffinityIntegralSamples = 7;
   const bool PoseVisualizationShowJointIndices = false;
   const float PoseVisualizationJointRadius = 5.f;
@@ -137,10 +136,10 @@ namespace {
             auto weightSum = 0.f;
             XMFLOAT2 refinedLocation{ 0.f, 0.f };
 
-            xMin = max(0, x - PoseJointRefineRadius);
-            yMin = max(0, y - PoseJointRefineRadius);
-            xMax = min(width, x + PoseJointRefineRadius + 1);
-            yMax = min(height, y + PoseJointRefineRadius + 1);
+            xMin = max(0, x - PoseJointSearchRadius);
+            yMin = max(0, y - PoseJointSearchRadius);
+            xMax = min(width, x + PoseJointSearchRadius + 1);
+            yMax = min(height, y + PoseJointSearchRadius + 1);
 
             for (auto yWindow = yMin; isPeak && yWindow < yMax; yWindow++)
             {
