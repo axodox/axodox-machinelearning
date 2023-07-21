@@ -10,6 +10,38 @@ This repository contains a **fully C++ implementation of Stable Diffusion**-base
   </tr>
 </table>
 
+## ControlNet support
+
+The library also supports ControlNet, this allows using input images to guide the image generation process, for example:
+
+![OpenPose based ControlNet](Examples/controlnet.png)
+In this first, example we use an OpenPose estimator and OpenPose conditioned ControlNet, we can guide the img2img generation by specifying the pose, so it produces better results.
+
+![HED based ControlNet](Examples/controlnet2.png)
+Using HED edge detection and edge conditioned ControlNet, we change the style of the image to resemble a comic book illustration, but keep the layout intact.
+
+![Depth based ControlNet](Examples/controlnet3.png)
+Using a depth estimator and depth map conditioned ControlNet, we generate a different character, but keep the original setup.
+
+## Feature extractors
+
+The library also provides GPU accelerated implementations of the following feature extractors (showcased above):
+- Pose estimation: extracts the skeleton of a human from an image using [OpenPose](https://arxiv.org/abs/1812.08008)
+- Depth estimation: estimates the depth of each pixel from a single image using [MiDAS](https://arxiv.org/abs/1907.01341v3)
+- Edge Detection: extracts edges from an image, using [Holistically-Nested Edge Detection](https://arxiv.org/abs/1504.06375)
+
+## Reference models
+
+The AI models required for the library are stored in the ONNX format. All of the models have been run through Microsoft Olive and are optimized for DirectML. I have tested the library with the following models:
+
+- [Stable Diffusion 1.5 with ControlNet support](https://huggingface.co/axodoxian/stable_diffusion_onnx)
+- [Realistic Vision 1.4 with ControlNet support](https://huggingface.co/axodoxian/realistic_vision_onnx)
+- [ControlNet with feature extractors](https://huggingface.co/axodoxian/controlnet_onnx)
+
+You may bring your own models, by converting them using [this guide](https://github.com/axodox/unpaint/wiki/Model-import).
+
+> Please make sure to check the original license of the models if you plan to integrate them in your products.
+
 ## Technical background
 
 The implementation uses the [ONNX](https://onnx.ai/) to store the mathematical models involved in the image generation. These ONNX models are then executed using the [ONNX runtime](https://github.com/microsoft/onnxruntime), which support a variety of platforms (Windows, Linux, MacOS, Android, iOS, WebAssembly etc.), and execution providers (such as NVIDIA CUDA / TensorRT; AMD ROCm, Apple CoreML, Qualcomm QNN, Microsoft DirectML and many more). 
