@@ -30,6 +30,13 @@ The library also provides GPU accelerated implementations of the following featu
 - Depth estimation: estimates the depth of each pixel from a single image using [MiDAS](https://arxiv.org/abs/1907.01341v3)
 - Edge Detection: extracts edges from an image, using [Holistically-Nested Edge Detection](https://arxiv.org/abs/1504.06375)
 
+## Code examples
+
+Here are some simple code examples:
+- [StableDiffusion](https://github.com/axodox/axodox-machinelearning/blob/main/Axodox.MachineLearning.Test/StableDiffusionTest.cpp)
+- [ControlNet](https://github.com/axodox/axodox-machinelearning/blob/main/Axodox.MachineLearning.Test/ControlNetTest.cpp)
+- [Feature extraction](https://github.com/axodox/axodox-machinelearning/blob/main/Axodox.MachineLearning.Test/FeatureExtractorTest.cpp)
+
 ## Reference models
 
 The AI models required for the library are stored in the ONNX format. All of the models have been run through Microsoft Olive and are optimized for DirectML. I have tested the library with the following models:
