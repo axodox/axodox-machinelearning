@@ -228,7 +228,7 @@ namespace Axodox::MachineLearning
 
   Tensor Tensor::FromTextureDataRgba8(const Graphics::TextureData& texture, ColorNormalization normalization)
   {
-    Tensor result(TensorType::Single, 1, 3, texture.Width, texture.Height);
+    Tensor result(TensorType::Single, 1, 3, texture.Height, texture.Width);
 
     if (texture.Format != DXGI_FORMAT_B8G8R8A8_UNORM && texture.Format != DXGI_FORMAT_B8G8R8A8_UNORM_SRGB) throw logic_error("Unsupported texture format.");
 
@@ -265,7 +265,7 @@ namespace Axodox::MachineLearning
 
   Tensor Tensor::FromTextureDataGray8(const Graphics::TextureData& texture, ColorNormalization normalization)
   {
-    Tensor result(TensorType::Single, 1, 1, texture.Width, texture.Height);
+    Tensor result(TensorType::Single, 1, 1, texture.Height, texture.Width);
 
     if (texture.Format != DXGI_FORMAT_R8_UNORM) throw logic_error("Unsupported texture format.");
 
@@ -297,8 +297,8 @@ namespace Axodox::MachineLearning
     vector<TextureData> results;
     results.reserve(Shape[0]);
 
-    auto width = uint32_t(Shape[2]);
-    auto height = uint32_t(Shape[3]);
+    auto width = uint32_t(Shape[3]);
+    auto height = uint32_t(Shape[2]);
     for (size_t i = 0u; i < Shape[0]; i++)
     {
       TextureData result{ width, height, DXGI_FORMAT_B8G8R8A8_UNORM_SRGB };
@@ -338,8 +338,8 @@ namespace Axodox::MachineLearning
     vector<TextureData> results;
     results.reserve(Shape[0]);
 
-    auto width = uint32_t(Shape[2]);
-    auto height = uint32_t(Shape[3]);
+    auto width = uint32_t(Shape[3]);
+    auto height = uint32_t(Shape[2]);
     for (size_t i = 0u; i < Shape[0]; i++)
     {
       TextureData result{ width, height, DXGI_FORMAT_R8_UNORM };
