@@ -27,6 +27,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Prompts\PromptAttention.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Prompts\PromptParser.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Prompts\PromptScheduler.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Prompts\PromptSplitter.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\SafetyChecker.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\SafetyCheckerOptions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\StableDiffusionScheduler.cpp" />
@@ -53,6 +54,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Munkres\MunkresSolver.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Munkres\PairGraph.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\PoseEstimator.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Prompts\PromptSplitter.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxEnvironment.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxExtensions.h" />
