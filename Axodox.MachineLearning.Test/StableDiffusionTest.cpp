@@ -25,7 +25,8 @@ namespace Axodox::MachineLearning::Test
         auto positiveEmbedding = textEmbedder.ProcessPrompt("a clean bedroom");
         auto negativeEmbedding = textEmbedder.ProcessPrompt("blurry, render");
 
-        options.TextEmbeddings = negativeEmbedding.Concat(positiveEmbedding);
+        options.TextEmbeddings.Tensor = negativeEmbedding.Concat(positiveEmbedding);
+        options.TextEmbeddings.Weights = { -1.f, 1.f };
       }
 
       //Run StableDiffusion

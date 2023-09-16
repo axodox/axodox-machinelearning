@@ -44,9 +44,10 @@ namespace Axodox::MachineLearning
     IoBinding binding{ _session };
     binding.BindOutput("out_sample", _environment->MemoryInfo());
 
-    if (holds_alternative<Tensor>(options.TextEmbeddings))
+    auto embeddingCount = options.TextEmbeddings.Weights.size();
+    if (holds_alternative<Tensor>(options.TextEmbeddings.Tensor))
     {
-      binding.BindInput("encoder_hidden_states", get<Tensor>(options.TextEmbeddings).ToHalf().Duplicate(options.BatchSize).ToOrtValue());
+      binding.BindInput("encoder_hidden_states", get<Tensor>(options.TextEmbeddings.Tensor).ToHalf().Duplicate(options.BatchSize).ToOrtValue());
     }
 
     //Run iteration
@@ -61,9 +62,9 @@ namespace Axodox::MachineLearning
       }
 
       //Update embeddings
-      if (holds_alternative<ScheduledTensor>(options.TextEmbeddings))
+      if (holds_alternative<ScheduledTensor>(options.TextEmbeddings.Tensor))
       {
-        auto embedding = get<ScheduledTensor>(options.TextEmbeddings)[i].get();
+        auto embedding = get<ScheduledTensor>(options.TextEmbeddings.Tensor)[i].get();
         if (currentEmbedding != embedding)
         {
           currentEmbedding = embedding;
@@ -72,7 +73,7 @@ namespace Axodox::MachineLearning
       }
 
       //Update sample
-      auto scaledSample = latentSample.Duplicate().Swizzle(options.BatchSize) / sqrt(steps.Sigmas[i] * steps.Sigmas[i] + 1);
+      auto scaledSample = latentSample.Duplicate(embeddingCount).Swizzle(options.BatchSize) / sqrt(steps.Sigmas[i] * steps.Sigmas[i] + 1);
       binding.BindInput("sample", scaledSample.ToHalf().ToOrtValue());
 
       //Update timestep
@@ -85,13 +86,24 @@ namespace Axodox::MachineLearning
       auto outputs = binding.GetOutputValues();
       auto output = Tensor::FromOrtValue(outputs[0]).ToSingle();
 
-      auto outputComponents = output.Swizzle().Split();
+      auto outputComponents = output.Swizzle(embeddingCount).Split(embeddingCount);
 
       //Calculate guidance
-      auto& blankNoise = outputComponents[0];
-      auto& textNoise = outputComponents[1];
-      auto guidedNoise = blankNoise.BinaryOperation<float>(textNoise, [guidanceScale = options.GuidanceScale](float a, float b)
-        { return a + guidanceScale * (b - a); });
+      Tensor guidedNoise;
+      for (auto embeddingIndex = 0; embeddingIndex < embeddingCount; embeddingIndex++)
+      {
+        auto componentWeight = options.TextEmbeddings.Weights[embeddingIndex];
+        auto finalWeight = componentWeight * (componentWeight > 0.f ? options.GuidanceScale : options.GuidanceScale - 1.f);
+        
+        if (embeddingIndex == 0)
+        {
+          guidedNoise = outputComponents[embeddingIndex] * finalWeight;
+        }
+        else
+        {
+          guidedNoise.UnaryOperation<float>(outputComponents[embeddingIndex], [=](float a, float b) { return a + b * finalWeight; });
+        }
+      }
 
       //Refine latent image
       latentSample = steps.ApplyStep(latentSample, guidedNoise, derivatives, context.Randoms, i);
@@ -168,6 +180,9 @@ namespace Axodox::MachineLearning
   {
     if (MaskInput && !LatentInput) throw logic_error("Mask input cannot be set without latent input!");
     if (MaskInput && (MaskInput.Shape[2] != LatentInput.Shape[2] || MaskInput.Shape[3] != LatentInput.Shape[3])) throw logic_error("Mask and latent inputs must have a matching width and height.");
-    if (holds_alternative<ScheduledTensor>(TextEmbeddings) && get<ScheduledTensor>(TextEmbeddings).size() != StepCount) throw logic_error("Scheduled text embedding size must match sample count.");
+    if (holds_alternative<ScheduledTensor>(TextEmbeddings.Tensor) && get<ScheduledTensor>(TextEmbeddings.Tensor).size() != StepCount) throw logic_error("Scheduled text embedding size must match sample count.");
+
+    auto embeddingDimension = (holds_alternative<Tensor>(TextEmbeddings.Tensor) ? get<Tensor>(TextEmbeddings.Tensor) : *get<ScheduledTensor>(TextEmbeddings.Tensor)[0]).Shape[0];
+    if (TextEmbeddings.Weights.size() != embeddingDimension) throw logic_error("Scheduled text embedding weight count does not match the first dimension of the text embedding tensor.");
   }
 }

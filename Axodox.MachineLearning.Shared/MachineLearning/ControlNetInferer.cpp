@@ -44,7 +44,7 @@ namespace Axodox::MachineLearning
     //Create initial sample
     auto latentSample = options.LatentInput ? StableDiffusionInferer::PrepareLatentSample(context, options.LatentInput, steps.Sigmas[initialStep]) : StableDiffusionInferer::GenerateLatentSample(context);
 
-    //Bind constant inputs / outputs  
+    //Bind constant inputs / outputs 
     IoBinding controlnetBinding{ _controlnetSession };
     for (auto i = 0; i < 12; i++)
     {
@@ -57,9 +57,10 @@ namespace Axodox::MachineLearning
     IoBinding unetBinding{ _unetSession };
     unetBinding.BindOutput("out_sample", _environment->MemoryInfo());
 
-    if (holds_alternative<Tensor>(options.TextEmbeddings))
+    auto embeddingCount = options.TextEmbeddings.Weights.size();
+    if (holds_alternative<Tensor>(options.TextEmbeddings.Tensor))
     {
-      auto encoderHiddenStates = get<Tensor>(options.TextEmbeddings).ToHalf().Duplicate(options.BatchSize);
+      auto encoderHiddenStates = get<Tensor>(options.TextEmbeddings.Tensor).ToHalf().Duplicate(options.BatchSize);
       controlnetBinding.BindInput("encoder_hidden_states", encoderHiddenStates.ToOrtValue());
       unetBinding.BindInput("encoder_hidden_states", encoderHiddenStates.ToOrtValue());
     }
@@ -76,9 +77,9 @@ namespace Axodox::MachineLearning
       }
 
       //Update embeddings
-      if (holds_alternative<ScheduledTensor>(options.TextEmbeddings))
+      if (holds_alternative<ScheduledTensor>(options.TextEmbeddings.Tensor))
       {
-        auto embedding = get<ScheduledTensor>(options.TextEmbeddings)[i].get();
+        auto embedding = get<ScheduledTensor>(options.TextEmbeddings.Tensor)[i].get();
         if (currentEmbedding != embedding)
         {
           auto encoderHiddenStates = embedding->ToHalf().Duplicate(options.BatchSize);
@@ -91,7 +92,7 @@ namespace Axodox::MachineLearning
 
       //Update sample
       {
-        auto scaledSample = (latentSample.Duplicate().Swizzle(options.BatchSize) / sqrt(steps.Sigmas[i] * steps.Sigmas[i] + 1)).ToHalf();
+        auto scaledSample = (latentSample.Duplicate(embeddingCount).Swizzle(options.BatchSize) / sqrt(steps.Sigmas[i] * steps.Sigmas[i] + 1)).ToHalf();
         controlnetBinding.BindInput("sample", scaledSample.ToOrtValue());
         unetBinding.BindInput("sample", scaledSample.ToOrtValue());
       }
@@ -123,13 +124,24 @@ namespace Axodox::MachineLearning
       auto outputs = unetBinding.GetOutputValues();
       auto output = Tensor::FromOrtValue(outputs[0]).ToSingle();
 
-      auto outputComponents = output.Swizzle().Split();
+      auto outputComponents = output.Swizzle(embeddingCount).Split(embeddingCount);
 
       //Calculate guidance
-      auto& blankNoise = outputComponents[0];
-      auto& textNoise = outputComponents[1];
-      auto guidedNoise = blankNoise.BinaryOperation<float>(textNoise, [guidanceScale = options.GuidanceScale](float a, float b)
-        { return a + guidanceScale * (b - a); });
+      Tensor guidedNoise;
+      for (auto embeddingIndex = 0; embeddingIndex < embeddingCount; embeddingIndex++)
+      {
+        auto componentWeight = options.TextEmbeddings.Weights[embeddingIndex];
+        auto finalWeight = componentWeight * (componentWeight > 0.f ? options.GuidanceScale : options.GuidanceScale - 1.f);
+
+        if (embeddingIndex == 0)
+        {
+          guidedNoise = outputComponents[embeddingIndex] * finalWeight;
+        }
+        else
+        {
+          guidedNoise.UnaryOperation<float>(outputComponents[embeddingIndex], [=](float a, float b) { return a + b * finalWeight; });
+        }
+      }
 
       //Refine latent image
       latentSample = steps.ApplyStep(latentSample, guidedNoise, derivatives, context.Randoms, i);

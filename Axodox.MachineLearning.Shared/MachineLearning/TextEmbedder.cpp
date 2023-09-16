@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "TextEmbedder.h"
+#include "Prompts/PromptSplitter.h"
 #include "Prompts/PromptScheduler.h"
 #include "Prompts/PromptParser.h"
 
@@ -16,17 +17,19 @@ namespace Axodox::MachineLearning
 
   int32_t TextEmbedder::ValidatePrompt(std::string_view text)
   {
-
     int32_t availableTokenCount = int32_t(TextTokenizer::MaxTokenCount);
     try
     {
-      auto frames = ::SchedulePrompt(text);
-
-      for (auto& frame : frames)
+      for (auto& fragment : SplitPrompt(text))
       {
-        auto tokenizedPrompt = TokenizePrompt(frame.Text);
-        if (availableTokenCount > tokenizedPrompt.AvailableTokenCount) availableTokenCount = tokenizedPrompt.AvailableTokenCount;
-      }
+        auto frames = ::SchedulePrompt(fragment.Prompt);
+
+        for (auto& frame : frames)
+        {
+          auto tokenizedPrompt = TokenizePrompt(frame.Text);
+          if (availableTokenCount > tokenizedPrompt.AvailableTokenCount) availableTokenCount = tokenizedPrompt.AvailableTokenCount;
+        }
+      }      
     }
     catch (...)
     {
@@ -36,22 +39,54 @@ namespace Axodox::MachineLearning
     return availableTokenCount;
   }
 
-  std::vector<std::shared_ptr<Tensor>> TextEmbedder::SchedulePrompt(std::string_view text, uint32_t stepCount)
+  std::vector<ScheduledPrompt> TextEmbedder::SchedulePrompt(std::string_view text, uint32_t stepCount)
   {
-    auto prompts = ::SchedulePrompt(text, stepCount);
-    
-    unordered_map<string, shared_ptr<Tensor>> embeddingsByPrompt;
-    vector<shared_ptr<Tensor>> embeddings;
-    embeddings.reserve(stepCount);
-    for (auto& prompt : prompts)
+    //Prepare fragments
+    auto fragments = SplitPrompt(text);
+    vector<vector<string>> scheduledFragments;
+    scheduledFragments.reserve(fragments.size());
+
+    auto totalWeight = 0.f;
+    for (auto& fragment : fragments)
     {
-      auto& embedding = embeddingsByPrompt[prompt];
-      if (!embedding)
+      totalWeight += fragment.Weight;
+      scheduledFragments.push_back(::SchedulePrompt(fragment.Prompt, stepCount));
+    }
+
+    //Create embeddings
+    vector<ScheduledPrompt> embeddings;
+    embeddings.reserve(stepCount);
+
+    unordered_map<string, ScheduledPrompt> embeddingsByPrompt;
+    for (auto i = 0u; i < stepCount; i++)
+    {
+      string key;
+      for (auto j = 0u; j < fragments.size(); j++)
       {
-        embedding = make_shared<Tensor>(ProcessPrompt(prompt));
+        key += ";" + scheduledFragments[j][i];
       }
 
-      embeddings.push_back(embedding);
+      auto& embedding = embeddingsByPrompt[key];
+      if (!embedding.Tensor)
+      {
+        for (auto j = 0u; j < fragments.size(); j++)
+        {
+          auto partialEmbedding = make_shared<Tensor>(ProcessPrompt(scheduledFragments[j][i]));
+
+          embedding.Weights.push_back(fragments[j].Weight / totalWeight);
+
+          if (j == 0)
+          {
+            embedding.Tensor = move(partialEmbedding);
+          }
+          else
+          {
+            *embedding.Tensor = embedding.Tensor->Concat(*partialEmbedding);
+          }
+        }
+      }
+
+      embeddings.push_back(move(embedding));
     }
 
     return embeddings;

@@ -12,6 +12,12 @@ namespace Axodox::MachineLearning
     std::string Text;
     float Attention;
   };
+
+  struct AXODOX_MACHINELEARNING_API ScheduledPrompt
+  {
+    std::shared_ptr<Tensor> Tensor;
+    std::vector<float> Weights;
+  };
   
   class AXODOX_MACHINELEARNING_API TextEmbedder
   {
@@ -27,7 +33,7 @@ namespace Axodox::MachineLearning
 
     int32_t ValidatePrompt(std::string_view text);
 
-    std::vector<std::shared_ptr<Tensor>> SchedulePrompt(std::string_view text, uint32_t stepCount);
+    std::vector<ScheduledPrompt> SchedulePrompt(std::string_view text, uint32_t stepCount);
 
     Tensor ProcessPrompt(std::string_view text);
 
