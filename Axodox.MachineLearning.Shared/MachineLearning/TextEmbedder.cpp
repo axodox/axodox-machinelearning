@@ -71,7 +71,7 @@ namespace Axodox::MachineLearning
       {
         for (auto j = 0u; j < fragments.size(); j++)
         {
-          auto partialEmbedding = make_shared<Tensor>(ProcessPrompt(scheduledFragments[j][i]));
+          auto partialEmbedding = make_shared<EncodedText>(ProcessPrompt(scheduledFragments[j][i]));
 
           embedding.Weights.push_back(fragments[j].Weight / totalWeight);
 
@@ -92,11 +92,11 @@ namespace Axodox::MachineLearning
     return embeddings;
   }
 
-  Tensor TextEmbedder::ProcessPrompt(std::string_view text)
+  EncodedText TextEmbedder::ProcessPrompt(std::string_view text)
   {
     auto tokenizedPrompt = TokenizePrompt(text);
     auto encodedText = _textEncoder.EncodeText(tokenizedPrompt.TokenizedText);
-    ApplyAttention(encodedText, tokenizedPrompt.AttentionMask);
+    ApplyAttention(encodedText.LastHiddenState, tokenizedPrompt.AttentionMask);
 
     return encodedText;
   }

@@ -13,9 +13,6 @@ namespace Axodox::MachineLearning
 
   struct AXODOX_MACHINELEARNING_API Tensor
   {
-    static const size_t TensorDimension = TensorInfo::TensorDimension;
-    typedef TensorInfo::TensorShape TensorShape;
-
     TensorType Type;
     TensorShape Shape;
     std::vector<uint8_t, Collections::aligned_allocator<uint8_t>> Buffer;
@@ -181,8 +178,9 @@ namespace Axodox::MachineLearning
     bool operator==(const Tensor& other) const;
     bool operator!=(const Tensor& other) const;
 
-    Tensor ToSingle() const;
-    Tensor ToHalf() const;
+    Tensor ToSingle(bool isEnabled = true) const;
+    Tensor ToHalf(bool isEnabled = true) const;
+    Tensor ToInt64(bool isEnabled = true) const;
 
     static Tensor FromOrtValue(const Ort::Value& value);
     Ort::Value ToOrtValue() const;

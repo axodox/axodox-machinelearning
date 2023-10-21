@@ -3,11 +3,11 @@
 
 namespace Axodox::MachineLearning
 {
+  static const size_t TensorDimension = 4;
+  typedef std::array<size_t, TensorDimension> TensorShape;
+
   struct AXODOX_MACHINELEARNING_API TensorInfo
   {
-    static const size_t TensorDimension = 4;
-    typedef std::array<size_t, TensorDimension> TensorShape;
-
     TensorType Type;
     TensorShape Shape;
 

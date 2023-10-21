@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "VaeDecoder.h"
+#include "OnnxModelMetadata.h"
 
 using namespace Ort;
 using namespace std;
@@ -9,7 +10,10 @@ namespace Axodox::MachineLearning
   VaeDecoder::VaeDecoder(OnnxEnvironment& environment, std::optional<ModelSource> source) :
     _environment(environment),
     _session(environment->CreateSession(source ? *source : (_environment.RootPath() / L"vae_decoder/model.onnx")))
-  { }
+  { 
+    auto metadata = OnnxModelMetadata::Create(_environment, _session);
+    _isUsingFloat16 = metadata.Inputs["latent_sample"].Type == TensorType::Half;
+  }
 
   Tensor VaeDecoder::DecodeVae(const Tensor& image)
   {
@@ -21,7 +25,7 @@ namespace Axodox::MachineLearning
     {
       //Bind values
       IoBinding bindings{ _session };
-      bindings.BindInput("latent_sample", inputValues[i].ToHalf().ToOrtValue());
+      bindings.BindInput("latent_sample", inputValues[i].ToHalf(_isUsingFloat16).ToOrtValue());
       bindings.BindOutput("sample", _environment->MemoryInfo());
 
       //Run inference

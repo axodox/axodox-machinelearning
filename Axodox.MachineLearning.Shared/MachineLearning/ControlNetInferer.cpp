@@ -58,15 +58,15 @@ namespace Axodox::MachineLearning
     unetBinding.BindOutput("out_sample", _environment->MemoryInfo());
 
     auto embeddingCount = options.TextEmbeddings.Weights.size();
-    if (holds_alternative<Tensor>(options.TextEmbeddings.Tensor))
+    if (holds_alternative<EncodedText>(options.TextEmbeddings.Tensor))
     {
-      auto encoderHiddenStates = get<Tensor>(options.TextEmbeddings.Tensor).ToHalf().Duplicate(options.BatchSize);
+      auto encoderHiddenStates = get<EncodedText>(options.TextEmbeddings.Tensor).LastHiddenState.ToHalf().Duplicate(options.BatchSize);
       controlnetBinding.BindInput("encoder_hidden_states", encoderHiddenStates.ToOrtValue());
       unetBinding.BindInput("encoder_hidden_states", encoderHiddenStates.ToOrtValue());
     }
 
     //Run iteration
-    const Tensor* currentEmbedding = nullptr;
+    const EncodedText* currentEmbedding = nullptr;
     for (size_t i = initialStep; i < steps.Timesteps.size(); i++)
     {
       //Update status
@@ -82,7 +82,7 @@ namespace Axodox::MachineLearning
         auto embedding = get<ScheduledTensor>(options.TextEmbeddings.Tensor)[i].get();
         if (currentEmbedding != embedding)
         {
-          auto encoderHiddenStates = embedding->ToHalf().Duplicate(options.BatchSize);
+          auto encoderHiddenStates = embedding->LastHiddenState.ToHalf().Duplicate(options.BatchSize);
           controlnetBinding.BindInput("encoder_hidden_states", encoderHiddenStates.ToOrtValue());
           unetBinding.BindInput("encoder_hidden_states", encoderHiddenStates.ToOrtValue());
 

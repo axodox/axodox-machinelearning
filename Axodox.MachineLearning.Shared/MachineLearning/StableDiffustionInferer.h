@@ -1,16 +1,16 @@
 #pragma once
-#include "Tensor.h"
+#include "TextEncoder.h"
 #include "OnnxEnvironment.h"
 #include "StableDiffusionScheduler.h"
 #include "Threading/AsyncOperation.h"
 
 namespace Axodox::MachineLearning
 {
-  typedef std::vector<std::shared_ptr<Tensor>> ScheduledTensor;
+  typedef std::vector<std::shared_ptr<EncodedText>> ScheduledTensor;
 
   struct TextEmbedding
   {
-    std::variant<Tensor, ScheduledTensor> Tensor;
+    std::variant<EncodedText, ScheduledTensor> Tensor;
     std::vector<float> Weights;
   };
 
@@ -67,5 +67,10 @@ namespace Axodox::MachineLearning
   private:
     OnnxEnvironment& _environment;
     Ort::Session _session;
+    bool _hasTextEmbeds;
+    bool _hasTimeIds;
+    bool _isUsingFloat16;
+
+    Tensor GetTimeIds() const;
   };
 }

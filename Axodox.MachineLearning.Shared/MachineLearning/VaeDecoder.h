@@ -14,5 +14,6 @@ namespace Axodox::MachineLearning
   private:
     OnnxEnvironment& _environment;
     Ort::Session _session;
+    bool _isUsingFloat16;
   };
 }

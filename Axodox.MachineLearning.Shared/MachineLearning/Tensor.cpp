@@ -150,8 +150,9 @@ namespace Axodox::MachineLearning
     return !(*this == other);
   }
 
-  Tensor Tensor::ToSingle() const
+  Tensor Tensor::ToSingle(bool isEnabled) const
   {
+    if (!isEnabled || Type == TensorType::Single) return *this;
     if (Type != TensorType::Half) throw bad_cast();
 
     auto size = Size();
@@ -162,14 +163,32 @@ namespace Axodox::MachineLearning
     return result;
   }
 
-  Tensor Tensor::ToHalf() const
+  Tensor Tensor::ToHalf(bool isEnabled) const
   {
+    if (!isEnabled || Type == TensorType::Half) return *this;
     if (Type != TensorType::Single) throw bad_cast();
 
     auto size = Size();
 
     Tensor result{ TensorType::Half, Shape };
     XMConvertFloatToHalfStream(reinterpret_cast<HALF*>(result.Buffer.data()), 2, reinterpret_cast<const float*>(Buffer.data()), 4, size);
+
+    return result;
+  }
+
+  Tensor Tensor::ToInt64(bool isEnabled) const
+  {
+    if (!isEnabled || Type == TensorType::Int64) return *this;
+    if (Type != TensorType::Int32) throw bad_cast();
+
+    auto size = Size();
+
+    Tensor result{ TensorType::Int64, Shape };
+    auto pResult = result.AsPointer<int64_t>();
+    for (auto value : AsSpan<int32_t>())
+    {
+      *pResult++ = value;
+    }    
 
     return result;
   }
