@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "OnnxModelStatistics.h"
+#include "Infrastructure/Logger.h"
 
+using namespace Axodox::Infrastructure;
 using namespace Ort;
 using namespace std;
 
@@ -70,46 +72,50 @@ namespace Axodox::MachineLearning
     return stream.str();
   }
 
+  void OnnxPrintPropertyInfos(Session& session, Allocator& allocator,
+    size_t(detail::ConstSessionImpl<OrtSession>::* getCount)() const,
+    AllocatedStringPtr(detail::ConstSessionImpl<OrtSession>::* getNameAllocated)(size_t, OrtAllocator*) const,
+    TypeInfo(detail::ConstSessionImpl<OrtSession>::* getTypeInfo)(size_t) const)
+  {
+    Infrastructure::logger logger{ "OnnxStatistics" };
+
+    auto count = (session.*getCount)();
+    for (size_t i = 0; i < count; i++)
+    {
+      auto name = (session.*getNameAllocated)(i, allocator);
+      auto typeAndShapeInfo = (session.*getTypeInfo)(i).GetTensorTypeAndShapeInfo();
+      auto type = OnnxTensorTypeToString(typeAndShapeInfo.GetElementType());
+
+      vector<const char*> dimensionNames;
+      dimensionNames.resize(typeAndShapeInfo.GetDimensionsCount());
+      typeAndShapeInfo.GetSymbolicDimensions(dimensionNames.data(), dimensionNames.size());
+
+      auto shape = OnnxTensorShapeToString(typeAndShapeInfo.GetShape(), dimensionNames);
+      logger.log(log_severity::information, "    {}: {} ({})", name.get(), type.data(), shape.c_str());
+    }
+  }
+
   void OnnxPrintStatistics(OnnxEnvironment& environment, Ort::Session& session)
   {
+    Infrastructure::logger logger{ "OnnxStatistics" };
+
     Allocator allocator{ session, environment->MemoryInfo() };
-    printf("Graph statistics\n");
+    logger.log(log_severity::information, "Graph statistics");
 
+    //Name
     auto graphName = session.GetModelMetadata().GetGraphNameAllocated(allocator);
-    printf("  Name: %s\n", graphName.get());
+    logger.log(log_severity::information, "  Name: {}", graphName.get());
 
-    auto inputCount = session.GetInputCount();
-    printf("  Inputs: %zd\n", inputCount);
+    //Initializers
+    logger.log(log_severity::information, "  Initializers:");
+    OnnxPrintPropertyInfos(session, allocator, &Session::GetOverridableInitializerCount, &Session::GetOverridableInitializerNameAllocated, &Session::GetOverridableInitializerTypeInfo);
 
-    for (size_t i = 0; i < inputCount; i++)
-    {
-      auto inputName = session.GetInputNameAllocated(i, allocator);
-      auto typeAndShapeInfo = session.GetInputTypeInfo(i).GetTensorTypeAndShapeInfo();
-      auto inputType = OnnxTensorTypeToString(typeAndShapeInfo.GetElementType());
+    //Inputs
+    logger.log(log_severity::information, "  Inputs:");
+    OnnxPrintPropertyInfos(session, allocator, &Session::GetInputCount, &Session::GetInputNameAllocated, &Session::GetInputTypeInfo);
 
-      vector<const char*> inputDimensionNames;
-      inputDimensionNames.resize(typeAndShapeInfo.GetDimensionsCount());
-      typeAndShapeInfo.GetSymbolicDimensions(inputDimensionNames.data(), inputDimensionNames.size());
-
-      auto inputShape = OnnxTensorShapeToString(typeAndShapeInfo.GetShape(), inputDimensionNames);            
-      printf("    %s: %s {%s}\n", inputName.get(), inputType.data(), inputShape.c_str());
-    }
-
-    auto outputCount = session.GetOutputCount();
-    printf("  Outputs: %zd\n", outputCount);
-
-    for (size_t i = 0; i < outputCount; i++)
-    {
-      auto outputName = session.GetOutputNameAllocated(i, allocator);
-      auto typeAndShapeInfo = session.GetOutputTypeInfo(i).GetTensorTypeAndShapeInfo();
-      auto outputType = OnnxTensorTypeToString(typeAndShapeInfo.GetElementType());
-
-      vector<const char*> outputDimensionNames;
-      outputDimensionNames.resize(typeAndShapeInfo.GetDimensionsCount());
-      typeAndShapeInfo.GetSymbolicDimensions(outputDimensionNames.data(), outputDimensionNames.size());
-
-      auto outputShape = OnnxTensorShapeToString(typeAndShapeInfo.GetShape(), outputDimensionNames);
-      printf("    %s: %s {%s}\n", outputName.get(), outputType.data(), outputShape.c_str());
-    }
+    //Outputs
+    logger.log(log_severity::information, "  Outputs:");
+    OnnxPrintPropertyInfos(session, allocator, &Session::GetOutputCount, &Session::GetOutputNameAllocated, &Session::GetOutputTypeInfo);
   }
 }
