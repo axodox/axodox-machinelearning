@@ -8,7 +8,7 @@ using namespace std;
 
 namespace Axodox::MachineLearning
 {
-  string_view OnnxTensorTypeToString(ONNXTensorElementDataType type)
+  string_view TensorInfoToString(ONNXTensorElementDataType type)
   {
     switch (type)
     {
@@ -84,7 +84,7 @@ namespace Axodox::MachineLearning
     {
       auto name = (session.*getNameAllocated)(i, allocator);
       auto typeAndShapeInfo = (session.*getTypeInfo)(i).GetTensorTypeAndShapeInfo();
-      auto type = OnnxTensorTypeToString(typeAndShapeInfo.GetElementType());
+      auto type = TensorInfoToString(typeAndShapeInfo.GetElementType());
 
       vector<const char*> dimensionNames;
       dimensionNames.resize(typeAndShapeInfo.GetDimensionsCount());

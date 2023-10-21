@@ -23,7 +23,7 @@ namespace Axodox::MachineLearning
     AllocateBuffer();
   }
 
-  Tensor::Tensor(TensorType type, shape_t shape) :
+  Tensor::Tensor(TensorType type, TensorShape shape) :
     Type(type),
     Shape(shape)
   {
@@ -97,7 +97,7 @@ namespace Axodox::MachineLearning
     return result;
   }
 
-  Tensor Tensor::CreateRandom(shape_t shape, std::span<std::minstd_rand> randoms, float scale)
+  Tensor Tensor::CreateRandom(TensorShape shape, std::span<std::minstd_rand> randoms, float scale)
   {
     static uniform_real_distribution<float> floatDistribution(0.f, 1.f);
 
@@ -205,9 +205,9 @@ namespace Axodox::MachineLearning
     return dimension;
   }
 
-  bool Tensor::AreShapesEqual(shape_t a, shape_t b, size_t startDimension)
+  bool Tensor::AreShapesEqual(TensorShape a, TensorShape b, size_t startDimension)
   {
-    for (size_t i = startDimension; i < shape_dimension; i++)
+    for (size_t i = startDimension; i < TensorDimension; i++)
     {
       if (a[i] != b[i]) return false;
     }
@@ -215,7 +215,7 @@ namespace Axodox::MachineLearning
     return true;
   }
 
-  size_t Tensor::ElementCount(shape_t shape)
+  size_t Tensor::ElementCount(TensorShape shape)
   {
     size_t result = shape[0] > 0 ? 1 : 0;
     for (auto item : shape)
@@ -405,7 +405,7 @@ namespace Axodox::MachineLearning
 
   const uint8_t* Tensor::AsPointer(size_t x, size_t y, size_t z, size_t w) const
   {
-    shape_t index{ x, y, z, w };
+    TensorShape index{ x, y, z, w };
 
     auto elementSize = GetElementSize(Type);
     size_t offset = 0;
@@ -462,7 +462,7 @@ namespace Axodox::MachineLearning
     return result;
   }
 
-  Tensor Tensor::Reshape(shape_t shape) const
+  Tensor Tensor::Reshape(TensorShape shape) const
   {
     if (ElementCount(shape) != ElementCount(Shape)) throw bad_cast();
 
@@ -496,9 +496,9 @@ namespace Axodox::MachineLearning
     Tensor result;
 
     //Set type and shape
-    auto info = ToTypeAndShape(value.GetTensorTypeAndShapeInfo());
-    result.Type = info.first;
-    result.Shape = info.second;
+    auto info = TensorInfo::FromTypeAndShapeInfo(value.GetTensorTypeAndShapeInfo());
+    result.Type = info.Type;
+    result.Shape = info.Shape;
     result.AllocateBuffer();
 
     //Copy data
@@ -520,29 +520,10 @@ namespace Axodox::MachineLearning
 
   void Tensor::UpdateOrtValue(Ort::Value& value)
   {
-    auto info = ToTypeAndShape(value.GetTensorTypeAndShapeInfo());
-    if (info.first != Type || info.second != Shape) throw bad_cast();
+    auto info = TensorInfo::FromTypeAndShapeInfo(value.GetTensorTypeAndShapeInfo());
+    if (info.Type != Type || info.Shape != Shape) throw bad_cast();
 
     auto data = value.GetTensorMutableRawData();
     memcpy(data, AsPointer(), ByteCount());
-  }
-
-  std::pair<TensorType, Tensor::shape_t> Tensor::ToTypeAndShape(const Ort::TensorTypeAndShapeInfo& info)
-  {
-    pair<TensorType, Tensor::shape_t> result;
-
-    //Convert type
-    result.first = ToTensorType(info.GetElementType());
-
-    //Convert shape
-    auto shape = info.GetShape();
-    if (shape.size() > result.second.size()) throw logic_error("Tensor does not support more than 4 dimensions.");
-
-    for (auto i = 0; auto dimension : shape)
-    {
-      if (dimension > 0) result.second[i++] = size_t(dimension);
-    }
-
-    return result;
   }
 }

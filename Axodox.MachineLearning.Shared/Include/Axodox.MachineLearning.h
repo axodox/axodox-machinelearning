@@ -4,6 +4,7 @@
 //General
 #include "MachineLearning/OnnxEnvironment.h"
 #include "MachineLearning/OnnxExtensions.h"
+#include "MachineLearning/OnnxModelMetadata.h"
 #include "MachineLearning/OnnxModelStatistics.h"
 
 //Image generation
@@ -15,6 +16,7 @@
 #include "MachineLearning/SafetyCheckerOptions.h"
 #include "MachineLearning/StableDiffusionScheduler.h"
 #include "MachineLearning/StableDiffustionInferer.h"
+#include "MachineLearning/TensorInfo.h"
 #include "MachineLearning/Tensor.h"
 #include "MachineLearning/TensorType.h"
 #include "MachineLearning/TextEmbedder.h"

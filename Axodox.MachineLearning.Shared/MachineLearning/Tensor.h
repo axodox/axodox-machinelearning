@@ -1,5 +1,5 @@
 #pragma once
-#include "TensorType.h"
+#include "TensorInfo.h"
 #include "Graphics/Textures/TextureData.h"
 #include "Collections/AlignedAllocator.h"
 
@@ -13,16 +13,16 @@ namespace Axodox::MachineLearning
 
   struct AXODOX_MACHINELEARNING_API Tensor
   {
-    static const size_t shape_dimension = 4;
-    typedef std::array<size_t, shape_dimension> shape_t;
+    static const size_t TensorDimension = TensorInfo::TensorDimension;
+    typedef TensorInfo::TensorShape TensorShape;
 
     TensorType Type;
-    shape_t Shape;
+    TensorShape Shape;
     std::vector<uint8_t, Collections::aligned_allocator<uint8_t>> Buffer;
 
     Tensor();
     explicit Tensor(TensorType type, size_t x = 0, size_t y = 0, size_t z = 0, size_t w = 0);
-    Tensor(TensorType type, shape_t shape);
+    Tensor(TensorType type, TensorShape shape);
 
     template<typename T>
     explicit Tensor(T value) :
@@ -126,7 +126,7 @@ namespace Axodox::MachineLearning
 
     Tensor Swizzle(size_t blockCount = 2) const;
 
-    Tensor Reshape(shape_t shape) const;
+    Tensor Reshape(TensorShape shape) const;
 
     std::vector<Tensor> Split(size_t instances = 2) const;
 
@@ -165,7 +165,7 @@ namespace Axodox::MachineLearning
       }
     }
 
-    static Tensor CreateRandom(shape_t shape, std::span<std::minstd_rand> randoms, float scale = 1.f);
+    static Tensor CreateRandom(TensorShape shape, std::span<std::minstd_rand> randoms, float scale = 1.f);
 
     template<typename T>
     void Fill(T value)
@@ -189,14 +189,12 @@ namespace Axodox::MachineLearning
 
     void UpdateOrtValue(Ort::Value& value);
 
-    static std::pair<TensorType, Tensor::shape_t> ToTypeAndShape(const Ort::TensorTypeAndShapeInfo& info);
-
   private:
     static const Ort::MemoryInfo _ortMemoryInfo;
 
     static size_t GetDimensionFromIndex(size_t& x, size_t& y, size_t& z, size_t& w);
-    static bool AreShapesEqual(shape_t a, shape_t b, size_t startDimension = 0);
-    static size_t ElementCount(shape_t shape);
+    static bool AreShapesEqual(TensorShape a, TensorShape b, size_t startDimension = 0);
+    static size_t ElementCount(TensorShape shape);
 
     static Tensor FromTextureDataRgba8(const Graphics::TextureData& texture, ColorNormalization normalization);
     static Tensor FromTextureDataGray8(const Graphics::TextureData& texture, ColorNormalization normalization);

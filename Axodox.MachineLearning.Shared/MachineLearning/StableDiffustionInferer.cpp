@@ -167,7 +167,7 @@ namespace Axodox::MachineLearning
 
   Tensor StableDiffusionInferer::GenerateLatentSample(StableDiffusionContext& context)
   {
-    Tensor::shape_t shape{ context.Options->BatchSize, 4, context.Options->Height / 8, context.Options->Width / 8 };
+    Tensor::TensorShape shape{ context.Options->BatchSize, 4, context.Options->Height / 8, context.Options->Width / 8 };
     return Tensor::CreateRandom(shape, context.Randoms, context.Scheduler.InitialNoiseSigma());
   }
 
