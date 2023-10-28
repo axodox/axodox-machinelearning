@@ -53,6 +53,8 @@ namespace Axodox::MachineLearning
 
   class AXODOX_MACHINELEARNING_API StableDiffusionInferer : public ImageDiffusionInferer
   {
+    static inline const Infrastructure::logger _logger{ "StableDiffusionInferer" };
+
   public:
     StableDiffusionInferer(OnnxEnvironment& environment, std::optional<ModelSource> source = {});
 

@@ -2,6 +2,7 @@
 #include "TextEncoder.h"
 #include "OnnxModelMetadata.h"
 
+using namespace Axodox::Infrastructure;
 using namespace Ort;
 using namespace std;
 
@@ -21,10 +22,14 @@ namespace Axodox::MachineLearning
   { 
     auto metadata = OnnxModelMetadata::Create(_environment, _session);
     _has64bitInputIds = metadata.Inputs["input_ids"].Type == TensorType::Int64;
+    
+    _logger.log(log_severity::information, "Loaded.");
   }
 
   Tensor TextEncoder::EncodeText(const Tensor& text)
   {
+    _logger.log(log_severity::information, "Running inference...");
+
     //Bind values
     IoBinding bindings{ _session };
     bindings.BindInput("input_ids", text.ToInt64(_has64bitInputIds).ToOrtValue());
@@ -35,8 +40,11 @@ namespace Axodox::MachineLearning
 
     //Get result
     auto outputValues = bindings.GetOutputValues();
+    auto result = Tensor::FromOrtValue(outputValues[0]).ToSingle();
 
-    return Tensor::FromOrtValue(outputValues[0]).ToSingle();
+    _session.Evict();
+    _logger.log(log_severity::information, "Inference finished.");
+    return result;
   }
 
   TextEncoder2::TextEncoder2(OnnxEnvironment& environment, std::optional<ModelSource> source) :
@@ -45,10 +53,15 @@ namespace Axodox::MachineLearning
   {
     auto metadata = OnnxModelMetadata::Create(_environment, _session);
     _has64bitInputIds = metadata.Inputs["input_ids"].Type == TensorType::Int64;
+
+    _session.Evict();
+    _logger.log(log_severity::information, "Loaded.");
   }
 
   EncodedText TextEncoder2::EncodeText(const Tensor& text)
   {
+    _logger.log(log_severity::information, "Running inference...");
+
     //Bind values
     IoBinding bindings{ _session };
     bindings.BindInput("input_ids", text.ToInt64(_has64bitInputIds).ToOrtValue());
@@ -64,6 +77,9 @@ namespace Axodox::MachineLearning
     EncodedText result;
     result.LastHiddenState = Tensor::FromOrtValue(outputValues[0]).ToSingle();
     result.TextEmbeds = Tensor::FromOrtValue(outputValues[1]).ToSingle();
+
+    _session.Evict();
+    _logger.log(log_severity::information, "Inference finished.");
     return result;
   }
 

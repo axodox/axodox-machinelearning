@@ -3,6 +3,7 @@
 #include "VaeDecoder.h"
 #include "OnnxModelMetadata.h"
 
+using namespace Axodox::Infrastructure;
 using namespace DirectX;
 using namespace Ort;
 using namespace std;
@@ -12,15 +13,20 @@ namespace Axodox::MachineLearning
   StableDiffusionInferer::StableDiffusionInferer(OnnxEnvironment& environment, std::optional<ModelSource> source) :
     _environment(environment),
     _session(environment->CreateSession(source ? *source : (_environment.RootPath() / L"unet/model.onnx")))
-  { 
+  {
     auto metadata = OnnxModelMetadata::Create(_environment, _session);
     _hasTextEmbeds = metadata.Inputs.contains("text_embeds");
     _hasTimeIds = metadata.Inputs.contains("time_ids");
     _isUsingFloat16 = metadata.Inputs["sample"].Type == TensorType::Half;
+
+    _session.Evict();
+    _logger.log(log_severity::information, "Loaded.");
   }
 
   Tensor StableDiffusionInferer::RunInference(const StableDiffusionOptions& options, Threading::async_operation_source* async)
   {
+    _logger.log(log_severity::information, "Running inference...");
+
     //Validate inputs
     options.Validate();
 
@@ -62,6 +68,8 @@ namespace Axodox::MachineLearning
     const EncodedText* currentEmbedding = nullptr;
     for (size_t i = initialStep; i < steps.Timesteps.size(); i++)
     {
+      _logger.log(log_severity::information, "Step {}/{}...", i, steps.Timesteps.size());
+
       //Update status
       if (async)
       {
@@ -104,7 +112,7 @@ namespace Axodox::MachineLearning
       {
         auto componentWeight = options.TextEmbeddings.Weights[embeddingIndex];
         auto finalWeight = componentWeight * (componentWeight > 0.f ? options.GuidanceScale : options.GuidanceScale - 1.f);
-        
+
         if (embeddingIndex == 0)
         {
           guidedNoise = outputComponents[embeddingIndex] * finalWeight;
@@ -128,6 +136,12 @@ namespace Axodox::MachineLearning
 
     //Decode sample
     latentSample = latentSample * (1.0f / 0.18215f);
+
+    _logger.log(log_severity::information, "Inference finished.");
+
+    _session.Evict();
+    _logger.log(log_severity::information, "Session evicted.");
+
     return latentSample;
   }
 
@@ -136,7 +150,7 @@ namespace Axodox::MachineLearning
     auto replicatedLatents = latents.DuplicateToSize(context.Options->BatchSize);
 
     auto result = Tensor::CreateRandom(replicatedLatents.Shape, context.Randoms);
-    
+
     if (context.Options->MaskInput)
     {
       auto maskInput = context.Options->MaskInput.Duplicate(latents.Shape[1]);

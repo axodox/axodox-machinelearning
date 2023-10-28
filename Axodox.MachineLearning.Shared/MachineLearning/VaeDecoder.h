@@ -6,6 +6,8 @@ namespace Axodox::MachineLearning
 {
   class AXODOX_MACHINELEARNING_API VaeDecoder
   {
+    static inline const Infrastructure::logger _logger{ "VaeDecoder" };
+
   public:
     VaeDecoder(OnnxEnvironment& environment, std::optional<ModelSource> source = {});
 

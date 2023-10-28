@@ -14,6 +14,8 @@ namespace Axodox::MachineLearning
 
   class AXODOX_MACHINELEARNING_API TextEncoder
   {
+    static inline const Infrastructure::logger _logger{ "TextEncoder" };
+
   public:
     TextEncoder(OnnxEnvironment& environment, std::optional<ModelSource> source = {});
 
@@ -28,6 +30,8 @@ namespace Axodox::MachineLearning
 
   class AXODOX_MACHINELEARNING_API TextEncoder2
   {
+    static inline const Infrastructure::logger _logger{ "TextEncoder2" };
+
   public:
     TextEncoder2(OnnxEnvironment& environment, std::optional<ModelSource> source = {});
 

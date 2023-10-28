@@ -2,6 +2,7 @@
 #include "VaeDecoder.h"
 #include "OnnxModelMetadata.h"
 
+using namespace Axodox::Infrastructure;
 using namespace Ort;
 using namespace std;
 
@@ -13,10 +14,15 @@ namespace Axodox::MachineLearning
   { 
     auto metadata = OnnxModelMetadata::Create(_environment, _session);
     _isUsingFloat16 = metadata.Inputs["latent_sample"].Type == TensorType::Half;
+
+    _session.Evict();
+    _logger.log(log_severity::information, "Loaded.");
   }
 
   Tensor VaeDecoder::DecodeVae(const Tensor& image)
   {
+    _logger.log(log_severity::information, "Running inference...");
+
     //Load inputs
     auto inputValues = image.Split(image.Shape[0]);
 
@@ -45,6 +51,8 @@ namespace Axodox::MachineLearning
       memcpy(results.AsPointer<float>(i), result.AsPointer<float>(), result.ByteCount());
     }
 
+    _session.Evict();
+    _logger.log(log_severity::information, "Inference finished.");
     return results;
   }
 }

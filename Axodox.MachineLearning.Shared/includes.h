@@ -10,6 +10,7 @@
 #include <winrt/windows.storage.streams.h>
 #endif
 
+#include <directml.h>
 #include "onnxruntime_cxx_api.h"
 #include "dml_provider_factory.h"
 
@@ -24,4 +25,5 @@
 #ifdef PLATFORM_WINDOWS
 #pragma comment (lib,"Axodox.MachineLearning.lib")
 #endif
+
 #endif
