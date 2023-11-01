@@ -20,6 +20,7 @@ namespace {
     {
       auto name = string((session.*getNameAllocated)(i, allocator).get());
       auto info = TensorInfo::FromTypeAndShapeInfo(ConstTensorTypeAndShapeInfo((session.*getTypeInfo)(i).GetTensorTypeAndShapeInfo()));
+      
       results[name] = info;
     }
 
@@ -38,7 +39,7 @@ namespace Axodox::MachineLearning
     result.Initializers = GetProperties(session, allocator, &Session::GetOverridableInitializerCount, &Session::GetOverridableInitializerNameAllocated, &Session::GetOverridableInitializerTypeInfo);
     result.Inputs = GetProperties(session, allocator, &Session::GetInputCount, &Session::GetInputNameAllocated, &Session::GetInputTypeInfo);
     result.Outputs = GetProperties(session, allocator, &Session::GetOutputCount, &Session::GetOutputNameAllocated, &Session::GetOutputTypeInfo);
-
+    
     return result;
   }
 }

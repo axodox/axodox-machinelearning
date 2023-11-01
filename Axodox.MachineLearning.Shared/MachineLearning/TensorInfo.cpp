@@ -3,6 +3,7 @@
 #include "Infrastructure/BitwiseOperations.h"
 
 using namespace Axodox::Infrastructure;
+using namespace std;
 
 namespace Axodox::MachineLearning
 {
@@ -28,6 +29,10 @@ namespace Axodox::MachineLearning
         result.Shape[i++] = size_t(dimension);
       }
     }
+
+    //Convert dimensions
+    auto dimensionCount = info.GetDimensionsCount();
+    info.GetSymbolicDimensions(result.Dimensions.data(), min(result.Dimensions.size(), dimensionCount));
 
     return result;
   }
