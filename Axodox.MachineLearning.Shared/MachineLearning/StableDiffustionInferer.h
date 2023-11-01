@@ -61,7 +61,7 @@ namespace Axodox::MachineLearning
     Tensor RunInference(const StableDiffusionOptions& options, Threading::async_operation_source* async = nullptr);
 
     static Tensor GenerateLatentSample(StableDiffusionContext& context);
-    static Tensor PrepareLatentSample(StableDiffusionContext& context, const Tensor& latents, float initialSigma);
+    static Tensor PrepareLatentSample(StableDiffusionContext& context, const Tensor& latents, float initialSigma, float vaeScalingFactor = 0.18215f);
     static Tensor BlendLatentSamples(const Tensor& a, const Tensor& b, const Tensor& weights);
 
     virtual ImageDiffusionInfererKind Type() const override;
@@ -72,6 +72,7 @@ namespace Axodox::MachineLearning
     bool _hasTextEmbeds;
     bool _hasTimeIds;
     bool _isUsingFloat16;
+    float _vaeScalingFactor;
 
     Tensor GetTimeIds() const;
   };

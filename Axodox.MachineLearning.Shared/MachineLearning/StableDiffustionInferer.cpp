@@ -18,6 +18,7 @@ namespace Axodox::MachineLearning
     _hasTextEmbeds = metadata.Inputs.contains("text_embeds");
     _hasTimeIds = metadata.Inputs.contains("time_ids");
     _isUsingFloat16 = metadata.Inputs["sample"].Type == TensorType::Half;
+    _vaeScalingFactor = _hasTextEmbeds ? 0.13025f : 0.18215f;
 
     _session.Evict();
     _logger.log(log_severity::information, "Loaded.");
@@ -49,7 +50,7 @@ namespace Axodox::MachineLearning
     auto initialStep = size_t(clamp(int(options.StepCount - options.StepCount * options.DenoisingStrength - 1), 0, int(options.StepCount)));
 
     //Create initial sample
-    auto latentSample = options.LatentInput ? PrepareLatentSample(context, options.LatentInput, steps.Sigmas[initialStep]) : GenerateLatentSample(context);
+    auto latentSample = options.LatentInput ? PrepareLatentSample(context, options.LatentInput, steps.Sigmas[initialStep], _vaeScalingFactor) : GenerateLatentSample(context);
 
     //Bind constant inputs    
     IoBinding binding{ _session };
@@ -129,13 +130,13 @@ namespace Axodox::MachineLearning
       //Apply mask
       if (options.MaskInput)
       {
-        auto maskedSample = PrepareLatentSample(context, options.LatentInput, steps.Sigmas[i]);
+        auto maskedSample = PrepareLatentSample(context, options.LatentInput, steps.Sigmas[i], _vaeScalingFactor);
         latentSample = BlendLatentSamples(maskedSample, latentSample, options.MaskInput);
       }
     }
 
     //Decode sample
-    latentSample = latentSample * (1.0f / 0.18215f);
+    latentSample = latentSample * (1.0f / _vaeScalingFactor);
 
     _logger.log(log_severity::information, "Inference finished.");
 
@@ -145,7 +146,7 @@ namespace Axodox::MachineLearning
     return latentSample;
   }
 
-  Tensor StableDiffusionInferer::PrepareLatentSample(StableDiffusionContext& context, const Tensor& latents, float initialSigma)
+  Tensor StableDiffusionInferer::PrepareLatentSample(StableDiffusionContext& context, const Tensor& latents, float initialSigma, float vaeScalingFactor)
   {
     auto replicatedLatents = latents.DuplicateToSize(context.Options->BatchSize);
 
@@ -160,7 +161,7 @@ namespace Axodox::MachineLearning
       //replicatedLatents.UnaryOperation<float>(maskInput, [=](float a, float b) { return a * (1.f - floor(b)); });
     }
 
-    result.UnaryOperation<float>(replicatedLatents, [=](float a, float b) { return a * initialSigma + b * 0.18215f; });
+    result.UnaryOperation<float>(replicatedLatents, [=](float a, float b) { return a * initialSigma + b * vaeScalingFactor; });
 
     return result;
   }
