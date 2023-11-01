@@ -62,9 +62,18 @@ namespace Axodox::MachineLearning
   {
     _logger.log(log_severity::information, "Running inference...");
 
+    //Convert text encoding
+    auto input = text;
+    auto isEnding = false;
+    for (auto& token : input.AsSpan<int32_t>())
+    {
+      if (isEnding) token = 0;
+      if (token == 49407) isEnding = true;
+    }
+
     //Bind values
     IoBinding bindings{ _session };
-    bindings.BindInput("input_ids", text.ToInt64(_has64bitInputIds).ToOrtValue());
+    bindings.BindInput("input_ids", input.ToInt64(_has64bitInputIds).ToOrtValue());
     bindings.BindOutput("last_hidden_state", _environment->MemoryInfo());
     bindings.BindOutput("text_embeds", _environment->MemoryInfo());
 
