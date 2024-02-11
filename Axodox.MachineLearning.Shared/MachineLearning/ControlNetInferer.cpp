@@ -39,8 +39,6 @@ namespace Axodox::MachineLearning
     context.Scheduler = StableDiffusionScheduler::Create(options.SchedulerType, { .InferenceStepCount = options.StepCount, .Randoms = context.Randoms });
 
     //Schedule steps
-    //list<Tensor> derivatives;
-    //auto steps = context.Scheduler.GetSteps(options.StepCount);
     auto initialStep = size_t(clamp(int(options.StepCount - options.StepCount * options.DenoisingStrength - 1), 0, int(options.StepCount)));
 
     //Create initial sample

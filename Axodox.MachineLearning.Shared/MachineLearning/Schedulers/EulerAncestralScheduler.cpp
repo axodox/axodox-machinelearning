@@ -11,17 +11,9 @@ namespace Axodox::MachineLearning
 
   Tensor EulerAncestralScheduler::ApplyStep(const Tensor& input, const Tensor& output, size_t step)
   {
-    //x = input
-    //denoised = predictedOriginalSample
-    //d => currentDerivative aka output
     auto currentSigma = _sigmas[step];
     auto nextSigma = _sigmas[step + 1];
-
-    //Compute predicted original sample (x_0) from sigma-scaled predicted noise
     auto predictedOriginalSample = input.BinaryOperation<float>(output, [currentSigma](float a, float b) { return a - currentSigma * b; });
-
-    //currentDerivative == output == d
-    //auto currentDerivative = input.BinaryOperation<float>(predictedOriginalSample, [sigma](float a, float b) { return (a - b) / sigma; });
 
     //Get ancestral step
     auto currentSigmaSquared = currentSigma * currentSigma;

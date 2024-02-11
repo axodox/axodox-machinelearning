@@ -31,42 +31,29 @@ namespace Axodox::MachineLearning
     _sigmas = move(sigmas);
     _timesteps = move(timesteps);
 
-    /*vector<float> timestepsInterpol(_timesteps.size());
-    vector<float> sigmasInterpol(_sigmas.size());
-    for (auto i = 0; i < stepCount; i++)
-    {
-      sigmasInterpol[i] = (sigmas[i] + sigmas[i + 1]) / 2.f;
-      timestepsInterpol[i] = SigmaToTime(sigmasInterpol[i]);
-    }*/
-
     //_timesteps = { 999.f, 947.6224f, 889.5464f, 823.0464f, 745.8676f, 655.3113f, 549.0170f, 427.4898f, 298.6582f, 179.8307f, 89.9427f, 36.5918f, 12.0011f, 2.8839f, 0.f };
   }
 
   Tensor DpmPlusPlus2MScheduler::ApplyStep(const Tensor& input, const Tensor& output, size_t step)
   {
-    //x = input
-    //denoised = predictedOriginalSample
-    //old_denoised = _previousPredictedSample
-    //d => currentDerivative aka output
-
     auto currentSigma = _sigmas[step];
     auto nextSigma = _sigmas[step + 1];
 
     auto predictedOriginalSample = input.BinaryOperation<float>(output, [currentSigma](float a, float b) { return a - currentSigma * b; });
 
     float t = -log(currentSigma);
-    float t_next = -log(nextSigma);
-    float h = t_next - t;
+    float tNext = -log(nextSigma);
+    float h = tNext - t;
 
     Tensor denoised;
-    if (step == 0 || nextSigma == 0)
+    if (!_previousPredictedSample || nextSigma == 0)
     {
       denoised = predictedOriginalSample;
     }
     else
     {
-      float h_last = t - -log(_sigmas[step - 1]);
-      float r = h_last / h;
+      float hLast = t - -log(_sigmas[step - 1]);
+      float r = hLast / h;
 
       auto x = 1.f + 1.f / (2.f * r);
       auto y = 1.f / (2.f * r);
