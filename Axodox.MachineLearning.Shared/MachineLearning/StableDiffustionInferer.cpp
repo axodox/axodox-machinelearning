@@ -44,13 +44,15 @@ namespace Axodox::MachineLearning
       context.Randoms.push_back(minstd_rand{ options.Seed + uint32_t(i) });
     }
 
+    context.Scheduler = StableDiffusionScheduler2::Create(StableDiffusionSchedulerKind2::DpmPlusPlus2M, { .InferenceStepCount = options.StepCount, .Randoms = context.Randoms });
+
     //Schedule steps
-    list<Tensor> derivatives;
-    auto steps = context.Scheduler.GetSteps(options.StepCount);
+    //list<Tensor> derivatives;
+    //auto steps = context.Scheduler.GetSteps(options.StepCount);
     auto initialStep = size_t(clamp(int(options.StepCount - options.StepCount * options.DenoisingStrength - 1), 0, int(options.StepCount)));
 
     //Create initial sample
-    auto latentSample = options.LatentInput ? PrepareLatentSample(context, options.LatentInput, steps.Sigmas[initialStep], _vaeScalingFactor) : GenerateLatentSample(context);
+    auto latentSample = options.LatentInput ? PrepareLatentSample(context, options.LatentInput, context.Scheduler->Sigmas()[initialStep], _vaeScalingFactor) : GenerateLatentSample(context);
 
     //Bind constant inputs    
     IoBinding binding{ _session };
@@ -67,9 +69,12 @@ namespace Axodox::MachineLearning
 
     //Run iteration
     const EncodedText* currentEmbedding = nullptr;
-    for (size_t i = initialStep; i < steps.Timesteps.size(); i++)
+    for (size_t i = initialStep; i < context.Scheduler->Timesteps().size(); i++)
     {
-      _logger.log(log_severity::information, "Step {}/{}...", i, steps.Timesteps.size());
+      auto timestep = context.Scheduler->Timesteps()[i];
+      auto sigma = context.Scheduler->Sigmas()[i];
+
+      _logger.log(log_severity::information, "Step {}/{}...", i + 1, context.Scheduler->Timesteps().size());
 
       //Update status
       if (async)
@@ -92,11 +97,11 @@ namespace Axodox::MachineLearning
       }
 
       //Update sample
-      auto scaledSample = latentSample.Duplicate(embeddingCount).Swizzle(options.BatchSize) / sqrt(steps.Sigmas[i] * steps.Sigmas[i] + 1);
+      auto scaledSample = latentSample.Duplicate(embeddingCount).Swizzle(options.BatchSize) / sqrt(sigma * sigma + 1);
       binding.BindInput("sample", scaledSample.ToHalf(_isUsingFloat16).ToOrtValue());
 
       //Update timestep
-      binding.BindInput("timestep", Tensor(steps.Timesteps[i]).ToHalf(_isUsingFloat16).ToOrtValue());
+      binding.BindInput("timestep", Tensor(timestep).ToHalf(_isUsingFloat16).ToOrtValue());
 
       //Run inference
       _session.Run({}, binding);
@@ -125,12 +130,12 @@ namespace Axodox::MachineLearning
       }
 
       //Refine latent image
-      latentSample = steps.ApplyStep(latentSample, guidedNoise, derivatives, context.Randoms, i);
+      latentSample = context.Scheduler->ApplyStep(latentSample, guidedNoise, i);
 
       //Apply mask
       if (options.MaskInput)
       {
-        auto maskedSample = PrepareLatentSample(context, options.LatentInput, steps.Sigmas[i], _vaeScalingFactor);
+        auto maskedSample = PrepareLatentSample(context, options.LatentInput, sigma, _vaeScalingFactor);
         latentSample = BlendLatentSamples(maskedSample, latentSample, options.MaskInput);
       }
     }
@@ -193,7 +198,7 @@ namespace Axodox::MachineLearning
   Tensor StableDiffusionInferer::GenerateLatentSample(StableDiffusionContext& context)
   {
     TensorShape shape{ context.Options->BatchSize, 4, context.Options->Height / 8, context.Options->Width / 8 };
-    return Tensor::CreateRandom(shape, context.Randoms, context.Scheduler.InitialNoiseSigma());
+    return Tensor::CreateRandom(shape, context.Randoms, context.Scheduler->Sigmas()[0]);
   }
 
   ImageDiffusionInfererKind StableDiffusionInferer::Type() const

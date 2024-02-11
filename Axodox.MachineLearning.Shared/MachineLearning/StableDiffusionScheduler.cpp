@@ -79,6 +79,11 @@ namespace Axodox::MachineLearning
       interpolatedSigma = lerp(sigmas[previousIndex], sigmas[nextIndex], trainStep - floor(trainStep));
     }
     interpolatedSigmas.push_back(0.f);
+
+    if (_options.SchedulerType == StableDiffusionSchedulerKind::DpmPlusPlus2M)
+    {
+      ApplyKarrasSigmas(interpolatedSigmas);
+    }
     ranges::reverse(timesteps);
 
     //Calculate LMS coefficients
@@ -92,6 +97,8 @@ namespace Axodox::MachineLearning
         break;
       case StableDiffusionSchedulerKind::EulerAncestral:
         coefficients.push_back(GetEulerCoefficients(i, interpolatedSigmas));
+        break;
+      case StableDiffusionSchedulerKind::DpmPlusPlus2M:
         break;
       default:
         throw logic_error("Scheduler not implemented.");
@@ -219,6 +226,25 @@ namespace Axodox::MachineLearning
       .SigmaUp = sigmaUp
     };
   }
+
+  void StableDiffusionScheduler::ApplyKarrasSigmas(std::span<float> sigmas)
+  {
+    const auto rho = 7.f;
+
+    auto sigmaMax = sigmas.front();
+    auto sigmaMin = *(sigmas.end() - 2);
+
+    auto invRhoMin = pow(sigmaMin, 1.f / rho);
+    auto invRhoMax = pow(sigmaMax, 1.f / rho);
+
+    auto stepCount = sigmas.size() - 1;
+    auto stepSize = 1.f / (stepCount - 1);
+    for (auto i = 0; i < stepCount; i++)
+    {
+      auto t = i * stepSize;
+      sigmas[i] = pow(invRhoMax + t * (invRhoMin - invRhoMax), rho);
+    }
+  }
   
   Tensor StableDiffusionSchedulerSteps::ApplyStep(const Tensor& sample, const Tensor& output, list<Tensor>& derivatives, std::span<std::minstd_rand> randoms, size_t step)
   {
@@ -227,15 +253,13 @@ namespace Axodox::MachineLearning
     //Compute predicted original sample (x_0) from sigma-scaled predicted noise
     auto predictedOriginalSample = sample.BinaryOperation<float>(output, [sigma](float a, float b) { return a - sigma * b; });
 
-    //Convert to an ODE derivative
-    auto currentDerivative = sample.BinaryOperation<float>(predictedOriginalSample, [sigma](float a, float b) { return (a - b) / sigma; });
-
-    //Calculate latent delta
-    Tensor latentDelta;
+    //Calculate new latents
     switch (SchedulerType)
     {
     case StableDiffusionSchedulerKind::LmsDiscrete:
     {
+      auto currentDerivative = sample.BinaryOperation<float>(predictedOriginalSample, [sigma](float a, float b) { return (a - b) / sigma; });
+
       derivatives.push_back(currentDerivative);
       if (derivatives.size() > DerivativeOrder) derivatives.pop_front();
 
@@ -248,28 +272,65 @@ namespace Axodox::MachineLearning
         lmsDerivativeProduct.push_back(derivative * derivativeCoefficients[i++]);
       }
 
-      latentDelta = { TensorType::Single, currentDerivative.Shape };
+      Tensor latentDelta{ TensorType::Single, currentDerivative.Shape };
       for (auto& tensor : lmsDerivativeProduct)
       {
         latentDelta.UnaryOperation<float>(tensor, [](float a, float b) { return a + b; });
       }
 
-      break;
+      return sample.BinaryOperation<float>(latentDelta, [](float a, float b) { return a + b; });
     }
     case StableDiffusionSchedulerKind::EulerAncestral:
     {
+      auto currentDerivative = sample.BinaryOperation<float>(predictedOriginalSample, [sigma](float a, float b) { return (a - b) / sigma; });
+
       auto& eulerCoefficient = get<EulerCoefficients>(Coefficients[step]);
 
       auto dt = eulerCoefficient.SigmaDown - sigma;
       auto randomNoise = Tensor::CreateRandom(sample.Shape, randoms, eulerCoefficient.SigmaUp);
-      latentDelta = randomNoise.BinaryOperation<float>(currentDerivative, [dt](float a, float b) { return a + dt * b; });
-      break;
+      auto latentDelta = randomNoise.BinaryOperation<float>(currentDerivative, [dt](float a, float b) { return a + dt * b; });
+
+      return sample.BinaryOperation<float>(latentDelta, [](float a, float b) { return a + b; });
+    }
+    case StableDiffusionSchedulerKind::DpmPlusPlus2M:
+    {
+      //K-diffusion nomenclature
+      //x => sample
+      //denoised => predictedOriginalSample
+      //d => currentDerivative
+
+      auto t = -log(sigma);
+      auto tNext = -log(Sigmas[step + 1]);
+      auto h = tNext - t;
+
+      derivatives.push_back(Tensor(predictedOriginalSample));
+
+      if (derivatives.size() > 1 && Sigmas[step + 1] != 0)
+      {
+        auto hLast = t + log(Sigmas[step - 1]);
+        auto r = hLast / h;
+
+        OutputDebugString(std::format(L"i: {}, h_last: {}, r : {}, x : {}, y : {}\n", step, hLast, r, exp(-tNext) / exp(-t), exp(-h) - 1.f).c_str());
+
+        predictedOriginalSample.UnaryOperation<float>(derivatives.front(), [
+          x = 1.f + 1.f / (2.f * r),
+          y = 1.f / (2.f * r)](float a, float b) 
+          { return x * a - y * b; });
+
+        derivatives.pop_front();
+      }
+      else
+      {
+        OutputDebugString(std::format(L"i: {}, x : {}, y : {}\n", step, exp(-tNext) / exp(-t), exp(-h) - 1.f).c_str());
+      }
+
+      return sample.BinaryOperation<float>(predictedOriginalSample, [
+        x = exp(-tNext) / exp(-t),
+        y = exp(-h) - 1.f](float a, float b) 
+        { return x * a - y * b; });
     }
     default:
       throw logic_error("Scheduler not implemented.");
     }
-
-    //Add the sumed tensor to the sample
-    return sample.BinaryOperation<float>(latentDelta, [](float a, float b) { return a + b; });
   }
 }

@@ -18,7 +18,8 @@ namespace Axodox::MachineLearning
   enum class StableDiffusionSchedulerKind
   {
     LmsDiscrete,
-    EulerAncestral
+    EulerAncestral,
+    DpmPlusPlus2M
   };
 
   struct AXODOX_MACHINELEARNING_API StableDiffusionSchedulerOptions
@@ -28,7 +29,7 @@ namespace Axodox::MachineLearning
     float BetaAtEnd = 0.012f;
     StableDiffusionBetaSchedulerKind BetaSchedulerType = StableDiffusionBetaSchedulerKind::ScaledLinear;
     StableDiffusionPredictorKind PredictorType = StableDiffusionPredictorKind::Epsilon;
-    StableDiffusionSchedulerKind SchedulerType = StableDiffusionSchedulerKind::EulerAncestral;
+    StableDiffusionSchedulerKind SchedulerType = StableDiffusionSchedulerKind::DpmPlusPlus2M;
     std::vector<float> BetasTrained;
   };
 
@@ -76,5 +77,6 @@ namespace Axodox::MachineLearning
     
     static LmsCoefficients GetLmsCoefficients(size_t step, std::span<const float> sigmas);
     static EulerCoefficients GetEulerCoefficients(size_t step, std::span<const float> sigmas);
+    static void ApplyKarrasSigmas(std::span<float> sigmas);
   };
 }

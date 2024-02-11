@@ -2,6 +2,7 @@
 #include "TextEncoder.h"
 #include "OnnxEnvironment.h"
 #include "StableDiffusionScheduler.h"
+#include "Schedulers/StableDiffusionScheduler2.h"
 #include "Threading/AsyncOperation.h"
 
 namespace Axodox::MachineLearning
@@ -33,7 +34,7 @@ namespace Axodox::MachineLearning
   struct StableDiffusionContext
   {
     const StableDiffusionOptions* Options;
-    StableDiffusionScheduler Scheduler;
+    std::unique_ptr<StableDiffusionScheduler2> Scheduler;
     std::vector<std::minstd_rand> Randoms;
   };
 
