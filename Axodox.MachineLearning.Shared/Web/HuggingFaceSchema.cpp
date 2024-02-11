@@ -36,7 +36,14 @@ namespace Axodox::Web
   };
   
   const std::set<std::string> HuggingFaceModelDetails::StableDiffusionOnnxOptionals = {
-    "controlnet/model.onnx"
+    "controlnet/model.onnx",
+    "text_encoder_2/model.onnx",
+    "text_encoder_2/model.onnx.data",
+    "tokenizer_2/merges.txt",
+    "tokenizer_2/special_tokens_map.json",
+    "tokenizer_2/tokenizer_config.json",
+    "tokenizer_2/vocab.json",
+    "unet/model.onnx.data",
   };
 
   bool HuggingFaceModelDetails::IsValidModel(const std::set<std::string>& fileset)

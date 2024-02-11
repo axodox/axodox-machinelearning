@@ -81,7 +81,11 @@ namespace Axodox::Web
     try
     {
       auto files = fileset;
-      files.insert(optionals.begin(), optionals.end());
+
+      for (auto& file : *modelInfo->Files)
+      {
+        if (optionals.contains(*file.FilePath)) files.emplace(*file.FilePath);
+      }
 
       auto fileCount = files.size();
       size_t fileIndex = 0;
@@ -131,7 +135,7 @@ namespace Axodox::Web
         //Copy to disk        
         auto content = response.Content();
         auto lengthHeader = content.Headers().TryLookup(L"Content-Length");
-        uint64_t length = lengthHeader ? stoi(to_string(lengthHeader.value())) : 0;
+        uint64_t length = lengthHeader ? stoll(to_string(lengthHeader.value())) : 0ul;
         
         uint64_t position = 0;
         auto sourceStream = content.ReadAsInputStreamAsync().get();

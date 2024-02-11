@@ -36,7 +36,7 @@ namespace Axodox::MachineLearning
       context.Randoms.push_back(minstd_rand{ options.Seed + uint32_t(i) });
     }
 
-    context.Scheduler = StableDiffusionScheduler::Create(options.SchedulerType, { .InferenceStepCount = options.StepCount, .Randoms = context.Randoms });
+    context.Scheduler = StableDiffusionScheduler::Create(options.Scheduler, { .InferenceStepCount = options.StepCount, .Randoms = context.Randoms });
 
     //Schedule steps
     auto initialStep = size_t(clamp(int(options.StepCount - options.StepCount * options.DenoisingStrength - 1), 0, int(options.StepCount)));

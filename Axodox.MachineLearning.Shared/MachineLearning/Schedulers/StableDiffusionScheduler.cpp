@@ -47,11 +47,11 @@ namespace Axodox::MachineLearning
     {
       timesteps.resize(options.InferenceStepCount);
 
-      auto stepRatio = float(options.TrainStepCount / options.InferenceStepCount);
       auto step = (options.TrainStepCount - 1) / float(options.InferenceStepCount - 1);
       for (auto value = 0; auto & timestep : timesteps)
       {
-        timestep = value++ * stepRatio + 1;
+        timestep = value;
+        value += step;
       }
 
       ranges::reverse(timesteps);

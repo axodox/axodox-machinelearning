@@ -16,17 +16,17 @@ namespace Axodox::MachineLearning
 
   struct AXODOX_MACHINELEARNING_API StableDiffusionOptions
   {
-    size_t StepCount = 15;    
+    size_t StepCount = 15;
     size_t BatchSize = 1;
     size_t Width = 512;
     size_t Height = 512;
-    float GuidanceScale = 7.f;    
+    float GuidanceScale = 7.f;
     uint32_t Seed = 0;
     TextEmbedding TextEmbeddings;
     Tensor LatentInput;
     Tensor MaskInput;
     float DenoisingStrength = 1.f;
-    StableDiffusionSchedulerKind SchedulerType = StableDiffusionSchedulerKind::DpmPlusPlus2M;
+    StableDiffusionSchedulerKind Scheduler = StableDiffusionSchedulerKind::EulerAncestral;
 
     void Validate() const;
   };
