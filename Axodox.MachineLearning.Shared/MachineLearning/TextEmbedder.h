@@ -15,7 +15,7 @@ namespace Axodox::MachineLearning
 
   struct AXODOX_MACHINELEARNING_API ScheduledPrompt
   {
-    std::shared_ptr<Tensor> Tensor;
+    std::shared_ptr<EncodedText> Tensor;
     std::vector<float> Weights;
   };
   
@@ -35,11 +35,11 @@ namespace Axodox::MachineLearning
 
     std::vector<ScheduledPrompt> SchedulePrompt(std::string_view text, uint32_t stepCount);
 
-    Tensor ProcessPrompt(std::string_view text);
+    EncodedText ProcessPrompt(std::string_view text);
 
   private:
     TextTokenizer _textTokenizer;
-    TextEncoder _textEncoder;
+    TextEncodingProvider _textEncoder;
 
     TokenizedPrompt MergeTokenizedChunks(const Tensor& tokenizedChunks, std::span<const Prompts::PromptAttentionFrame> textChunks);
     void ApplyAttention(Tensor& encodedText, std::span<const float> attentionMask);

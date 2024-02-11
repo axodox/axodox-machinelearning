@@ -22,7 +22,12 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Munkres\MunkresSolver.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Munkres\PairGraph.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxEnvironment.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxModelMetadata.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxModelStatistics.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Schedulers\DpmPlusPlus2MScheduler.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Schedulers\EulerAncestralScheduler.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Schedulers\StableDiffusionScheduler.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\TensorInfo.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\PoseEstimator.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Prompts\PromptAttention.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Prompts\PromptParser.cpp" />
@@ -30,7 +35,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Prompts\PromptSplitter.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\SafetyChecker.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\SafetyCheckerOptions.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\StableDiffusionScheduler.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\StableDiffustionInferer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Tensor.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\TensorType.cpp" />
@@ -48,11 +52,16 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\ControlNetInferer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\DepthEstimator.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\EdgeDetector.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Schedulers\DpmPlusPlus2MScheduler.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Schedulers\EulerAncestralScheduler.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\ImageFeatureExtractor.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Munkres\CostGraph.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Munkres\CoverTable.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Munkres\MunkresSolver.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Munkres\PairGraph.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Schedulers\StableDiffusionScheduler.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\TensorInfo.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxModelMetadata.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\PoseEstimator.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Prompts\PromptSplitter.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
@@ -64,7 +73,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Prompts\PromptScheduler.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\SafetyChecker.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\SafetyCheckerOptions.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\StableDiffusionScheduler.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\StableDiffustionInferer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Tensor.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\TensorType.h" />

@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "VaeDecoder.h"
+#include "OnnxModelMetadata.h"
 
+using namespace Axodox::Infrastructure;
 using namespace Ort;
 using namespace std;
 
@@ -9,10 +11,18 @@ namespace Axodox::MachineLearning
   VaeDecoder::VaeDecoder(OnnxEnvironment& environment, std::optional<ModelSource> source) :
     _environment(environment),
     _session(environment->CreateSession(source ? *source : (_environment.RootPath() / L"vae_decoder/model.onnx")))
-  { }
+  { 
+    auto metadata = OnnxModelMetadata::Create(_environment, _session);
+    _isUsingFloat16 = metadata.Inputs["latent_sample"].Type == TensorType::Half;
+
+    _session.Evict();
+    _logger.log(log_severity::information, "Loaded.");
+  }
 
   Tensor VaeDecoder::DecodeVae(const Tensor& image)
   {
+    _logger.log(log_severity::information, "Running inference...");
+
     //Load inputs
     auto inputValues = image.Split(image.Shape[0]);
 
@@ -21,7 +31,7 @@ namespace Axodox::MachineLearning
     {
       //Bind values
       IoBinding bindings{ _session };
-      bindings.BindInput("latent_sample", inputValues[i].ToHalf().ToOrtValue());
+      bindings.BindInput("latent_sample", inputValues[i].ToHalf(_isUsingFloat16).ToOrtValue());
       bindings.BindOutput("sample", _environment->MemoryInfo());
 
       //Run inference
@@ -41,6 +51,8 @@ namespace Axodox::MachineLearning
       memcpy(results.AsPointer<float>(i), result.AsPointer<float>(), result.ByteCount());
     }
 
+    _session.Evict();
+    _logger.log(log_severity::information, "Inference finished.");
     return results;
   }
 }

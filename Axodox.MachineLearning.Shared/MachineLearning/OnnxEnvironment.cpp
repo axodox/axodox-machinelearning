@@ -4,6 +4,7 @@
 using namespace Axodox::Infrastructure;
 using namespace Ort;
 using namespace std;
+using namespace winrt;
 
 namespace Axodox::MachineLearning
 {
@@ -15,6 +16,13 @@ namespace Axodox::MachineLearning
     _environment.CreateAndRegisterAllocator(_memoryInfo, ArenaCfg(0, 1, -1, -1));
     _environment.DisableTelemetryEvents();
     //_runOptions.AddConfigEntry("memory.enable_memory_arena_shrinkage", "gpu:0");
+
+    D3D12_COMMAND_QUEUE_DESC commandQueueDesc;
+    zero_memory(commandQueueDesc);
+
+    check_hresult(D3D12CreateDevice(nullptr, D3D_FEATURE_LEVEL_12_0, guid_of<ID3D12Device>(), _d3d12Device.put_void()));
+    check_hresult(_d3d12Device->CreateCommandQueue(&commandQueueDesc, guid_of<ID3D12CommandQueue>(), _d3d12CommandQueue.put_void()));
+    check_hresult(DMLCreateDevice(_d3d12Device.get(), DML_CREATE_DEVICE_FLAG_NONE, guid_of<IDMLDevice>(), _dmlDevice.put_void()));
   }
 
   Ort::Env& OnnxHost::Environment()
@@ -30,7 +38,9 @@ namespace Axodox::MachineLearning
   Ort::SessionOptions OnnxHost::DefaultSessionOptions()
   {
     auto options = CpuSessionOptions();
-    OrtSessionOptionsAppendExecutionProvider_DML(options, DeviceId);
+    
+    OrtSessionOptionsAppendExecutionProviderEx_DML(options, _dmlDevice.get(), _d3d12CommandQueue.get());
+    //OrtSessionOptionsAppendExecutionProvider_DML(options, DeviceId);
     return options;
   }
   
@@ -38,7 +48,7 @@ namespace Axodox::MachineLearning
   {
     Ort::SessionOptions options;
     options.AddConfigEntry("session.use_env_allocators", "1");
-    options.SetLogSeverityLevel(ORT_LOGGING_LEVEL_WARNING);
+    options.SetLogSeverityLevel(ORT_LOGGING_LEVEL_INFO);
     options.DisableMemPattern();
     options.DisableCpuMemArena();
     options.SetExecutionMode(ExecutionMode::ORT_SEQUENTIAL);

@@ -8,11 +8,11 @@
 #include <winrt/windows.web.http.headers.h>
 #include <winrt/windows.storage.h>
 #include <winrt/windows.storage.streams.h>
+#include <directml.h>
+#include "dml_provider_factory.h"
 #endif
 
 #include "onnxruntime_cxx_api.h"
-#include "dml_provider_factory.h"
-
 #include "Include/Axodox.Infrastructure.h"
 #include "Include/Axodox.Graphics.h"
 
@@ -24,4 +24,5 @@
 #ifdef PLATFORM_WINDOWS
 #pragma comment (lib,"Axodox.MachineLearning.lib")
 #endif
+
 #endif

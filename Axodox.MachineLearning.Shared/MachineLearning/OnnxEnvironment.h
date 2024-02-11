@@ -27,6 +27,9 @@ namespace Axodox::MachineLearning
     Ort::Env _environment;
     Ort::MemoryInfo _memoryInfo;
     Ort::RunOptions _runOptions;
+    winrt::com_ptr<ID3D12Device> _d3d12Device;
+    winrt::com_ptr<ID3D12CommandQueue> _d3d12CommandQueue;
+    winrt::com_ptr<IDMLDevice> _dmlDevice;
 
     static void ORT_API_CALL OnOrtLogAdded(void* param, OrtLoggingLevel severity, const char* category, const char* logId, const char* codeLocation, const char* message);
   };
