@@ -3,14 +3,13 @@
 
 namespace Axodox::MachineLearning
 {
-  enum class StableDiffusionSchedulerKind2
+  enum class StableDiffusionSchedulerKind
   {
-    LmsDiscrete,
     EulerAncestral,
     DpmPlusPlus2M
   };
 
-  struct AXODOX_MACHINELEARNING_API StableDiffusionSchedulerOptions2
+  struct AXODOX_MACHINELEARNING_API StableDiffusionSchedulerOptions
   {
     size_t TrainStepCount = 1000;
     size_t InferenceStepCount = 20;
@@ -21,15 +20,15 @@ namespace Axodox::MachineLearning
     std::span<std::minstd_rand> Randoms;
   };
 
-  class AXODOX_MACHINELEARNING_API StableDiffusionScheduler2
+  class AXODOX_MACHINELEARNING_API StableDiffusionScheduler
   {
   public:
-    StableDiffusionScheduler2(const StableDiffusionSchedulerOptions2& options);
-    virtual ~StableDiffusionScheduler2() = default;
+    StableDiffusionScheduler(const StableDiffusionSchedulerOptions& options);
+    virtual ~StableDiffusionScheduler() = default;
 
     virtual Tensor ApplyStep(const Tensor& input, const Tensor& output, size_t step) = 0;
 
-    static std::unique_ptr<StableDiffusionScheduler2> Create(StableDiffusionSchedulerKind2 kind, const StableDiffusionSchedulerOptions2& options);
+    static std::unique_ptr<StableDiffusionScheduler> Create(StableDiffusionSchedulerKind kind, const StableDiffusionSchedulerOptions& options);
 
     std::span<const float> Timesteps() const;
     std::span<const float> Sigmas() const;

@@ -5,8 +5,8 @@ using namespace std;
 
 namespace Axodox::MachineLearning
 {
-  EulerAncestralScheduler::EulerAncestralScheduler(const StableDiffusionSchedulerOptions2& options) : 
-    StableDiffusionScheduler2(options)
+  EulerAncestralScheduler::EulerAncestralScheduler(const StableDiffusionSchedulerOptions& options) : 
+    StableDiffusionScheduler(options)
   { }
 
   Tensor EulerAncestralScheduler::ApplyStep(const Tensor& input, const Tensor& output, size_t step)

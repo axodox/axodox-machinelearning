@@ -36,7 +36,7 @@ namespace Axodox::MachineLearning
       context.Randoms.push_back(minstd_rand{ options.Seed + uint32_t(i) });
     }
 
-    context.Scheduler = StableDiffusionScheduler2::Create(StableDiffusionSchedulerKind2::EulerAncestral, { .InferenceStepCount = options.StepCount, .Randoms = context.Randoms });
+    context.Scheduler = StableDiffusionScheduler::Create(options.SchedulerType, { .InferenceStepCount = options.StepCount, .Randoms = context.Randoms });
 
     //Schedule steps
     //list<Tensor> derivatives;

@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "StableDiffusionScheduler2.h"
+#include "StableDiffusionScheduler.h"
 #include "EulerAncestralScheduler.h"
 #include "DpmPlusPlus2MScheduler.h"
 
@@ -7,7 +7,7 @@ using namespace std;
 
 namespace Axodox::MachineLearning
 {
-  StableDiffusionScheduler2::StableDiffusionScheduler2(const StableDiffusionSchedulerOptions2& options) :
+  StableDiffusionScheduler::StableDiffusionScheduler(const StableDiffusionSchedulerOptions& options) :
     _randoms(options.Randoms)
   {
     //Betas - scaled linear
@@ -47,7 +47,7 @@ namespace Axodox::MachineLearning
     {
       timesteps.resize(options.InferenceStepCount);
 
-      auto stepRatio = options.TrainStepCount / options.InferenceStepCount;
+      auto stepRatio = float(options.TrainStepCount / options.InferenceStepCount);
       auto step = (options.TrainStepCount - 1) / float(options.InferenceStepCount - 1);
       for (auto value = 0; auto & timestep : timesteps)
       {
@@ -83,49 +83,47 @@ namespace Axodox::MachineLearning
     _timesteps = move(timesteps);
   }
 
-  std::unique_ptr<StableDiffusionScheduler2> StableDiffusionScheduler2::Create(StableDiffusionSchedulerKind2 kind, const StableDiffusionSchedulerOptions2& options)
+  std::unique_ptr<StableDiffusionScheduler> StableDiffusionScheduler::Create(StableDiffusionSchedulerKind kind, const StableDiffusionSchedulerOptions& options)
   {
     switch (kind)
     {
-    case StableDiffusionSchedulerKind2::EulerAncestral:
+    case StableDiffusionSchedulerKind::EulerAncestral:
       return make_unique<EulerAncestralScheduler>(options);
-    case StableDiffusionSchedulerKind2::DpmPlusPlus2M:
+    case StableDiffusionSchedulerKind::DpmPlusPlus2M:
       return make_unique<DpmPlusPlus2MScheduler>(options);
     default:
       return nullptr;
     }
   }
 
-  std::span<const float> StableDiffusionScheduler2::Timesteps() const
+  std::span<const float> StableDiffusionScheduler::Timesteps() const
   {
     return _timesteps;
   }
 
-  std::span<const float> StableDiffusionScheduler2::Sigmas() const
+  std::span<const float> StableDiffusionScheduler::Sigmas() const
   {
     return _sigmas;
   }
 
-  float StableDiffusionScheduler2::SigmaToTime(float sigma) const
+  float StableDiffusionScheduler::SigmaToTime(float sigma) const
   {
-    auto TIMESTEPS = int(_timesteps.size());
+    auto stepCount = int(_timesteps.size());
 
-    int low_idx = TIMESTEPS - 1, high_idx = TIMESTEPS;
+    int lowIndex = stepCount - 1, highIndex = stepCount;
     for (auto i = 0; i < _trainingSigmas.size(); i++) {
       if (_trainingSigmas[i] >= sigma)
       {
-        low_idx = max(0, i - 1);
-        high_idx = low_idx + 1;
+        lowIndex = max(0, i - 1);
+        highIndex = lowIndex + 1;
         break;
       }
     }
 
-    float low = log(_trainingSigmas[low_idx]);
-    float high = log(_trainingSigmas[high_idx]);
-    float w = (low -log(sigma)) / (low - high);
-    w = max(0.f, min(1.f, w));
-    float t = (1.0f - w) * low_idx + w * high_idx;
-
+    float low = log(_trainingSigmas[lowIndex]);
+    float high = log(_trainingSigmas[highIndex]);
+    float w = clamp((low -log(sigma)) / (low - high), 0.f, 1.f);
+    float t = (1.0f - w) * lowIndex + w * highIndex;
     return t;
   }
 }

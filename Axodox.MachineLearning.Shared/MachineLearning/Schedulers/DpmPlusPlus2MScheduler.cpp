@@ -5,8 +5,8 @@ using namespace std;
 
 namespace Axodox::MachineLearning
 {
-  DpmPlusPlus2MScheduler::DpmPlusPlus2MScheduler(const StableDiffusionSchedulerOptions2& options) :
-    StableDiffusionScheduler2(options)
+  DpmPlusPlus2MScheduler::DpmPlusPlus2MScheduler(const StableDiffusionSchedulerOptions& options) :
+    StableDiffusionScheduler(options)
   {
     //Apply Karras sigmas
     const auto rho = 7.f;
@@ -28,13 +28,16 @@ namespace Axodox::MachineLearning
       timesteps[i] = SigmaToTime(sigmas[i]);
     }
 
-    vector<float> timestepsInterpol(_timesteps.size());
+    _sigmas = move(sigmas);
+    _timesteps = move(timesteps);
+
+    /*vector<float> timestepsInterpol(_timesteps.size());
     vector<float> sigmasInterpol(_sigmas.size());
     for (auto i = 0; i < stepCount; i++)
     {
       sigmasInterpol[i] = (sigmas[i] + sigmas[i + 1]) / 2.f;
       timestepsInterpol[i] = SigmaToTime(sigmasInterpol[i]);
-    }
+    }*/
 
     //_timesteps = { 999.f, 947.6224f, 889.5464f, 823.0464f, 745.8676f, 655.3113f, 549.0170f, 427.4898f, 298.6582f, 179.8307f, 89.9427f, 36.5918f, 12.0011f, 2.8839f, 0.f };
   }

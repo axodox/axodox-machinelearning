@@ -12,9 +12,12 @@
 #include "MachineLearning/Prompts/PromptParser.h"
 #include "MachineLearning/Prompts/PromptScheduler.h"
 
+#include "MachineLearning/Schedulers/StableDiffusionScheduler.h"
+#include "MachineLearning/Schedulers/EulerAncestralScheduler.h"
+#include "MachineLearning/Schedulers/DpmPlusPlus2MScheduler.h"
+
 #include "MachineLearning/SafetyChecker.h"
 #include "MachineLearning/SafetyCheckerOptions.h"
-#include "MachineLearning/StableDiffusionScheduler.h"
 #include "MachineLearning/StableDiffustionInferer.h"
 #include "MachineLearning/TensorInfo.h"
 #include "MachineLearning/Tensor.h"

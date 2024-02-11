@@ -1,8 +1,7 @@
 #pragma once
 #include "TextEncoder.h"
 #include "OnnxEnvironment.h"
-#include "StableDiffusionScheduler.h"
-#include "Schedulers/StableDiffusionScheduler2.h"
+#include "Schedulers/StableDiffusionScheduler.h"
 #include "Threading/AsyncOperation.h"
 
 namespace Axodox::MachineLearning
@@ -27,6 +26,7 @@ namespace Axodox::MachineLearning
     Tensor LatentInput;
     Tensor MaskInput;
     float DenoisingStrength = 1.f;
+    StableDiffusionSchedulerKind SchedulerType = StableDiffusionSchedulerKind::DpmPlusPlus2M;
 
     void Validate() const;
   };
@@ -34,7 +34,7 @@ namespace Axodox::MachineLearning
   struct StableDiffusionContext
   {
     const StableDiffusionOptions* Options;
-    std::unique_ptr<StableDiffusionScheduler2> Scheduler;
+    std::unique_ptr<StableDiffusionScheduler> Scheduler;
     std::vector<std::minstd_rand> Randoms;
   };
 

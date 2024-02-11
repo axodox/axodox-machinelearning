@@ -1,12 +1,12 @@
 #pragma once
-#include "StableDiffusionScheduler2.h"
+#include "StableDiffusionScheduler.h"
 
 namespace Axodox::MachineLearning
 {
-  class EulerAncestralScheduler : public StableDiffusionScheduler2
+  class EulerAncestralScheduler : public StableDiffusionScheduler
   {
   public:
-    EulerAncestralScheduler(const StableDiffusionSchedulerOptions2& context);
+    EulerAncestralScheduler(const StableDiffusionSchedulerOptions& context);
 
     virtual Tensor ApplyStep(const Tensor& input, const Tensor& output, size_t step) override;
   };
