@@ -47,7 +47,7 @@ namespace Axodox::MachineLearning
     float h = tNext - t;
 
     Tensor denoised;
-    if (step == 0 || nextSigma == 0)
+    if (!_previousPredictedSample || nextSigma == 0)
     {
       denoised = predictedOriginalSample;
     }
@@ -64,8 +64,14 @@ namespace Axodox::MachineLearning
         });
     }
 
-    _previousPredictedSample = predictedOriginalSample;
-
+    if (nextSigma != 0)
+    {
+      _previousPredictedSample = predictedOriginalSample;
+    }
+    else
+    {
+      _previousPredictedSample.Reset();
+    }
 
     float x = nextSigma / currentSigma;
     float y = exp(-h) - 1.f;
