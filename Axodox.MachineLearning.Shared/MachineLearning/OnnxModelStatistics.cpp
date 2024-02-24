@@ -83,9 +83,10 @@ namespace Axodox::MachineLearning
     for (size_t i = 0; i < count; i++)
     {
       auto name = (session.*getNameAllocated)(i, allocator);
-      auto typeAndShapeInfo = (session.*getTypeInfo)(i).GetTensorTypeAndShapeInfo();
+      auto typeInfo = (session.*getTypeInfo)(i);
+      auto typeAndShapeInfo = typeInfo.GetTensorTypeAndShapeInfo();
       auto type = TensorInfoToString(typeAndShapeInfo.GetElementType());
-
+      
       vector<const char*> dimensionNames;
       dimensionNames.resize(typeAndShapeInfo.GetDimensionsCount());
       typeAndShapeInfo.GetSymbolicDimensions(dimensionNames.data(), dimensionNames.size());

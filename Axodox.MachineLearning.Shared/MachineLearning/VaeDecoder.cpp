@@ -14,12 +14,12 @@ namespace Axodox::MachineLearning
   { 
     auto metadata = OnnxModelMetadata::Create(_environment, _session);
     _isUsingFloat16 = metadata.Inputs["latent_sample"].Type == TensorType::Half;
-
+    
     _session.Evict();
     _logger.log(log_severity::information, "Loaded.");
   }
 
-  Tensor VaeDecoder::DecodeVae(const Tensor& image)
+  Tensor VaeDecoder::DecodeVae(const Tensor& image, Threading::async_operation_source* async)
   {
     _logger.log(log_severity::information, "Running inference...");
 
@@ -29,6 +29,13 @@ namespace Axodox::MachineLearning
     Tensor results;
     for (size_t i = 0; i < image.Shape[0]; i++)
     {
+      //Update status
+      if (async)
+      {
+        async->update_state(NAN, format("Decoding VAE {}/{}...", i + 1, image.Shape[0]));
+        if (async->is_cancelled()) return {};
+      }
+
       //Bind values
       IoBinding bindings{ _session };
       bindings.BindInput("latent_sample", inputValues[i].ToHalf(_isUsingFloat16).ToOrtValue());
@@ -49,6 +56,11 @@ namespace Axodox::MachineLearning
       }
 
       memcpy(results.AsPointer<float>(i), result.AsPointer<float>(), result.ByteCount());
+    }
+
+    if (async)
+    {
+      async->update_state(1.f, "VAE decoded.");
     }
 
     _session.Evict();
