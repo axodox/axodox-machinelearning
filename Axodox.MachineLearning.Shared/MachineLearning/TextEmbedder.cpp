@@ -86,7 +86,7 @@ namespace Axodox::MachineLearning
         }
       }
 
-      embeddings.push_back(move(embedding));
+      embeddings.push_back(embedding);
     }
 
     return embeddings;

@@ -127,8 +127,8 @@ namespace Axodox::MachineLearning
 
     std::vector<Tensor> Split(size_t instances = 2) const;
 
-    template<typename T>
-    Tensor BinaryOperation(const Tensor& other, const std::function<T(T, T)>& operation) const
+    template<typename T, typename TOperation>
+    Tensor BinaryOperation(const Tensor& other, TOperation operation) const
     {
       if (Shape != other.Shape) throw std::logic_error("Incompatible tensor shapes.");
       if (Type != other.Type) throw std::logic_error("Incompatible tensor types.");
@@ -147,8 +147,8 @@ namespace Axodox::MachineLearning
       return result;
     }
 
-    template<typename T>
-    void UnaryOperation(const Tensor& other, const std::function<T(T, T)>& operation)
+    template<typename T, typename TOperation>
+    void UnaryOperation(const Tensor& other, TOperation operation)
     {
       if (Shape != other.Shape) throw std::logic_error("Incompatible tensor shapes.");
       if (Type != other.Type) throw std::logic_error("Incompatible tensor types.");
