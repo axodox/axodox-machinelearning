@@ -8,7 +8,7 @@ namespace Axodox::MachineLearning
   {
   public:
     static const int32_t StartToken;
-    static const int32_t BlankToken;
+    static const int32_t EndToken;
     static const size_t MaxTokenCount;
 
     TextTokenizer(OnnxEnvironment& environment, const std::filesystem::path& sourcePath = {});

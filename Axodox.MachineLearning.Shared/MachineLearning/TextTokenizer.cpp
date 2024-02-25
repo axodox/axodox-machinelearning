@@ -9,7 +9,7 @@ namespace Axodox::MachineLearning
 {
   const size_t TextTokenizer::MaxTokenCount = 77;
   const int32_t TextTokenizer::StartToken = 49406;
-  const int32_t TextTokenizer::BlankToken = 49407;
+  const int32_t TextTokenizer::EndToken = 49407;
 
   TextTokenizer::TextTokenizer(OnnxEnvironment& environment, const std::filesystem::path& sourcePath) :
     _environment(environment),
@@ -65,7 +65,7 @@ namespace Axodox::MachineLearning
       auto pMask = attentionMask.AsPointer<int64_t>(i);
       for (size_t j = 0; j < outputSpan.Shape[1]; j++)
       {
-        *pToken++ = *pMask++ ? int32_t(*pSource++) : BlankToken;
+        *pToken++ = *pMask++ ? int32_t(*pSource++) : EndToken;
       }
     }
 
@@ -75,9 +75,9 @@ namespace Axodox::MachineLearning
   Tensor TextTokenizer::GetUnconditionalTokens()
   {
     Tensor result{ TensorType::Int32, 1, MaxTokenCount };
-    ranges::fill(result.AsSpan<int32_t>(), BlankToken);
+    ranges::fill(result.AsSpan<int32_t>(), EndToken);
 
-    *result.AsPointer<int32_t>(0) = 49406;
+    *result.AsPointer<int32_t>(0) = StartToken;
     return result;
   }
 }

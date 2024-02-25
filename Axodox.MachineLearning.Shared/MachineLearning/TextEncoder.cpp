@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "TextEncoder.h"
+#include "TextTokenizer.h"
 #include "OnnxModelMetadata.h"
 
 using namespace Axodox::Infrastructure;
@@ -22,6 +23,7 @@ namespace Axodox::MachineLearning
   { 
     auto metadata = OnnxModelMetadata::Create(_environment, _session);
     _has64bitInputIds = metadata.Inputs["input_ids"].Type == TensorType::Int64;
+    _hasHiddenLayers = metadata.Outputs.contains("hidden_states.11");
     
     _logger.log(log_severity::information, "Loaded.");
   }
@@ -33,7 +35,7 @@ namespace Axodox::MachineLearning
     //Bind values
     IoBinding bindings{ _session };
     bindings.BindInput("input_ids", text.ToInt64(_has64bitInputIds).ToOrtValue());
-    bindings.BindOutput("last_hidden_state", _environment->MemoryInfo());
+    bindings.BindOutput(_hasHiddenLayers ? "hidden_states.11" : "last_hidden_state", _environment->MemoryInfo());
 
     //Run inference
     _session.Run({}, bindings);
@@ -68,13 +70,13 @@ namespace Axodox::MachineLearning
     for (auto& token : input.AsSpan<int32_t>())
     {
       if (isEnding) token = 0;
-      if (token == 49407) isEnding = true;
+      if (token == TextTokenizer::EndToken) isEnding = true;
     }
 
     //Bind values
     IoBinding bindings{ _session };
     bindings.BindInput("input_ids", input.ToInt64(_has64bitInputIds).ToOrtValue());
-    bindings.BindOutput("last_hidden_state", _environment->MemoryInfo());
+    bindings.BindOutput("hidden_states.11", _environment->MemoryInfo());
     bindings.BindOutput("text_embeds", _environment->MemoryInfo());
 
     //Run inference

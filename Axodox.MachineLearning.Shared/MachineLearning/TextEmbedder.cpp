@@ -118,7 +118,7 @@ namespace Axodox::MachineLearning
     {
       auto tokenizedChunk = tokenizedChunks.AsSubSpan<int32_t>(i);
       auto lastToken = tokenizedChunk.end() - 1;
-      while (lastToken > tokenizedChunk.begin() && *lastToken == TextTokenizer::BlankToken) lastToken--;
+      while (lastToken > tokenizedChunk.begin() && *lastToken == TextTokenizer::EndToken) lastToken--;
 
       auto tokensToCopy = int32_t(distance(tokenizedChunk.begin(), lastToken));
       auto copiableLength = min(tokensToCopy, availableSpace);
@@ -132,7 +132,7 @@ namespace Axodox::MachineLearning
       availableSpace -= copiableLength;
     }
 
-    fill(pTokenTarget, tokenTarget.data() + tokenTarget.size(), TextTokenizer::BlankToken);
+    fill(pTokenTarget, tokenTarget.data() + tokenTarget.size(), TextTokenizer::EndToken);
     fill(pAttention, attentionMask.data() + attentionMask.size(), 1.f);
 
     return { tokenizedTensor, attentionMask, availableSpace };

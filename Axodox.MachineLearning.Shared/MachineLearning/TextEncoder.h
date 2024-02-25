@@ -26,6 +26,7 @@ namespace Axodox::MachineLearning
     Ort::Session _session;
 
     bool _has64bitInputIds;
+    bool _hasHiddenLayers;
   };
 
   class AXODOX_MACHINELEARNING_API TextEncoder2
