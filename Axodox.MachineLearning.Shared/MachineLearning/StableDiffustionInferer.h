@@ -27,6 +27,7 @@ namespace Axodox::MachineLearning
     Tensor MaskInput;
     float DenoisingStrength = 1.f;
     StableDiffusionSchedulerKind Scheduler = StableDiffusionSchedulerKind::EulerAncestral;
+    StableDiffusionSchedulerPredictionType PredictionType = StableDiffusionSchedulerPredictionType::Epsilon;
 
     void Validate() const;
   };

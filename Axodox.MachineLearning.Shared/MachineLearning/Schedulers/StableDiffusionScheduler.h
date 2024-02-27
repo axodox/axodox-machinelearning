@@ -9,12 +9,19 @@ namespace Axodox::MachineLearning
     DpmPlusPlus2M
   };
 
+  enum class StableDiffusionSchedulerPredictionType {
+      Epsilon,
+      V
+  };
+
   struct AXODOX_MACHINELEARNING_API StableDiffusionSchedulerOptions
   {
     size_t TrainStepCount = 1000;
     size_t InferenceStepCount = 20;
     float BetaAtStart = 0.00085f;
     float BetaAtEnd = 0.012f;
+    StableDiffusionSchedulerPredictionType PredictionType = StableDiffusionSchedulerPredictionType::Epsilon;
+
     std::span<const float> BetasTrained;
 
     std::span<std::minstd_rand> Randoms;
@@ -37,6 +44,7 @@ namespace Axodox::MachineLearning
     std::vector<float> _timesteps;
     std::vector<float> _trainingSigmas, _sigmas;
     std::span<std::minstd_rand> _randoms;
+    StableDiffusionSchedulerPredictionType _predictiontype;
 
     float SigmaToTime(float sigma) const;
   };
