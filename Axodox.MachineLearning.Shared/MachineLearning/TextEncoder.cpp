@@ -24,6 +24,7 @@ namespace Axodox::MachineLearning
     auto metadata = OnnxModelMetadata::Create(_environment, _session);
     _has64bitInputIds = metadata.Inputs["input_ids"].Type == TensorType::Int64;
     _hasHiddenLayers = metadata.Outputs.contains("hidden_states.11");
+    isSDXL = false;
     
     _logger.log(log_severity::information, "Loaded.");
   }
@@ -32,10 +33,18 @@ namespace Axodox::MachineLearning
   {
     _logger.log(log_severity::information, "Running inference...");
 
+    std::string hiddenStatesLayer = "hidden_states.11";
+
+    // https://github.com/huggingface/diffusers/blob/1f22c9882020cbe2cc08acfee54fab553bbb5678/src/diffusers/pipelines/stable_diffusion_xl/pipeline_stable_diffusion_xl.py#L387
+    // SDXL has -2 (use penultimate layer) CLIP skip in diffusers for both text encoders
+    // without this, some models generate noise/clouds.
+    if (isSDXL)
+        hiddenStatesLayer = "hidden_states.10";
+
     //Bind values
     IoBinding bindings{ _session };
     bindings.BindInput("input_ids", text.ToInt64(_has64bitInputIds).ToOrtValue());
-    bindings.BindOutput(_hasHiddenLayers ? "hidden_states.11" : "last_hidden_state", _environment->MemoryInfo());
+    bindings.BindOutput(_hasHiddenLayers ? hiddenStatesLayer.c_str() : "last_hidden_state", _environment->MemoryInfo());
 
     //Run inference
     _session.Run({}, bindings);
@@ -76,7 +85,11 @@ namespace Axodox::MachineLearning
     //Bind values
     IoBinding bindings{ _session };
     bindings.BindInput("input_ids", input.ToInt64(_has64bitInputIds).ToOrtValue());
-    bindings.BindOutput("hidden_states.11", _environment->MemoryInfo());
+
+    // https://github.com/huggingface/diffusers/blob/1f22c9882020cbe2cc08acfee54fab553bbb5678/src/diffusers/pipelines/stable_diffusion_xl/pipeline_stable_diffusion_xl.py#L387
+    // SDXL has -2 (use penultimate layer) CLIP skip in diffusers for both text encoders
+    // without this, some models generate noise/clouds.
+    bindings.BindOutput("hidden_states.31", _environment->MemoryInfo());
     bindings.BindOutput("text_embeds", _environment->MemoryInfo());
 
     //Run inference
@@ -113,6 +126,7 @@ namespace Axodox::MachineLearning
     if (filesystem::exists(get<filesystem::path>(*source), ec))
     {
       _textEncoder2 = make_unique<TextEncoder2>(environment, source);
+      _textEncoder.isSDXL = true;
     }
   }
 
