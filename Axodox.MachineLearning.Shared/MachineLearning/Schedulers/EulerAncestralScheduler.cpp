@@ -25,9 +25,14 @@ namespace Axodox::MachineLearning
                 });
 
         }
-        else 
+        else if (_predictiontype == StableDiffusionSchedulerPredictionType::Epsilon) 
         {
             predictedOriginalSample = input.BinaryOperation<float>(output, [currentSigma](float a, float b) { return a - currentSigma * b; });
+
+        }
+        else 
+        {
+            throw std::invalid_argument("Uninmplemented prediction type.");
 
         }
          
