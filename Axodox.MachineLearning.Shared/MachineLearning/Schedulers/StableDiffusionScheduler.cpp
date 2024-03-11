@@ -81,6 +81,7 @@ namespace Axodox::MachineLearning
     _trainingSigmas = move(trainingSigmas);
     _sigmas = move(inferenceSigmas);
     _timesteps = move(timesteps);
+    _predictiontype = options.PredictionType;
   }
 
   std::unique_ptr<StableDiffusionScheduler> StableDiffusionScheduler::Create(StableDiffusionSchedulerKind kind, const StableDiffusionSchedulerOptions& options)

@@ -27,6 +27,11 @@ namespace Axodox::MachineLearning
 
     bool _has64bitInputIds;
     bool _hasHiddenLayers;
+
+  protected:
+      friend class TextEncodingProvider;
+      bool isSDXL;
+
   };
 
   class AXODOX_MACHINELEARNING_API TextEncoder2
