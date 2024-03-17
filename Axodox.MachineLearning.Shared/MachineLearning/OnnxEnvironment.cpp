@@ -9,6 +9,7 @@ using namespace winrt;
 namespace Axodox::MachineLearning
 {
   OnnxHost::OnnxHost(const char* logId) :
+    _logId(logId),
     _environment(ORT_LOGGING_LEVEL_WARNING, logId, &OnOrtLogAdded, this),
     _memoryInfo(MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeDefault)),
     _runOptions()
@@ -16,13 +17,6 @@ namespace Axodox::MachineLearning
     _environment.CreateAndRegisterAllocator(_memoryInfo, ArenaCfg(0, 1, -1, -1));
     _environment.DisableTelemetryEvents();
     //_runOptions.AddConfigEntry("memory.enable_memory_arena_shrinkage", "gpu:0");
-
-    D3D12_COMMAND_QUEUE_DESC commandQueueDesc;
-    zero_memory(commandQueueDesc);
-
-    check_hresult(D3D12CreateDevice(nullptr, D3D_FEATURE_LEVEL_12_0, guid_of<ID3D12Device>(), _d3d12Device.put_void()));
-    check_hresult(_d3d12Device->CreateCommandQueue(&commandQueueDesc, guid_of<ID3D12CommandQueue>(), _d3d12CommandQueue.put_void()));
-    check_hresult(DMLCreateDevice(_d3d12Device.get(), DML_CREATE_DEVICE_FLAG_NONE, guid_of<IDMLDevice>(), _dmlDevice.put_void()));
   }
 
   Ort::Env& OnnxHost::Environment()
@@ -39,7 +33,7 @@ namespace Axodox::MachineLearning
   {
     auto options = CpuSessionOptions();
     
-    OrtSessionOptionsAppendExecutionProviderEx_DML(options, _dmlDevice.get(), _d3d12CommandQueue.get());
+    //OrtSessionOptionsAppendExecutionProviderEx_DML(options, _dmlDevice.get(), _d3d12CommandQueue.get());
     //OrtSessionOptionsAppendExecutionProvider_DML(options, DeviceId);
     return options;
   }
@@ -59,6 +53,32 @@ namespace Axodox::MachineLearning
   {
     return _runOptions;
   }
+
+  bool OnnxHost::IsValid() const
+  {
+    //return _d3d12Device->GetDeviceRemovedReason() == S_OK;
+    return true;
+  }
+
+  void OnnxHost::Reset()
+  {
+    auto logId = _logId;
+    this->~OnnxHost();
+    new (this) OnnxHost(logId);
+  }
+
+  bool OnnxHost::ResetIfFailed()
+  {
+    if (!IsValid())
+    {
+      Reset();
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
   
   Ort::Session OnnxHost::CreateSession(ModelSource modelSource)
   {
@@ -76,6 +96,13 @@ namespace Axodox::MachineLearning
       auto modelData = get<span<const uint8_t>>(modelSource);
       return Session{ _environment, modelData.data(), modelData.size(), sessionOptions};
     }
+  }
+
+  Ort::Session OnnxHost::CreateSession(std::span<const uint8_t> modelBuffer)
+  {
+    auto sessionOptions = DefaultSessionOptions();
+    sessionOptions.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_DISABLE_ALL);
+    return Session{ _environment, modelBuffer.data(), modelBuffer.size(), sessionOptions };
   }
 
   Ort::Session OnnxHost::CreateOptimizedSession(const std::filesystem::path& modelPath)

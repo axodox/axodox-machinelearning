@@ -48,7 +48,7 @@ namespace Axodox::MachineLearning
       timesteps.resize(options.InferenceStepCount);
 
       auto step = (options.TrainStepCount - 1) / float(options.InferenceStepCount - 1);
-      for (auto value = 0; auto & timestep : timesteps)
+      for (auto value = 0.f; auto & timestep : timesteps)
       {
         timestep = value;
         value += step;

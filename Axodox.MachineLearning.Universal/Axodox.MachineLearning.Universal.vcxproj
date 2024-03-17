@@ -103,6 +103,14 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Update="C:\dev\axodox-machinelearning\Axodox.MachineLearning.Shared\MachineLearning\Sessions\OnnxEnvironment.2cpp">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Update="C:\dev\axodox-machinelearning\Axodox.MachineLearning.Shared\MachineLearning\Sessions\OnnxEnvironment2.cpp">
+      <FileType>Document</FileType>
+    </ClCompile>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\packages\Axodox.MachineLearning.OnnxRuntime.DirectML.1.16.1\build\native\Axodox.MachineLearning.OnnxRuntime.DirectML.targets" Condition="Exists('..\packages\Axodox.MachineLearning.OnnxRuntime.DirectML.1.16.1\build\native\Axodox.MachineLearning.OnnxRuntime.DirectML.targets')" />

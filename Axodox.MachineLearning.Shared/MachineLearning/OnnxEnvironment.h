@@ -20,16 +20,19 @@ namespace Axodox::MachineLearning
     Ort::SessionOptions CpuSessionOptions();
     Ort::RunOptions& RunOptions();
 
+    bool IsValid() const;
+    void Reset();
+    bool ResetIfFailed();
+
     Ort::Session CreateSession(ModelSource modelPath);
+    Ort::Session CreateSession(std::span<const uint8_t> modelBuffer);
     Ort::Session CreateOptimizedSession(const std::filesystem::path& modelPath);
 
   private:
+    const char* _logId;
     Ort::Env _environment;
     Ort::MemoryInfo _memoryInfo;
-    Ort::RunOptions _runOptions;
-    winrt::com_ptr<ID3D12Device> _d3d12Device;
-    winrt::com_ptr<ID3D12CommandQueue> _d3d12CommandQueue;
-    winrt::com_ptr<IDMLDevice> _dmlDevice;
+    Ort::RunOptions _runOptions;   
 
     static void ORT_API_CALL OnOrtLogAdded(void* param, OrtLoggingLevel severity, const char* category, const char* logId, const char* codeLocation, const char* message);
   };
