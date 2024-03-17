@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "SafetyCheckerOptions.h"
 
-namespace Axodox::MachineLearning
+namespace Axodox::MachineLearning::StableDiffusion
 {
   SafetyCheckerCropSize::SafetyCheckerCropSize() :
     Width(this, "width", 224),

@@ -7,25 +7,30 @@ using namespace std;
 
 namespace Axodox::MachineLearning::Sessions
 {
-  OnnxSession::OnnxSession(const OnnxSessionParameters& parameters) :
+  OnnxSessionContainer::OnnxSessionContainer(const OnnxSessionParameters& parameters) :
     _parameters(parameters),
     _session(nullptr)
   {
     if (!_parameters.IsValid()) throw logic_error("Some of the required session parameters have not been set.");
 
     //Subscribe to executor reset
-    _deviceResetSubscription = _parameters.Executor->DeviceReset({ this, &OnnxSession::OnDeviceReset });
+    _deviceResetSubscription = _parameters.Executor->DeviceReset({ this, &OnnxSessionContainer::OnDeviceReset });
 
     //Initalize session
     EnsureSession();
   }
 
-  Threading::locked_ptr<Ort::Session> OnnxSession::TryLock()
+  Threading::locked_ptr<Ort::Session> OnnxSessionContainer::Session()
   {
     return { _mutex, &_session };
   }
 
-  void OnnxSession::EnsureSession()
+  OnnxEnvironment* OnnxSessionContainer::Environment() const
+  {
+    return _parameters.Environment.get();
+  }
+
+  void OnnxSessionContainer::EnsureSession()
   {
     //Esnure executor (might trigger reset)
     _parameters.Executor->Ensure();
@@ -48,10 +53,10 @@ namespace Axodox::MachineLearning::Sessions
     _session = { environment, buffer.data(), buffer.size(), options };
   }
 
-  void OnnxSession::OnDeviceReset(Executors::OnnxExecutor* executor)
+  void OnnxSessionContainer::OnDeviceReset(Executors::OnnxExecutor* executor)
   {
     unique_lock lock(_mutex);
-    _session = Session{nullptr};
+    _session = Ort::Session{nullptr};
 
     EnsureSession();
   }

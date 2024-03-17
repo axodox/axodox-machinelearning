@@ -1,27 +1,29 @@
 #include "pch.h"
 #include "VaeDecoder.h"
-#include "OnnxModelMetadata.h"
+#include "../Sessions/OnnxModelMetadata.h"
 
 using namespace Axodox::Infrastructure;
+using namespace Axodox::MachineLearning::Sessions;
 using namespace Ort;
 using namespace std;
 
-namespace Axodox::MachineLearning
+namespace Axodox::MachineLearning::StableDiffusion
 {
-  VaeDecoder::VaeDecoder(OnnxEnvironment& environment, std::optional<ModelSource> source) :
-    _environment(environment),
-    _session(environment->CreateSession(source ? *source : (_environment.RootPath() / L"vae_decoder/model.onnx")))
+  VaeDecoder::VaeDecoder(const Sessions::OnnxSessionParameters& parameters) :
+    _sessionContainer(parameters)
   { 
-    auto metadata = OnnxModelMetadata::Create(_environment, _session);
+    auto metadata = OnnxModelMetadata::Create(_sessionContainer);
     _isUsingFloat16 = metadata.Inputs["latent_sample"].Type == TensorType::Half;
-    
-    _session.Evict();
     _logger.log(log_severity::information, "Loaded.");
   }
 
   Tensor VaeDecoder::DecodeVae(const Tensor& image, Threading::async_operation_source* async)
   {
     _logger.log(log_severity::information, "Running inference...");
+
+    //Get session
+    auto environment = _sessionContainer.Environment();
+    auto session = _sessionContainer.Session();
 
     //Load inputs
     auto inputValues = image.Split(image.Shape[0]);
@@ -37,12 +39,12 @@ namespace Axodox::MachineLearning
       }
 
       //Bind values
-      IoBinding bindings{ _session };
+      IoBinding bindings{ *session };
       bindings.BindInput("latent_sample", inputValues[i].ToHalf(_isUsingFloat16).ToOrtValue());
-      bindings.BindOutput("sample", _environment->MemoryInfo());
+      bindings.BindOutput("sample", environment->MemoryInfo());
 
       //Run inference
-      _session.Run({}, bindings);
+      session->Run({}, bindings);
 
       //Get result
       auto outputValues = bindings.GetOutputValues();
@@ -63,8 +65,10 @@ namespace Axodox::MachineLearning
       async->update_state(1.f, "VAE decoded.");
     }
 
-    _session.Evict();
+    //Evict model on end
+    session->Evict();
     _logger.log(log_severity::information, "Inference finished.");
+
     return results;
   }
 }

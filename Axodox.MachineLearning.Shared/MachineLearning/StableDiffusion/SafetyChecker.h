@@ -1,21 +1,22 @@
 #pragma once
-#include "OnnxEnvironment.h"
-#include "Tensor.h"
+#include "../Sessions/OnnxSession.h"
+#include "../Tensor.h"
 #include "SafetyCheckerOptions.h"
 #include "Graphics/Textures/TextureData.h"
 
-namespace Axodox::MachineLearning
+namespace Axodox::MachineLearning::StableDiffusion
 {
   class AXODOX_MACHINELEARNING_API SafetyChecker
   {
+    static inline const Infrastructure::logger _logger{ "SafetyChecker" };
+
   public:
-    SafetyChecker(OnnxEnvironment& environment, std::optional<ModelSource> source = {});
+    SafetyChecker(const Sessions::OnnxSessionParameters& parameters, SafetyCheckerOptions&& options = {});
 
     bool IsSafe(const Graphics::TextureData& texture);
 
   private:
-    OnnxEnvironment& _environment;
-    Ort::Session _session;
+    Sessions::OnnxSessionContainer _sessionContainer;
     SafetyCheckerOptions _options;
 
     Tensor ToClipInput(const Graphics::TextureData& texture) const;

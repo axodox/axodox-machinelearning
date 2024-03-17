@@ -3,6 +3,7 @@
 #include "Storage/FileIO.h"
 
 using namespace Axodox::Graphics;
+using namespace Axodox::Infrastructure;
 using namespace Axodox::Json;
 using namespace Axodox::Storage;
 using namespace DirectX;
@@ -10,35 +11,41 @@ using namespace DirectX::PackedVector;
 using namespace Ort;
 using namespace std;
 
-namespace Axodox::MachineLearning
+namespace Axodox::MachineLearning::StableDiffusion
 {
-  SafetyChecker::SafetyChecker(OnnxEnvironment& environment, std::optional<ModelSource> source) :
-    _environment(environment),
-    _session(environment->CreateSession(source ? *source : (_environment.RootPath() / L"safety_checker/model.onnx")))
-  {
-    auto text = try_read_text(_environment.RootPath() / L"feature_extractor/preprocessor_config.json");
-    if (!text) return;
-
-    auto value = try_parse_json<SafetyCheckerOptions>(*text);
-    if(!value) return;
-
-    _options = move(*value);
-  }
+  SafetyChecker::SafetyChecker(const Sessions::OnnxSessionParameters& parameters, SafetyCheckerOptions&& options) :
+    _sessionContainer(parameters),
+    _options(move(options))
+  { }
 
   bool SafetyChecker::IsSafe(const Graphics::TextureData& texture)
   {
+    _logger.log(log_severity::information, "Running inference...");
+
+    //Get session
+    auto environment = _sessionContainer.Environment();
+    auto session = _sessionContainer.Session();
+
+    //Load inputs
     auto clipInput = ToClipInput(texture);
     auto imageInput = ToImageInput(texture);
 
-    IoBinding bindings{ _session };
+    //Bind values
+    IoBinding bindings{ *session };
     bindings.BindInput("clip_input", clipInput.ToHalf().ToOrtValue());
     bindings.BindInput("images", imageInput.ToHalf().ToOrtValue());
-    bindings.BindOutput("has_nsfw_concepts", _environment->MemoryInfo());
+    bindings.BindOutput("has_nsfw_concepts", environment->MemoryInfo());
 
-    _session.Run({}, bindings);
+    //Run inference
+    session->Run({}, bindings);
 
+    //Get result
     auto outputValues = bindings.GetOutputValues();
     auto result = Tensor::FromOrtValue(outputValues[0]);
+
+    //Evict model on end
+    session->Evict();
+    _logger.log(log_severity::information, "Inference finished.");
 
     return !result.AsSpan<bool>()[0];
   }

@@ -15,12 +15,14 @@ namespace Axodox::MachineLearning::Sessions
     bool IsValid() const;
   };
 
-  class OnnxSession
+  class OnnxSessionContainer
   {
   public:
-    OnnxSession(const OnnxSessionParameters& parameters);
+    OnnxSessionContainer(const OnnxSessionParameters& parameters);
 
-    Threading::locked_ptr<Ort::Session> TryLock();
+    Threading::locked_ptr<Ort::Session> Session();
+
+    OnnxEnvironment* Environment() const;
 
   private:
     OnnxSessionParameters _parameters;

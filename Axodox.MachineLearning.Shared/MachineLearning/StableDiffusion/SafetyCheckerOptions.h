@@ -1,7 +1,7 @@
 #pragma once
 #include "Json/JsonSerializer.h"
 
-namespace Axodox::MachineLearning
+namespace Axodox::MachineLearning::StableDiffusion
 {
 	struct AXODOX_MACHINELEARNING_API SafetyCheckerCropSize : public Json::json_object_base
 	{

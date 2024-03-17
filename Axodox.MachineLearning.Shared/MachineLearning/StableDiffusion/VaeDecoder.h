@@ -1,22 +1,21 @@
 #pragma once
-#include "OnnxEnvironment.h"
-#include "Tensor.h"
+#include "../Sessions/OnnxSession.h"
+#include "../Tensor.h"
 #include "Threading/AsyncOperation.h"
 
-namespace Axodox::MachineLearning
+namespace Axodox::MachineLearning::StableDiffusion
 {
   class AXODOX_MACHINELEARNING_API VaeDecoder
   {
     static inline const Infrastructure::logger _logger{ "VaeDecoder" };
 
   public:
-    VaeDecoder(OnnxEnvironment& environment, std::optional<ModelSource> source = {});
+    VaeDecoder(const Sessions::OnnxSessionParameters& parameters);
 
     Tensor DecodeVae(const Tensor& image, Threading::async_operation_source* async = nullptr);
 
   private:
-    OnnxEnvironment& _environment;
-    Ort::Session _session;
+    Sessions::OnnxSessionContainer _sessionContainer;
     bool _isUsingFloat16;
   };
 }
