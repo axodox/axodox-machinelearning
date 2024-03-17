@@ -5,7 +5,9 @@
 using namespace Axodox::Graphics;
 using namespace Axodox::Storage;
 using namespace Axodox::MachineLearning;
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+using namespace Axodox::MachineLearning::Imaging::StableDiffusion;
+using namespace Axodox::MachineLearning::Sessions;
+using namespace Microsoft::VisualStudio::CppUnitTestFramework; 
 using namespace std;
 
 namespace Axodox::MachineLearning::Test
@@ -14,14 +16,13 @@ namespace Axodox::MachineLearning::Test
   {
     TEST_METHOD(TestControlNet)
     {
-      auto modelFolder = (lib_folder() / "..\\..\\..\\models").lexically_normal();
-      OnnxEnvironment environment(modelFolder / "stable_diffusion");
+      StableDiffusionDirectorySessionParameters sessionParameters{ lib_folder() / "../../../models/stable_diffusion" };
 
       ControlNetOptions options{};
 
       //Create text embedding
       {
-        TextEmbedder textEmbedder(environment);
+        TextEmbedder textEmbedder(sessionParameters);
         auto positiveEmbedding = textEmbedder.ProcessPrompt("a clean bedroom");
         auto negativeEmbedding = textEmbedder.ProcessPrompt("blurry, render");
 
@@ -36,21 +37,20 @@ namespace Axodox::MachineLearning::Test
         auto imageTexture = TextureData::FromBuffer(imageData);
         
         options.ConditionInput = Tensor::FromTextureData(imageTexture, ColorNormalization::LinearZeroToOne);
-        options.ConditionType = "depth";
       }
 
       //Run ControlNet
       Tensor image;
       {
-        auto controlnetFolder = (lib_folder() / "..\\..\\..\\models\\controlnet").lexically_normal();
-        ControlNetInferer controlNet{ environment, controlnetFolder };
+        auto controlnetParameters = OnnxSessionParameters::Create(lib_folder() / "../../../models/controlnet", OnnxExecutorType::Dml);
+        ControlNetInferer controlNet{ controlnetParameters, sessionParameters };
 
         image = controlNet.RunInference(options);
       }
 
       //Decode VAE
       {
-        VaeDecoder vaeDecoder{ environment };
+        VaeDecoder vaeDecoder{ sessionParameters };
 
         image = vaeDecoder.DecodeVae(image);
       }

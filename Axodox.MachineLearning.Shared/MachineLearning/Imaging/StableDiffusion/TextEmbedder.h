@@ -4,6 +4,7 @@
 #include "MachineLearning/Tensor.h"
 #include "TextTokenizer.h"
 #include "TextEncoder.h"
+#include "StableDiffusionSessionParameters.h"
 
 namespace Axodox::MachineLearning::Imaging::StableDiffusion
 {
@@ -30,6 +31,7 @@ namespace Axodox::MachineLearning::Imaging::StableDiffusion
 
   public:
     TextEmbedder(std::unique_ptr<TextTokenizer>&& tokenizer, std::unique_ptr<TextEncodingProvider>&& encoder);
+    TextEmbedder(const StableDiffusionSessionParameters& parameters);
 
     int32_t ValidatePrompt(std::string_view text);
 

@@ -1,6 +1,7 @@
 #pragma once
 #include "MachineLearning/Sessions/OnnxSession.h"
 #include "MachineLearning/Tensor.h"
+#include "StableDiffusionSessionParameters.h"
 
 namespace Axodox::MachineLearning::Imaging::StableDiffusion
 {
@@ -10,6 +11,7 @@ namespace Axodox::MachineLearning::Imaging::StableDiffusion
 
   public:
     VaeEncoder(const Sessions::OnnxSessionParameters& parameters);
+    VaeEncoder(const StableDiffusionSessionParameters& parameters);
 
     Tensor EncodeVae(const Tensor& image);
 

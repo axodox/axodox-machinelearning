@@ -15,6 +15,10 @@ namespace Axodox::MachineLearning::Imaging::StableDiffusion
     _sessionContainer(parameters)
   { }
 
+  TextTokenizer::TextTokenizer(const StableDiffusionSessionParameters& parameters) :
+    TextTokenizer(parameters.TextTokenizer())
+  { }
+
   Tensor TextTokenizer::TokenizeText(std::string_view text)
   {
     return TokenizeText(std::vector<const char*>{ text.data() });

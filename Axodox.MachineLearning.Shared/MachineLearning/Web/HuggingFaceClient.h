@@ -1,10 +1,10 @@
 #pragma once
 #ifdef PLATFORM_WINDOWS
-#include "../includes.h"
+#include "../../includes.h"
 #include "HuggingFaceSchema.h"
 #include "Threading/AsyncOperation.h"
 
-namespace Axodox::Web
+namespace Axodox::MachineLearning::Web
 {
   class AXODOX_MACHINELEARNING_API HuggingFaceClient
   {

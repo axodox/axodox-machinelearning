@@ -13,6 +13,10 @@ namespace Axodox::MachineLearning::Imaging::StableDiffusion
     _unetSessionContainer(unetParameters)
   { }
 
+  ControlNetInferer::ControlNetInferer(const Sessions::OnnxSessionParameters& controlnetParameters, const StableDiffusionDirectorySessionParameters& unetParameters) :
+    ControlNetInferer(controlnetParameters, unetParameters.ControlNet())
+  { }
+
   Tensor ControlNetInferer::RunInference(const ControlNetOptions& options, Threading::async_operation_source* async)
   {
     //Validate inputs

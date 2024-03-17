@@ -23,6 +23,10 @@ namespace Axodox::MachineLearning::Imaging::StableDiffusion
     _logger.log(log_severity::information, "Loaded.");
   }
 
+  StableDiffusionInferer::StableDiffusionInferer(const StableDiffusionSessionParameters& parameters) :
+    StableDiffusionInferer(parameters.UNet())
+  { }
+
   Tensor StableDiffusionInferer::RunInference(const StableDiffusionOptions& options, Threading::async_operation_source* async)
   {
     _logger.log(log_severity::information, "Running inference...");

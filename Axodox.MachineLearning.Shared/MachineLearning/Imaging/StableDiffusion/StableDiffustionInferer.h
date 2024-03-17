@@ -3,6 +3,7 @@
 #include "TextEncoder.h"
 #include "Schedulers/StableDiffusionScheduler.h"
 #include "Threading/AsyncOperation.h"
+#include "StableDiffusionSessionParameters.h"
 
 namespace Axodox::MachineLearning::Imaging::StableDiffusion
 {
@@ -58,6 +59,7 @@ namespace Axodox::MachineLearning::Imaging::StableDiffusion
 
   public:
     StableDiffusionInferer(const Sessions::OnnxSessionParameters& parameters);
+    StableDiffusionInferer(const StableDiffusionSessionParameters& parameters);
 
     Tensor RunInference(const StableDiffusionOptions& options, Threading::async_operation_source* async = nullptr);
 

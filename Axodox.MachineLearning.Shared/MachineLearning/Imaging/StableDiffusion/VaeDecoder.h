@@ -2,6 +2,7 @@
 #include "MachineLearning/Sessions/OnnxSession.h"
 #include "MachineLearning/Tensor.h"
 #include "Threading/AsyncOperation.h"
+#include "StableDiffusionSessionParameters.h"
 
 namespace Axodox::MachineLearning::Imaging::StableDiffusion
 {
@@ -11,6 +12,7 @@ namespace Axodox::MachineLearning::Imaging::StableDiffusion
 
   public:
     VaeDecoder(const Sessions::OnnxSessionParameters& parameters);
+    VaeDecoder(const StableDiffusionSessionParameters& parameters);
 
     Tensor DecodeVae(const Tensor& image, Threading::async_operation_source* async = nullptr);
 

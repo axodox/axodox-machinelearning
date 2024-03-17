@@ -15,6 +15,10 @@ namespace Axodox::MachineLearning::Imaging::StableDiffusion
     _textEncoder(move(encoder))
   { }
 
+  TextEmbedder::TextEmbedder(const StableDiffusionSessionParameters& parameters) :
+    TextEmbedder(make_unique<TextTokenizer>(parameters), make_unique<TextEncodingProvider>(parameters))
+  { }
+
   int32_t TextEmbedder::ValidatePrompt(std::string_view text)
   {
     int32_t availableTokenCount = int32_t(TextTokenizer::MaxTokenCount);

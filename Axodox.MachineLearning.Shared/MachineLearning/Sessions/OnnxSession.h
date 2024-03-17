@@ -12,7 +12,7 @@ namespace Axodox::MachineLearning::Sessions
     Dml = 1
   };
 
-  struct OnnxSessionParameters
+  struct AXODOX_MACHINELEARNING_API OnnxSessionParameters
   {
     std::shared_ptr<OnnxEnvironment> Environment;
     std::shared_ptr<Executors::OnnxExecutor> Executor;
@@ -23,7 +23,7 @@ namespace Axodox::MachineLearning::Sessions
     bool IsValid() const;
   };
 
-  class OnnxSessionContainer
+  class AXODOX_MACHINELEARNING_API OnnxSessionContainer
   {
   public:
     OnnxSessionContainer(const OnnxSessionParameters& parameters);

@@ -27,6 +27,10 @@ namespace Axodox::MachineLearning::Imaging::StableDiffusion
     _logger.log(log_severity::information, "Loaded.");
   }
 
+  TextEncoder::TextEncoder(const StableDiffusionSessionParameters& parameters) :
+    TextEncoder(parameters.TextEncoder())
+  { }
+
   Tensor TextEncoder::EncodeText(const Tensor& text)
   {
     _logger.log(log_severity::information, "Running inference...");
@@ -61,6 +65,10 @@ namespace Axodox::MachineLearning::Imaging::StableDiffusion
     _has64bitInputIds = metadata.Inputs["input_ids"].Type == TensorType::Int64;
     _logger.log(log_severity::information, "Loaded.");
   }
+
+  TextEncoder2::TextEncoder2(const StableDiffusionSessionParameters& parameters) :
+    TextEncoder2(parameters.TextEncoder2())
+  { }
 
   EncodedText TextEncoder2::EncodeText(const Tensor& text)
   {
@@ -112,6 +120,10 @@ namespace Axodox::MachineLearning::Imaging::StableDiffusion
       _textEncoder2 = make_unique<TextEncoder2>(encoder2Parameters);
     }
   }
+
+  TextEncodingProvider::TextEncodingProvider(const StableDiffusionSessionParameters& parameters) :
+    TextEncodingProvider(parameters.TextEncoder(), parameters.TextEncoder2())
+  { }
 
   EncodedText TextEncodingProvider::EncodeText(const Tensor& text)
   {

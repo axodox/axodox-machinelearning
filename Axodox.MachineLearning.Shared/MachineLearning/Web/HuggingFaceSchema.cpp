@@ -2,7 +2,7 @@
 #ifdef PLATFORM_WINDOWS
 #include "HuggingFaceSchema.h"
 
-namespace Axodox::Web
+namespace Axodox::MachineLearning::Web
 {
   HuggingFaceModelInfo::HuggingFaceModelInfo() :
     Id(this, "id")

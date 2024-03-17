@@ -18,6 +18,10 @@ namespace Axodox::MachineLearning::Imaging::StableDiffusion
     _options(move(options))
   { }
 
+  SafetyChecker::SafetyChecker(const StableDiffusionSessionParameters& parameters) :
+    SafetyChecker(parameters.SafetyChecker())
+  { }
+
   bool SafetyChecker::IsSafe(const Graphics::TextureData& texture)
   {
     _logger.log(log_severity::information, "Running inference...");

@@ -17,7 +17,7 @@ using namespace winrt::Windows::Web::Http;
 using namespace winrt::Windows::Web::Http::Headers;
 using namespace winrt::Windows::Web::Http::Filters;
 
-namespace Axodox::Web
+namespace Axodox::MachineLearning::Web
 {
   const wchar_t* const HuggingFaceClient::_baseUri = L"https://huggingface.co/";
 

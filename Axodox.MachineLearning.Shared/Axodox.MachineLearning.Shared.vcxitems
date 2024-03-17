@@ -21,6 +21,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Executors\DmlExecutor.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Executors\OnnxExecutor.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Imaging\Annotators\ImageAnnotator.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Imaging\StableDiffusion\StableDiffusionSessionParameters.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Solvers\Munkres\CostGraph.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Solvers\Munkres\CoverTable.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Solvers\Munkres\MunkresSolver.cpp" />
@@ -49,18 +50,25 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Imaging\StableDiffusion\TextTokenizer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Imaging\StableDiffusion\VaeDecoder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Imaging\StableDiffusion\VaeEncoder.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Web\HuggingFaceClient.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Web\HuggingFaceSchema.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Web\HuggingFaceClient.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Web\HuggingFaceSchema.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Include\Axodox.MachineLearning.Executors.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Include\Axodox.MachineLearning.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)includes.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Include\Axodox.MachineLearning.Imaging.Annotators.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Include\Axodox.MachineLearning.Imaging.StableDiffusion.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Include\Axodox.MachineLearning.Sessions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Include\Axodox.MachineLearning.Text.Prompts.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Include\Axodox.MachineLearning.Web.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Imaging\StableDiffusion\ControlNetInferer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Imaging\Annotators\DepthEstimator.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Executors\CpuExecutor.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Executors\DmlExecutor.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Imaging\Annotators\EdgeDetector.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Executors\OnnxExecutor.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Imaging\StableDiffusion\StableDiffusionSessionParameters.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Sessions\OnnxModelMetadata.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Sessions\OnnxModelSource.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Sessions\OnnxSession.h" />
@@ -92,8 +100,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Imaging\StableDiffusion\TextTokenizer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Imaging\StableDiffusion\VaeDecoder.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Imaging\StableDiffusion\VaeEncoder.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Web\HuggingFaceClient.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Web\HuggingFaceSchema.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Web\HuggingFaceClient.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Web\HuggingFaceSchema.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Assets\custom_op_cliptok.onnx" />

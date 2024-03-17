@@ -17,6 +17,10 @@ namespace Axodox::MachineLearning::Imaging::StableDiffusion
     _logger.log(log_severity::information, "Loaded.");
   }
 
+  VaeDecoder::VaeDecoder(const StableDiffusionSessionParameters& parameters) :
+    VaeDecoder(parameters.VaeDecoder())
+  { }
+
   Tensor VaeDecoder::DecodeVae(const Tensor& image, Threading::async_operation_source* async)
   {
     _logger.log(log_severity::information, "Running inference...");

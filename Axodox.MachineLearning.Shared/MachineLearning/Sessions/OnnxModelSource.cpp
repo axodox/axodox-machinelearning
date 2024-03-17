@@ -17,13 +17,14 @@ namespace Axodox::MachineLearning::Sessions
 
   std::unique_ptr<OnnxModelSource> OnnxModelSource::FromFilePath(const std::filesystem::path& path)
   {
-    return make_unique<OnnxModelSource>([=] { return read_file(path.lexically_normal()); });
+    error_code ec;
+    return filesystem::exists(path, ec) ? make_unique<OnnxModelSource>([=] { return read_file(path.lexically_normal()); }) : nullptr;
   }
 
 #ifdef WINRT_Windows_Storage_H
   std::unique_ptr<OnnxModelSource> OnnxModelSource::FromStorageFile(const winrt::Windows::Storage::StorageFile& file)
   {
-    return make_unique<OnnxModelSource>([=] { return read_file(file); });
+    return file ? make_unique<OnnxModelSource>([=] { return read_file(file); }) : nullptr;
   }
 #endif
 }

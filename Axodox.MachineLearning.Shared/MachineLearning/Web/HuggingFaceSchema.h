@@ -1,9 +1,8 @@
 #pragma once
-#ifdef PLATFORM_WINDOWS
-#include "../includes.h"
+#include "../../includes.h"
 #include "Json/JsonSerializer.h"
 
-namespace Axodox::Web
+namespace Axodox::MachineLearning::Web
 {
   struct AXODOX_MACHINELEARNING_API HuggingFaceModelInfo : public Json::json_object_base
   {
@@ -36,4 +35,3 @@ namespace Axodox::Web
     bool IsValidModel(const std::set<std::string>& fileset);
   };
 }
-#endif

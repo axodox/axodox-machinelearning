@@ -1,13 +1,14 @@
 #include "pch.h"
 #include "CppUnitTest.h"
-#include "MachineLearning/DepthEstimator.h"
-#include "MachineLearning/EdgeDetector.h"
-#include "MachineLearning/PoseEstimator.h"
+#include "MachineLearning/Imaging/Annotators/DepthEstimator.h"
+#include "MachineLearning/Imaging/Annotators/EdgeDetector.h"
+#include "MachineLearning/Imaging/Annotators/PoseEstimator.h"
 #include "Storage/FileIO.h"
 
 using namespace Axodox::Graphics;
 using namespace Axodox::Storage;
-using namespace Axodox::MachineLearning::Prompts;
+using namespace Axodox::MachineLearning::Sessions;
+using namespace Axodox::MachineLearning::Imaging::Annotators;
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace std;
 
@@ -34,16 +35,14 @@ namespace Axodox::MachineLearning::Test
       auto imageTensor = Tensor::FromTextureData(imageTexture, ColorNormalization::LinearZeroToOne);
 
       //Load model
-      auto modelFolder = (lib_folder() / "..\\..\\..\\models").lexically_normal();
+      auto modelPath = lib_folder() / "../../../models/annotators/depth.onnx";
+      DepthEstimator depthEstimator{ OnnxSessionParameters::Create(modelPath, OnnxExecutorType::Dml) };
 
       //Run depth estimation
-      OnnxEnvironment environment{ modelFolder };
-      DepthEstimator depthEstimator{ environment };
+      auto result = depthEstimator.EstimateDepth(imageTensor);
 
       //Convert output to image
-      auto result = depthEstimator.EstimateDepth(imageTensor);      
       DepthEstimator::NormalizeDepthTensor(result);
-
       auto depthTexture = result.ToTextureData(ColorNormalization::LinearZeroToOne);
       auto depthData = depthTexture[0].ToBuffer();      
       auto outputPath = lib_folder() / "depth.png";
@@ -56,16 +55,14 @@ namespace Axodox::MachineLearning::Test
       auto imageTensor = Tensor::FromTextureData(_imageTexture, ColorNormalization::LinearZeroToOne);
 
       //Load model
-      auto modelFolder = (lib_folder() / "..\\..\\..\\models").lexically_normal();
+      auto modelPath = lib_folder() / "../../../models/annotators/canny.onnx";
+      EdgeDetector edgeDetector{ OnnxSessionParameters::Create(modelPath, OnnxExecutorType::Dml) };
 
       //Run depth estimation
-      OnnxEnvironment environment{ modelFolder };
-      EdgeDetector edgeDetector{ environment, EdgeDetectionMode::Canny };
+      auto result = edgeDetector.DetectEdges(imageTensor);
 
       //Convert output to image
-      auto result = edgeDetector.DetectEdges(imageTensor);
       auto values = result.AsSpan<float>();
-
       auto edgeTexture = result.ToTextureData(ColorNormalization::LinearZeroToOne);
       auto edgeData = edgeTexture[0].ToBuffer();
       auto outputPath = lib_folder() / "canny.png";
@@ -78,16 +75,14 @@ namespace Axodox::MachineLearning::Test
       auto imageTensor = Tensor::FromTextureData(_imageTexture, ColorNormalization::LinearZeroToOne);
 
       //Load model
-      auto modelFolder = (lib_folder() / "..\\..\\..\\models").lexically_normal();
+      auto modelPath = lib_folder() / "../../../models/annotators/hed.onnx";
+      EdgeDetector edgeDetector{ OnnxSessionParameters::Create(modelPath, OnnxExecutorType::Dml) };
 
       //Run depth estimation
-      OnnxEnvironment environment{ modelFolder };
-      EdgeDetector edgeDetector{ environment, EdgeDetectionMode::Hed };
+      auto result = edgeDetector.DetectEdges(imageTensor);
 
       //Convert output to image
-      auto result = edgeDetector.DetectEdges(imageTensor);
       auto values = result.AsSpan<float>();
-
       auto edgeTexture = result.ToTextureData(ColorNormalization::LinearZeroToOne);
       auto edgeData = edgeTexture[0].ToBuffer();
       auto outputPath = lib_folder() / "hed.png";
@@ -102,14 +97,13 @@ namespace Axodox::MachineLearning::Test
       auto imageTexture = TextureData::FromBuffer(imageData);
 
       //Load model
-      auto modelFolder = (lib_folder() / "..\\..\\..\\models").lexically_normal();
+      auto modelPath = lib_folder() / "../../../models/annotators/openpose.onnx";
+      PoseEstimator poseDetector{ OnnxSessionParameters::Create(modelPath, OnnxExecutorType::Dml) };
 
       //Run depth estimation
-      OnnxEnvironment environment{ modelFolder };
-      PoseEstimator poseDetector{ environment };
+      auto poseTexture = poseDetector.ExtractFeatures(imageTexture);
 
       //Convert output to image
-      auto poseTexture = poseDetector.ExtractFeatures(imageTexture);
       auto edgeData = poseTexture.ToBuffer();
       auto outputPath = lib_folder() / "pose.png";
       write_file(outputPath, edgeData);

@@ -1,6 +1,7 @@
 #pragma once
 #include "MachineLearning/Sessions/OnnxSession.h"
 #include "MachineLearning/Tensor.h"
+#include "StableDiffusionSessionParameters.h"
 
 namespace Axodox::MachineLearning::Imaging::StableDiffusion
 {
@@ -14,6 +15,7 @@ namespace Axodox::MachineLearning::Imaging::StableDiffusion
     static const size_t MaxTokenCount;
 
     TextTokenizer(const Sessions::OnnxSessionParameters& parameters);
+    TextTokenizer(const StableDiffusionSessionParameters& parameters);
 
     Tensor TokenizeText(std::string_view text);
     Tensor TokenizeText(const std::vector<const char*>& texts);

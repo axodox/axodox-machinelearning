@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "CppUnitTest.h"
 
-using namespace Axodox::MachineLearning::Prompts;
+using namespace Axodox::MachineLearning::Text::Prompts;
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace std;
 

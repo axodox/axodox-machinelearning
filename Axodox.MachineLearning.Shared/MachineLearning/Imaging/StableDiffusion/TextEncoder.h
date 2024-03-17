@@ -1,6 +1,7 @@
 #pragma once
 #include "MachineLearning/Sessions/OnnxSession.h"
 #include "MachineLearning/Tensor.h"
+#include "StableDiffusionSessionParameters.h"
 
 namespace Axodox::MachineLearning::Imaging::StableDiffusion
 {
@@ -18,6 +19,7 @@ namespace Axodox::MachineLearning::Imaging::StableDiffusion
 
   public:
     TextEncoder(const Sessions::OnnxSessionParameters& parameters);
+    TextEncoder(const StableDiffusionSessionParameters& parameters);
 
     Tensor EncodeText(const Tensor& text);
 
@@ -33,6 +35,7 @@ namespace Axodox::MachineLearning::Imaging::StableDiffusion
 
   public:
     TextEncoder2(const Sessions::OnnxSessionParameters& parameters);
+    TextEncoder2(const StableDiffusionSessionParameters& parameters);
 
     EncodedText EncodeText(const Tensor& text);
 
@@ -47,6 +50,7 @@ namespace Axodox::MachineLearning::Imaging::StableDiffusion
     TextEncodingProvider(
       const Sessions::OnnxSessionParameters& encoder1Parameters, 
       const Sessions::OnnxSessionParameters& encoder2Parameters);
+    TextEncodingProvider(const StableDiffusionSessionParameters& parameters);
 
     EncodedText EncodeText(const Tensor& text);
 

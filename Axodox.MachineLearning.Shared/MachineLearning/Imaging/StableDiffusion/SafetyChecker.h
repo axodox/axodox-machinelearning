@@ -3,6 +3,7 @@
 #include "MachineLearning/Tensor.h"
 #include "SafetyCheckerOptions.h"
 #include "Graphics/Textures/TextureData.h"
+#include "StableDiffusionSessionParameters.h"
 
 namespace Axodox::MachineLearning::Imaging::StableDiffusion
 {
@@ -12,6 +13,7 @@ namespace Axodox::MachineLearning::Imaging::StableDiffusion
 
   public:
     SafetyChecker(const Sessions::OnnxSessionParameters& parameters, SafetyCheckerOptions&& options = {});
+    SafetyChecker(const StableDiffusionSessionParameters& parameters);
 
     bool IsSafe(const Graphics::TextureData& texture);
 
