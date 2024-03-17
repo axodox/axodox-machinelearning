@@ -10,10 +10,10 @@ namespace Axodox::MachineLearning::Sessions
 
     std::vector<uint8_t> GetModelData() const;
 
-    static OnnxModelSource FromFilePath(const std::filesystem::path& path);
+    static std::unique_ptr<OnnxModelSource> FromFilePath(const std::filesystem::path& path);
 
 #ifdef WINRT_Windows_Storage_H
-    static OnnxModelSource FromStorageFile(const winrt::Windows::Storage::StorageFile& file);
+    static std::unique_ptr<OnnxModelSource> FromStorageFile(const winrt::Windows::Storage::StorageFile& file);
 #endif
 
   private:

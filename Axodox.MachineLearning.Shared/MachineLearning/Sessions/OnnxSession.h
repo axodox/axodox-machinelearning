@@ -1,16 +1,24 @@
 #pragma once
 #include "../../includes.h"
-#include "../Executors/OnnxExecutor.h"
+#include "MachineLearning/Executors/OnnxExecutor.h"
 #include "OnnxEnvironment.h"
 #include "OnnxModelSource.h"
 
 namespace Axodox::MachineLearning::Sessions
 {
+  enum class OnnxExecutorType
+  {
+    Cpu = 0,
+    Dml = 1
+  };
+
   struct OnnxSessionParameters
   {
     std::shared_ptr<OnnxEnvironment> Environment;
     std::shared_ptr<Executors::OnnxExecutor> Executor;
     std::shared_ptr<OnnxModelSource> ModelSource;
+
+    static OnnxSessionParameters Create(const std::filesystem::path& path, OnnxExecutorType executorType);
 
     bool IsValid() const;
   };

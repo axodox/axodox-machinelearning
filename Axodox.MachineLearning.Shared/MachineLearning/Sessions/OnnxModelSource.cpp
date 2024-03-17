@@ -15,15 +15,15 @@ namespace Axodox::MachineLearning::Sessions
     return _source();
   }
 
-  OnnxModelSource OnnxModelSource::FromFilePath(const std::filesystem::path& path)
+  std::unique_ptr<OnnxModelSource> OnnxModelSource::FromFilePath(const std::filesystem::path& path)
   {
-    return OnnxModelSource([=] { return read_file(path); });
+    return make_unique<OnnxModelSource>([=] { return read_file(path.lexically_normal()); });
   }
 
 #ifdef WINRT_Windows_Storage_H
-  OnnxModelSource OnnxModelSource::FromStorageFile(const winrt::Windows::Storage::StorageFile& file)
+  std::unique_ptr<OnnxModelSource> OnnxModelSource::FromStorageFile(const winrt::Windows::Storage::StorageFile& file)
   {
-    return OnnxModelSource([=] { return read_file(file); });
+    return make_unique<OnnxModelSource>([=] { return read_file(file); });
   }
 #endif
 }

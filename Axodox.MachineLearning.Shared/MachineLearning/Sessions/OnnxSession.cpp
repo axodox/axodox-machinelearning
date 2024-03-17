@@ -1,7 +1,10 @@
 #include "pch.h"
 #include "OnnxSession.h"
+#include "MachineLearning/Executors/CpuExecutor.h"
+#include "MachineLearning/Executors/DmlExecutor.h"
 
 using namespace Axodox::Infrastructure;
+using namespace Axodox::MachineLearning::Executors;
 using namespace Ort;
 using namespace std;
 
@@ -59,6 +62,26 @@ namespace Axodox::MachineLearning::Sessions
     _session = Ort::Session{nullptr};
 
     EnsureSession();
+  }
+
+  OnnxSessionParameters OnnxSessionParameters::Create(const std::filesystem::path& path, OnnxExecutorType executorType)
+  {
+    unique_ptr<OnnxExecutor> executor;
+    switch (executorType)
+    {
+    case OnnxExecutorType::Cpu:
+      executor = make_unique<CpuExecutor>();
+      break;
+    case OnnxExecutorType::Dml:
+      executor = make_unique<DmlExecutor>();
+      break;
+    }
+
+    return OnnxSessionParameters{
+      .Environment = make_shared<OnnxEnvironment>(),
+      .Executor = move(executor),
+      .ModelSource = OnnxModelSource::FromFilePath(path)
+    };
   }
 
   bool OnnxSessionParameters::IsValid() const
