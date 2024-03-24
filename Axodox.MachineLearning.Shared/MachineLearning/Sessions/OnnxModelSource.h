@@ -6,7 +6,9 @@ namespace Axodox::MachineLearning::Sessions
   class AXODOX_MACHINELEARNING_API OnnxModelSource
   {
   public:
-    explicit OnnxModelSource(std::function<std::vector<uint8_t>()>&& source);
+    explicit OnnxModelSource(std::function<std::vector<uint8_t>()>&& source, const std::filesystem::path& pathHint = {});
+
+    const std::filesystem::path& PathHint() const;
 
     std::vector<uint8_t> GetModelData() const;
 
@@ -17,6 +19,7 @@ namespace Axodox::MachineLearning::Sessions
 #endif
 
   private:
+    std::filesystem::path _pathHint;
     std::function<std::vector<uint8_t>()> _source;
   };
 }

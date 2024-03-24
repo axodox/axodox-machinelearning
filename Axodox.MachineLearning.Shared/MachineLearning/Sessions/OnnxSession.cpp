@@ -48,17 +48,22 @@ namespace Axodox::MachineLearning::Sessions
     auto options = _parameters.Environment->DefaultSessionOptions();
     _parameters.Executor->Apply(options);
 
-    //Read model
-    auto buffer = _parameters.ModelSource->GetModelData();
-
     //Create session
-    _session = { environment, buffer.data(), buffer.size(), options };
+    if (_parameters.ModelSource->PathHint().empty())
+    {
+      auto buffer = _parameters.ModelSource->GetModelData();
+      _session = { environment, buffer.data(), buffer.size(), options };
+    }
+    else
+    {
+      _session = { environment, _parameters.ModelSource->PathHint().c_str(), options };
+    }
   }
 
   void OnnxSessionContainer::OnDeviceReset(Executors::OnnxExecutor* executor)
   {
     unique_lock lock(_mutex);
-    _session = Ort::Session{nullptr};
+    _session = Ort::Session{ nullptr };
 
     EnsureSession();
   }
