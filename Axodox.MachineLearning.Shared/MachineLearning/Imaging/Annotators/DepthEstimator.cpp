@@ -33,10 +33,7 @@ namespace Axodox::MachineLearning::Imaging::Annotators
     auto result = Tensor::FromOrtValue(outputValues[0]).ToSingle();
     result.Shape = { result.Shape[0], 1, result.Shape[1], result.Shape[2] };
     
-    //Evict model on end
-    session->Evict();
     _logger.log(log_severity::information, "Inference finished.");
-
     return result;
   }
 

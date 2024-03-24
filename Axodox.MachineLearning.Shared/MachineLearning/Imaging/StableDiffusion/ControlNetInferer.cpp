@@ -13,7 +13,7 @@ namespace Axodox::MachineLearning::Imaging::StableDiffusion
     _unetSessionContainer(unetParameters)
   { }
 
-  ControlNetInferer::ControlNetInferer(const Sessions::OnnxSessionParameters& controlnetParameters, const StableDiffusionDirectorySessionParameters& unetParameters) :
+  ControlNetInferer::ControlNetInferer(const Sessions::OnnxSessionParameters& controlnetParameters, const StableDiffusionSessionParameters& unetParameters) :
     ControlNetInferer(controlnetParameters, unetParameters.ControlNet())
   { }
 

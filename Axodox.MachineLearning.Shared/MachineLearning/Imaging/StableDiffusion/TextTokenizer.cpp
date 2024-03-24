@@ -70,10 +70,7 @@ namespace Axodox::MachineLearning::Imaging::StableDiffusion
       }
     }
 
-    //Evict model on end
-    session->Evict();
     _logger.log(log_severity::information, "Inference finished.");
-
     return result;
   }
   

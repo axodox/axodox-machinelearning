@@ -44,7 +44,6 @@ namespace Axodox::MachineLearning::Sessions
       .Outputs = GetProperties(*session, allocator, &Session::GetOutputCount, &Session::GetOutputNameAllocated, &Session::GetOutputTypeInfo)
     };
 
-    session->Evict();
     return result;
   }
 }

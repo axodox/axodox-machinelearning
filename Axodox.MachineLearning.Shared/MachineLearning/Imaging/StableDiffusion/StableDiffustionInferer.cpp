@@ -147,11 +147,7 @@ namespace Axodox::MachineLearning::Imaging::StableDiffusion
 
     //Decode sample
     latentSample = latentSample * (1.0f / _vaeScalingFactor);
-    
-    //Evict model on end
-    session->Evict();
     _logger.log(log_severity::information, "Inference finished.");
-
     return latentSample;
   }
 

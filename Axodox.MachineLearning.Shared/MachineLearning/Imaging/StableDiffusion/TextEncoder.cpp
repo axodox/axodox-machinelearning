@@ -51,10 +51,7 @@ namespace Axodox::MachineLearning::Imaging::StableDiffusion
     auto outputValues = bindings.GetOutputValues();
     auto result = Tensor::FromOrtValue(outputValues[0]).ToSingle();
 
-    //Evict model on end
-    session->Evict();
     _logger.log(log_severity::information, "Inference finished.");
-
     return result;
   }
 
@@ -102,11 +99,7 @@ namespace Axodox::MachineLearning::Imaging::StableDiffusion
     EncodedText result;
     result.LastHiddenState = Tensor::FromOrtValue(outputValues[0]).ToSingle();
     result.TextEmbeds = Tensor::FromOrtValue(outputValues[1]).ToSingle();
-
-    //Evict model on end
-    session->Evict();
     _logger.log(log_severity::information, "Inference finished.");
-
     return result;
   }
 

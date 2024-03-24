@@ -21,14 +21,22 @@ namespace Axodox::MachineLearning::Sessions
     static OnnxSessionParameters Create(const std::filesystem::path& path, OnnxExecutorType executorType);
 
     bool IsValid() const;
+    explicit operator bool() const;
   };
+
+  struct AXODOX_MACHINELEARNING_API OnnxSessionUnlock
+  {
+    void operator()(Ort::Session* value);
+  };
+
+  using OnnxSessionRef = Threading::locked_ptr<Ort::Session, OnnxSessionUnlock>;
 
   class AXODOX_MACHINELEARNING_API OnnxSessionContainer
   {
   public:
     OnnxSessionContainer(const OnnxSessionParameters& parameters);
 
-    Threading::locked_ptr<Ort::Session> Session();
+    OnnxSessionRef Session();
 
     OnnxEnvironment* Environment() const;
 

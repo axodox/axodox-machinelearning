@@ -57,10 +57,7 @@ namespace Axodox::MachineLearning::Imaging::StableDiffusion
       memcpy(results.AsPointer<float>(i), result.AsPointer<float>(), result.ByteCount());
     }
     
-    //Evict model on end
-    session->Evict();
     _logger.log(log_severity::information, "Inference finished.");
-
     return results;
   }
 }

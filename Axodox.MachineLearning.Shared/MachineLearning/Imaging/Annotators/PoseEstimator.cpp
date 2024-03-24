@@ -485,12 +485,9 @@ namespace Axodox::MachineLearning::Imaging::Annotators
     auto jointPositionConfidenceMap = Tensor::FromOrtValue(outputValues[0]).ToSingle();
     auto boneAffinityMap = Tensor::FromOrtValue(outputValues[1]).ToSingle();
 
-    //Evict model on end
-    session->Evict();
-    _logger.log(log_severity::information, "Inference finished.");
-
     //Extract skeletons
     auto skeletons = ExtractSkeletons(jointPositionConfidenceMap, boneAffinityMap);
+    _logger.log(log_severity::information, "Inference finished.");
     return skeletons;
   }
 

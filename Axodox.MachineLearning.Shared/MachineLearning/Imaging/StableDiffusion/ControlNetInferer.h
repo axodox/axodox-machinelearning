@@ -16,7 +16,7 @@ namespace Axodox::MachineLearning::Imaging::StableDiffusion
   {
   public:
     ControlNetInferer(const Sessions::OnnxSessionParameters& controlnetParameters, const Sessions::OnnxSessionParameters& unetParameters);
-    ControlNetInferer(const Sessions::OnnxSessionParameters& controlnetParameters, const StableDiffusionDirectorySessionParameters& unetParameters);
+    ControlNetInferer(const Sessions::OnnxSessionParameters& controlnetParameters, const StableDiffusionSessionParameters& unetParameters);
 
     Tensor RunInference(const ControlNetOptions& options, Threading::async_operation_source* async = nullptr);
 

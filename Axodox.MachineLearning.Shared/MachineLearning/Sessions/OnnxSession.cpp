@@ -23,7 +23,7 @@ namespace Axodox::MachineLearning::Sessions
     EnsureSession();
   }
 
-  Threading::locked_ptr<Ort::Session> OnnxSessionContainer::Session()
+  OnnxSessionRef OnnxSessionContainer::Session()
   {
     return { _mutex, &_session };
   }
@@ -39,7 +39,6 @@ namespace Axodox::MachineLearning::Sessions
     _parameters.Executor->Ensure();
 
     //If the session exists nothing to do
-    unique_lock lock(_mutex);
     if (_session) return;
 
     //Get environment
@@ -89,4 +88,13 @@ namespace Axodox::MachineLearning::Sessions
     return Environment && Executor && ModelSource;
   }
 
+  OnnxSessionParameters::operator bool() const
+  {
+    return IsValid();
+  }
+
+  void OnnxSessionUnlock::operator()(Ort::Session* value)
+  {
+    value->Evict();
+  }
 }

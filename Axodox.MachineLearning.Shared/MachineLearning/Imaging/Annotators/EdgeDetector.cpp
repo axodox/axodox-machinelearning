@@ -32,10 +32,7 @@ namespace Axodox::MachineLearning::Imaging::Annotators
     auto outputValues = bindings.GetOutputValues();
     auto result = Tensor::FromOrtValue(outputValues[0]);
 
-    //Evict model on end
-    session->Evict();
     _logger.log(log_severity::information, "Inference finished.");
-
     return result;
   }
 

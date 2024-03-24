@@ -69,10 +69,7 @@ namespace Axodox::MachineLearning::Imaging::StableDiffusion
       async->update_state(1.f, "VAE decoded.");
     }
 
-    //Evict model on end
-    session->Evict();
     _logger.log(log_severity::information, "Inference finished.");
-
     return results;
   }
 }
