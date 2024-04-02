@@ -14,7 +14,9 @@
 
 #include "onnxruntime_cxx_api.h"
 #include "Include/Axodox.Infrastructure.h"
+#include "Include/Axodox.Storage.h"
 #include "Include/Axodox.Graphics.h"
+#include "Include/Axodox.Threading.h"
 
 #ifdef AXODOX_MACHINELEARNING_EXPORT
 #define AXODOX_MACHINELEARNING_API __declspec(dllexport)

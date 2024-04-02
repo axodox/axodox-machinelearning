@@ -4,7 +4,8 @@
 
 using namespace Axodox::Graphics;
 using namespace Axodox::Storage;
-using namespace Axodox::MachineLearning;
+using namespace Axodox::MachineLearning::Sessions;
+using namespace Axodox::MachineLearning::Imaging::StableDiffusion;
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace std;
 
@@ -14,14 +15,13 @@ namespace Axodox::MachineLearning::Test
   {
     TEST_METHOD(TestStableDiffusion)
     {
-      auto modelFolder = (lib_folder() / "..\\..\\..\\models").lexically_normal();
-      OnnxEnvironment environment(modelFolder / "stable_diffusion");
+      StableDiffusionDirectorySessionParameters sessionParameters{ lib_folder() / "../../../models/stable_diffusion" };
 
       StableDiffusionOptions options{};
 
       //Create text embedding
       {
-        TextEmbedder textEmbedder(environment);
+        TextEmbedder textEmbedder{ sessionParameters };
         auto positiveEmbedding = textEmbedder.ProcessPrompt("a clean bedroom");
         auto negativeEmbedding = textEmbedder.ProcessPrompt("blurry, render");
 
@@ -32,14 +32,14 @@ namespace Axodox::MachineLearning::Test
       //Run StableDiffusion
       Tensor image;
       {
-        StableDiffusionInferer uNet{ environment };
+        StableDiffusionInferer uNet{ sessionParameters };
 
         image = uNet.RunInference(options);
       }
 
       //Decode VAE
       {
-        VaeDecoder vaeDecoder{ environment };
+        VaeDecoder vaeDecoder{ sessionParameters };
 
         image = vaeDecoder.DecodeVae(image);
       }
