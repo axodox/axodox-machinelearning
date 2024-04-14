@@ -17,6 +17,8 @@ namespace Axodox::MachineLearning::Executors
     virtual void Apply(Ort::SessionOptions& sessionOptions) override;
 
   private:
+    const OrtDmlApi* _dmlApi;
+
     std::recursive_mutex _mutex;
     winrt::com_ptr<IDXGIAdapter> _dxgiAdapter;
     winrt::com_ptr<ID3D12Device> _d3d12Device;

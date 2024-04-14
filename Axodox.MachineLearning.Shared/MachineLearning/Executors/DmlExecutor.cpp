@@ -2,6 +2,7 @@
 #include "DmlExecutor.h"
 
 using namespace Axodox::Infrastructure;
+using namespace Ort;
 using namespace std;
 using namespace winrt;
 
@@ -9,6 +10,7 @@ namespace Axodox::MachineLearning::Executors
 {
   DmlExecutor::DmlExecutor(uint32_t adapterIndex)
   {
+    ThrowOnError(GetApi().GetExecutionProviderApi("DML", ORT_API_VERSION, reinterpret_cast<const void**>(&_dmlApi)));
     ChangeAdapter(adapterIndex);
   }
 
@@ -82,6 +84,6 @@ namespace Axodox::MachineLearning::Executors
   void DmlExecutor::Apply(Ort::SessionOptions& sessionOptions)
   {
     lock_guard lock(_mutex);
-    OrtSessionOptionsAppendExecutionProviderEx_DML(sessionOptions, _dmlDevice.get(), _d3d12CommandQueue.get());
+    _dmlApi->SessionOptionsAppendExecutionProvider_DML1(sessionOptions, _dmlDevice.get(), _d3d12CommandQueue.get());
   }
 }
