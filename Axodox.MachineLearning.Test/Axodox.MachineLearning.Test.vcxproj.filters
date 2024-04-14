@@ -76,5 +76,16 @@
     <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
     <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
     <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
+    <None Include="$(SolutionDir)Axodox.MachineLearning.Desktop\bin\$(Platform)\$(Configuration)\*.*" />
   </ItemGroup>
 </Project>
